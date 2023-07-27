@@ -1,0 +1,12 @@
+name: Start GitHub Runner VM
+
+on:
+  workflow_call:
+
+jobs:
+  start-runner:
+    name: Echo
+    runs-on: ubuntu-latest
+    steps:
+      - name: Echo
+        run: echo "ok"
