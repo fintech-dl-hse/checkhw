@@ -1,4 +1,4 @@
-name: Start GitHub Runner VM
+name: Check hw letters
 
 on:
   workflow_call:
