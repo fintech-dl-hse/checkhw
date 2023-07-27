@@ -1,0 +1,26 @@
+name: Start GitHub Runner VM
+
+on:
+  workflow_call:
+
+jobs:
+  start-runner:
+    name: Start self-hosted YC runner
+    runs-on: ubuntu-latest
+    outputs:
+      label: ${{ steps.start-yc-runner.outputs.label }}
+      instance-id: ${{ steps.start-yc-runner.outputs.instance-id }}
+    steps:
+      - name: Start YC runner
+        id: start-yc-runner
+        uses: yc-actions/yc-github-runner@v1
+        with:
+          mode: start
+          yc-sa-json-credentials: ${{ secrets.YC_SA_JSON_CREDENTIALS }}
+          github-token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+          folder-id: b1ggdqd3303e40vlujo0
+          image-id: fd8emvfmfoaordspe1jr
+          cores: 2
+          memory: 4GB
+          core-fraction: 100
+          subnet-id: e2l7f1j7epi5kckmobpk
