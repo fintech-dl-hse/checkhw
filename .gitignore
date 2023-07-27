@@ -1,1 +1,5 @@
 key.json
+*.zip
+.terraform
+*.tfstate
+*.tfstate.backup
