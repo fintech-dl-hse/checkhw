@@ -1,0 +1,49 @@
+{
+  "tests": [
+    {
+      "name": "pytest",
+      "run": "/data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs test_notebook.py",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 3600,
+      "points": 0
+    },
+    {
+      "name": "pytest",
+      "run": "/data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs test_activations.py -k test_relu",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 600,
+      "points": 25
+    },
+    {
+      "name": "pytest",
+      "run": "/data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs test_activations.py -k test_leaky_relu",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 600,
+      "points": 25
+    },
+    {
+      "name": "pytest",
+      "run": "/data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs test_activations.py -k test_sigmoid",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 600,
+      "points": 25
+    },
+    {
+      "name": "pytest",
+      "run": "/data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs test_activations.py -k test_elu",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 600,
+      "points": 25
+    }
+  ]
+}
