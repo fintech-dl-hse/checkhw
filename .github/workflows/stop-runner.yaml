@@ -7,7 +7,7 @@ on:
   workflow_call:
 
 jobs:
-  start-runner:
+  stop-runner:
     runs-on: ubuntu-latest
     steps:
       - name: Check any runner is busy
