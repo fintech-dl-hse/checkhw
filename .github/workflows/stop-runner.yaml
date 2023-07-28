@@ -1,27 +1,13 @@
-name: Suspend runners
+name: Stop GitHub Runners
 
-  # Controls when the workflow will run
 on:
-  workflow_call:
-    inputs:
-      label:
-        required: true
-        type: string
-      instance-id:
-        required: true
-        type: string
+  schedule:
+    - cron: "*/20 * * * *"
+  workflow_dispatch:
 
 jobs:
-  stop-runner:
-    name: Stop self-hosted YC runner
+  start-runner:
     runs-on: ubuntu-latest
-    if: ${{ always() }} # required to stop the runner even if the error happened in the previous jobs
     steps:
-      - name: Stop YC runner
-        uses: yc-actions/yc-github-runner@v1
-        with:
-          mode: stop
-          yc-sa-json-credentials: ${{ secrets.YC_SA_JSON_CREDENTIALS }}
-          github-token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
-          label: ${{ inputs.label }}
-          instance-id: ${{ inputs.instance-id }}
+      - name: Stop Cloud Runners
+        run: curl https://functions.yandexcloud.net/d4e9t5qi6hnqvi3b1633

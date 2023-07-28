@@ -1,26 +1,19 @@
-name: Start GitHub Runner VM
+name: Start GitHub Runners
 
 on:
   workflow_call:
+  workflow_dispatch:
 
 jobs:
-  start-runner:
-    name: Start self-hosted YC runner
+  debug env:
     runs-on: ubuntu-latest
-    outputs:
-      label: ${{ steps.start-yc-runner.outputs.label }}
-      instance-id: ${{ steps.start-yc-runner.outputs.instance-id }}
     steps:
-      - name: Start YC runner
-        id: start-yc-runner
-        uses: yc-actions/yc-github-runner@v1
-        with:
-          mode: start
-          yc-sa-json-credentials: ${{ secrets.YC_SA_JSON_CREDENTIALS }}
-          github-token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
-          folder-id: b1ggdqd3303e40vlujo0
-          image-id: fd8emvfmfoaordspe1jr
-          cores: 2
-          memory: 4GB
-          core-fraction: 100
-          subnet-id: e2l7f1j7epi5kckmobpk
+      - name: dbg
+        run: echo "ORGANIZATION_VAR = ${{ vars.ORGANIZATION_VAR }}"
+
+  start-runner:
+    runs-on: ubuntu-latest
+    if: vars.ORGANIZATION_VAR  == 'fintech-dl-hse'
+    steps:
+      - name: Start Cloud Runners
+        run: curl https://functions.yandexcloud.net/d4ekjk6fah67t6pdv3o1
