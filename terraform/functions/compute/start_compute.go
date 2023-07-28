@@ -42,11 +42,14 @@ func StartComputeInstances(ctx context.Context) (*Response, error) {
 	count := 0
 	// Фильтрация списка Compute Instance, фильтр: выключена, в тегах содержится тег, заданный запросом
 	for _, i := range instances {
-		_, err := startComputeInstance(ctx, sdk, i.GetId())
-		if err != nil {
-			return nil, err
+		if i.Status != compute.Instance_RUNNING {
+			_, err := startComputeInstance(ctx, sdk, i.GetId())
+			if err != nil {
+				return nil, err
+			}
+			count++
 		}
-		count++
+
 	}
 	return &Response{
 		StatusCode: 200,

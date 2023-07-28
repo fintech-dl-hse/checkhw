@@ -42,10 +42,10 @@ resource "yandex_compute_instance" "runner-hse" {
   }
 }
 
-resource "yandex_function" "create-compute" {
-    name               = "create-compute"
-    description        = "Test function to create compute instance"
-    user_hash          = "v0.0.3"
+resource "yandex_function" "start-compute" {
+    name               = "start-compute"
+    description        = "Test function to start compute instance"
+    user_hash          = "v0.0.4"
     runtime            = "golang119"
     entrypoint         = "start_compute.StartComputeInstances"
     memory             = "128"
@@ -56,10 +56,10 @@ resource "yandex_function" "create-compute" {
     }
 }
 
-resource "yandex_function" "delete-compute" {
-    name               = "delete-compute"
-    description        = "Test function to delete compute instance"
-    user_hash          = "v0.0.1"
+resource "yandex_function" "stop-compute" {
+    name               = "stop-compute"
+    description        = "Test function to stop compute instance"
+    user_hash          = "v0.0.4"
     runtime            = "golang119"
     entrypoint         = "stop_compute.StopComputeInstance"
     memory             = "128"
@@ -71,10 +71,10 @@ resource "yandex_function" "delete-compute" {
 }
 
 
-output "yandex_function_create-compute" {
-    value = "${yandex_function.create-compute.id}"
+output "yandex_function_start-compute" {
+    value = "${yandex_function.start-compute.id}"
 }
 
-output "yandex_function_delete-compute" {
-    value = "${yandex_function.delete-compute.id}"
+output "yandex_function_stop-compute" {
+    value = "${yandex_function.stop-compute.id}"
 }
