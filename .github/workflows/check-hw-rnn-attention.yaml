@@ -15,12 +15,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Checkout checkhw autograding files
+      - name: Checkout classroom files
         uses: actions/checkout@v3
         with:
           sparse-checkout: |
             .github/classroom
           path: checkhw
+          repository: fintech-dl-hse/checkhw
 
       - name: Mkdir .github/classroom
         run: mkdir -p .github/classroom || true

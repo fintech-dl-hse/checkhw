@@ -45,7 +45,7 @@ resource "yandex_compute_instance" "runner-hse" {
 resource "yandex_function" "start-compute" {
     name               = "start-compute"
     description        = "Test function to start compute instance"
-    user_hash          = "v0.0.4"
+    user_hash          = "v0.0.5"
     runtime            = "golang119"
     entrypoint         = "start_compute.StartComputeInstances"
     memory             = "128"
@@ -59,7 +59,7 @@ resource "yandex_function" "start-compute" {
 resource "yandex_function" "stop-compute" {
     name               = "stop-compute"
     description        = "Test function to stop compute instance"
-    user_hash          = "v0.0.4"
+    user_hash          = "v0.0.5"
     runtime            = "golang119"
     entrypoint         = "stop_compute.StopComputeInstance"
     memory             = "128"
