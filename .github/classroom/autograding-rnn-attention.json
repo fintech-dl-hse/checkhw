@@ -1,0 +1,13 @@
+{
+  "tests": [
+    {
+      "name": "Run rnn attention tests",
+      "run": "/data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs test_rnn_attention.py",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 600,
+      "points": 200
+    }
+  ]
+}
