@@ -12,22 +12,10 @@ jobs:
     name: Autograding
     runs-on: self-hosted
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Checkout classroom files
-        uses: actions/checkout@v3
+      - name: Prepare repo
+        uses: fintech-dl-hse/checkhw/.github/workflows/prepare-hw-repo.yaml@main
         with:
-          sparse-checkout: |
-            .github/classroom
-          path: checkhw
-          repository: fintech-dl-hse/checkhw
-
-      - name: Mkdir .github/classroom
-        run: mkdir -p .github/classroom || true
-
-      - name: Restore autograding file
-        run: cp checkhw/.github/classroom/autograding-rnn-attention.json .github/classroom/autograding.json
+          autograding-file: autograding-rnn-attention.json
 
       - name: Extract RNN Attention Class
         run: /data/bin/miniconda3/envs/jupyter-actions/bin/python extract_class_from_notebook.py --notebook "hw_rnn_attention.ipynb" --class_definition "class Seq2SeqRNNAttention(PreTrainedModel):" --out_filename "rnn_attention.py"
