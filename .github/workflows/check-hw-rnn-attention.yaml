@@ -14,6 +14,8 @@ jobs:
     steps:
       - name: Checkout HW
         uses: fintech-dl-hse/action-checkout-hw@v1
+        with:
+          autograding-file: autograding-rnn-attention.json
 
       - name: Extract RNN Attention Class
         run: /data/bin/miniconda3/envs/jupyter-actions/bin/python extract_class_from_notebook.py --notebook "hw_rnn_attention.ipynb" --class_definition "class Seq2SeqRNNAttention(PreTrainedModel):" --out_filename "rnn_attention.py"
