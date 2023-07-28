@@ -1,0 +1,13 @@
+{
+  "tests": [
+    {
+      "name": "Run transformer attention tests",
+      "run": "/data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs test_transformer_attention.py",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 600,
+      "points": 200
+    }
+  ]
+}
