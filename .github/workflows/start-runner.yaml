@@ -9,11 +9,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: dbg
-        run: echo "ORGANIZATION_VAR = ${{ vars.ORGANIZATION_VAR }}"
+        run: echo "ORGANIZATION_VAR = ${{ github.repository_owner }}"
 
   start-runner:
     runs-on: ubuntu-latest
-    if: vars.ORGANIZATION_VAR  == 'fintech-dl-hse'
+    if: github.repository_owner  == 'fintech-dl-hse'
     steps:
       - name: Start Cloud Runners
         run: curl https://functions.yandexcloud.net/d4ekjk6fah67t6pdv3o1
