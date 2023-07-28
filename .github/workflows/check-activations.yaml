@@ -10,7 +10,7 @@ jobs:
   run_autograding:
     needs: [ "start-runner-internal" ]
     concurrency:
-      group: ${{ github.action_repository }}
+      group: ${{ github.repository }}
       cancel-in-progress: true
     name: Autograding
     runs-on: self-hosted
