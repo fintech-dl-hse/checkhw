@@ -11,6 +11,9 @@ jobs:
     needs: [ "start-runner-internal" ]
     name: Autograding
     runs-on: self-hosted
+    concurrency:
+      group: ${{ github.action_repository }}
+      cancel-in-progress: true
     steps:
       - name: Checkout HW
         uses: fintech-dl-hse/action-checkout-hw@v1.3
