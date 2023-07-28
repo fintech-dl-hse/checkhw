@@ -7,16 +7,18 @@ jobs:
   start-runner-internal:
     uses: fintech-dl-hse/checkhw/.github/workflows/start-runner.yaml@main
 
-  run_autograding:
+  prepare-repo:
     needs: start-runner-internal
+    - name: Prepare repo
+      uses: fintech-dl-hse/checkhw/.github/workflows/prepare-hw-repo.yaml@main
+      with:
+        autograding-file: autograding-rnn-attention.json
+
+  run_autograding:
+    needs: ["start-runner-internal", "prepare-repo"]
     name: Autograding
     runs-on: self-hosted
     steps:
-      - name: Prepare repo
-        uses: fintech-dl-hse/checkhw/.github/workflows/prepare-hw-repo.yaml@main
-        with:
-          autograding-file: autograding-rnn-attention.json
-
       - name: Extract RNN Attention Class
         run: /data/bin/miniconda3/envs/jupyter-actions/bin/python extract_class_from_notebook.py --notebook "hw_rnn_attention.ipynb" --class_definition "class Seq2SeqRNNAttention(PreTrainedModel):" --out_filename "rnn_attention.py"
 
