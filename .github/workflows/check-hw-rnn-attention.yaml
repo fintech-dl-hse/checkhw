@@ -37,8 +37,3 @@ jobs:
         with:
           name: rnn_attention.py
           path: rnn_attention.py
-
-  stop-runner-internal:
-    needs: [ "start-runner-internal", "run_autograding"  ]
-    if: always()
-    uses: fintech-dl-hse/checkhw/.github/workflows/stop-runner.yaml@main
