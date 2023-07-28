@@ -1,0 +1,116 @@
+---
+- name: Add github-runner user
+  hosts: github_runners
+  become: yes
+  tasks:
+    - name: create github runner user
+      user:
+        name: github-runner
+
+- name: Make data path
+  hosts: github_runners
+  become: yes
+  tasks:
+    - name: mkdir data
+      ansible.builtin.file:
+        path: /data
+        state: directory
+        owner: root
+        group: root
+    - name: mkdir data/var
+      ansible.builtin.file:
+        path: /data/var
+        state: directory
+        owner: root
+        group: root
+
+
+- name: Install packages
+  hosts: github_runners
+  become: yes
+  tasks:
+    - name: install conda dependencies
+      apt:
+        name: libgl1-mesa-glx
+        state: present
+        update_cache: true
+    - name: install tmux
+      apt:
+        name: tmux
+        state: present
+
+- name: Install GitHub Actions Runner
+  hosts: github_runners
+  tags: [ 'github-runner' ]
+  become: yes
+  vars:
+    runner_user: "github-runner"
+    runner_dir: /data/var/actions-runner
+    runner_pkg_tempdir: /tmp/gh_actions_runner
+    runner_version: "latest"
+    runner_state: "started"
+    reinstall_runner: no
+    hide_sensitive_logs: no
+    github_url: "https://github.com"
+    github_api_url: "https://api.github.com"
+    runner_org: yes
+    runner_labels: [ 'self-hosted' ]
+    runner_download_repository: "actions/runner"
+    runner_extra_config_args: ""
+    runner_name: "ansible-runner {{inventory_hostname}}"
+    runner_on_ghes: no
+    github_account: "fintech-dl-hse"
+  roles:
+    - role: monolithprojects.github_actions_runner
+
+- name: Install Miniconda and Dependencies
+  hosts: github_runners
+  become: yes
+  tasks:
+    - name: Install Conda
+      block:
+        - name: Download Miniconda
+          get_url:
+            url: https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+            dest: /tmp/install-miniconda.sh
+            mode: 0550
+        - name: Create conda folder
+          become: True
+          file:
+            path: /data/bin/miniconda3
+            state: directory
+            owner: github-runner
+            mode: 755
+            recurse: yes
+        - name: Run the installer
+          shell: /tmp/install-miniconda.sh -b -u -p /data/bin/miniconda3
+        - name: Remove the installer
+          file:
+            state: absent
+            path: /tmp/install-miniconda.sh
+        - name: Add miniconda bin to path
+          become: True
+          shell: echo 'export PATH=/data/bin/miniconda3/bin:$PATH' >> /etc/profile
+        - name: conda - read permission for all
+          become: True
+          file:
+            path: /data/bin/miniconda3
+            mode: +r
+            recurse: yes
+        - name: conda - create jupyter-actions env
+          become: True
+          shell: /data/bin/miniconda3/bin/conda create -p /data/bin/miniconda3/envs/jupyter-actions python=3.11
+        - name: conda env jupyter-actions - install pytorch
+          become: True
+          shell: /data/bin/miniconda3/envs/jupyter-actions/bin/pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
+        - name: conda env jupyter-actions - install other dependencies
+          become: True
+          shell: /data/bin/miniconda3/envs/jupyter-actions/bin/pip3 install jupyter nbformat nbconvert numpy requests pytest scikit-learn pandas opencv-python tqdm tensorboard matplotlib scipy datasets pytorch-lightning transformers evaluate sacrebleu accelerate
+        - name: conda - execution permission for all
+          become: True
+          file:
+            path: /data/bin/miniconda3
+            mode: +x
+            owner: github-runner
+            group: github-runner
+            recurse: yes

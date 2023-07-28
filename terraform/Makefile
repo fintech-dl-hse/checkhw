@@ -1,6 +1,6 @@
 
 zip-functions:
-	rm functions/compute.zip && zip -rj functions/compute.zip functions/compute
+	(rm functions/compute.zip || true) && zip -rj functions/compute.zip functions/compute
 
 validate: zip-functions
 	terraform validate
