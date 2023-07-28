@@ -1,0 +1,40 @@
+{
+  "tests": [
+    {
+      "name": "run weight init notebook",
+      "run": "/data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs test_notebook_weight_init.py",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 3600,
+      "points": 1
+    },
+    {
+      "name": "pytest test_constant.py",
+      "run": "/data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs test_constant.py",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 600,
+      "points": 33
+    },
+    {
+      "name": "pytest test_uniform.py",
+      "run": "/data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs test_uniform.py",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 600,
+      "points": 33
+    },
+    {
+      "name": "pytest test_normal.py",
+      "run": "/data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs test_normal.py",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 600,
+      "points": 33
+    }
+  ]
+}

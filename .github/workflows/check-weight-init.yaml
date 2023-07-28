@@ -15,7 +15,7 @@ jobs:
       - name: Checkout HW
         uses: fintech-dl-hse/action-checkout-hw@v1.3
         with:
-          autograding-file: autograding-activations.json
+          autograding-file: autograding-weight-init.json
 
       - name: Autograding
         uses: education/autograding@v1
