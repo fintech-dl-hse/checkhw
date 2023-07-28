@@ -1,0 +1,31 @@
+name: Check hw rnn attention
+
+on:
+  workflow_call:
+
+jobs:
+  start-runner-internal:
+    uses: fintech-dl-hse/checkhw/.github/workflows/start-runner.yaml@main
+
+  run_autograding:
+    needs: [ "start-runner-internal" ]
+    name: Autograding
+    runs-on: self-hosted
+    concurrency:
+      group: ${{ github.repository }}
+      cancel-in-progress: true
+
+    steps:
+      - name: Checkout HW
+        uses: fintech-dl-hse/action-checkout-hw@v1.3
+        with:
+          autograding-file: check-hw-transformer-attention.yaml
+
+      - name: Save repo name
+        run: echo "${{ github.event.repository.name }}" >> .repo_name
+
+      - name: Autograding
+        uses: education/autograding@v1
+
+      - name: Cleanup
+        run: rm ./letters.csv

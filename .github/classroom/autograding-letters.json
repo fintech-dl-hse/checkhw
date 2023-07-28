@@ -1,0 +1,33 @@
+{
+  "tests": [
+    {
+      "name": "Check letters classification 200 points",
+      "run": "cat ./letters.csv | /usr/bin/letters200points",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 60,
+      "points": 200
+    },
+    {
+      "name": "Check letters classification 300 points",
+      "run": "cat ./letters.csv | /usr/bin/letters300points",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 60,
+      "points": 100
+    },
+    {
+      "name": "Check letters classification 400 points",
+      "run": "cat ./letters.csv | /usr/bin/letters400points",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 60,
+      "points": 100
+    }
+  ]
+}
+
+
