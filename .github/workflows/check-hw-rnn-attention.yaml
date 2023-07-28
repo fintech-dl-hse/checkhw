@@ -8,7 +8,7 @@ jobs:
     uses: fintech-dl-hse/checkhw/.github/workflows/start-runner.yaml@main
 
   run_autograding:
-    needs: start-runner
+    needs: start-runner-internal
     name: Autograding
     runs-on: self-hosted
     steps:
@@ -39,5 +39,6 @@ jobs:
           path: rnn_attention.py
 
   stop-runner-internal:
+    needs: [ "start-runner-internal", "run_autograding"  ]
     if: always()
     uses: fintech-dl-hse/checkhw/.github/workflows/start-runner.yaml@main
