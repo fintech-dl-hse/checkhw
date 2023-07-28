@@ -9,10 +9,9 @@ jobs:
 
   prepare-repo:
     needs: start-runner-internal
-    - name: Prepare repo
-      uses: fintech-dl-hse/checkhw/.github/workflows/prepare-hw-repo.yaml@main
-      with:
-        autograding-file: autograding-rnn-attention.json
+    uses: fintech-dl-hse/checkhw/.github/workflows/prepare-hw-repo.yaml@main
+    with:
+      autograding-file: autograding-rnn-attention.json
 
   run_autograding:
     needs: ["start-runner-internal", "prepare-repo"]
