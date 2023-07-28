@@ -4,7 +4,7 @@ on:
   workflow_call:
 
 jobs:
-  start-runner:
+  start-runner-internal:
     uses: fintech-dl-hse/checkhw/.github/workflows/start-runner.yaml@main
 
   run_autograding:
@@ -38,6 +38,6 @@ jobs:
           name: rnn_attention.py
           path: rnn_attention.py
 
-  stop-runner:
+  stop-runner-internal:
     if: always()
     uses: fintech-dl-hse/checkhw/.github/workflows/start-runner.yaml@main

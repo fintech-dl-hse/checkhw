@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  debug env:
+  debug-env:
     runs-on: ubuntu-latest
     steps:
       - name: dbg
