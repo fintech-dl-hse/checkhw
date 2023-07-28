@@ -28,10 +28,16 @@
 - name: Install packages
   hosts: github_runners
   become: yes
+  tags: [ 'apt' ]
   tasks:
     - name: install conda dependencies
       apt:
         name: libgl1-mesa-glx
+        state: present
+        update_cache: true
+    - name: install unzip
+      apt:
+        name: unzip
         state: present
         update_cache: true
     - name: install tmux
