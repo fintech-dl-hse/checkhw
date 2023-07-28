@@ -13,7 +13,7 @@ jobs:
     runs-on: self-hosted
     steps:
       - name: Checkout HW
-        uses: fintech-dl-hse/action-checkout-hw@v1
+        uses: fintech-dl-hse/action-checkout-hw@v1.1
         with:
           autograding-file: autograding-rnn-attention.json
 
