@@ -41,4 +41,4 @@ jobs:
   stop-runner-internal:
     needs: [ "start-runner-internal", "run_autograding"  ]
     if: always()
-    uses: fintech-dl-hse/checkhw/.github/workflows/start-runner.yaml@main
+    uses: fintech-dl-hse/checkhw/.github/workflows/stop-runner.yaml@main
