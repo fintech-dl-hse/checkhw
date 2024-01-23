@@ -10,7 +10,7 @@ import (
 	ycsdk "github.com/yandex-cloud/go-sdk"
 )
 
-const FolderId = "b1ggdqd3303e40vlujo0"
+const FolderId = "b1gtgl0ktbrjt750ihta"
 
 func startComputeInstance(ctx context.Context, sdk *ycsdk.SDK, id string) (*operation.Operation, error) {
 	// Операция запуска Compute Instance с указанным ID
