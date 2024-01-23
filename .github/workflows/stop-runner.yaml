@@ -2,7 +2,7 @@ name: Stop GitHub Runners
 
 on:
   schedule:
-    - cron: "*/20 * * * *"
+    - cron: "0 3 * * *"
   workflow_dispatch:
   workflow_call:
 
