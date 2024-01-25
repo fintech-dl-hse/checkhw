@@ -2,7 +2,7 @@
   "tests": [
     {
       "name": "pytest",
-      "run": "/data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs test_notebook.py",
+      "run": "PYTHONPATH=. /data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs test_notebook.py",
       "input": "",
       "output": "",
       "comparison": "included",
@@ -11,7 +11,7 @@
     },
     {
       "name": "pytest",
-      "run": "/data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs test_dataset.py",
+      "run": "PYTHONPATH=. /data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs test_dataset.py",
       "input": "",
       "output": "",
       "comparison": "included",
@@ -20,7 +20,7 @@
     },
     {
       "name": "pytest",
-      "run": "/data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs test_resnet.py -k test_residual_block",
+      "run": "PYTHONPATH=. /data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs test_resnet.py -k test_residual_block",
       "input": "",
       "output": "",
       "comparison": "included",
@@ -29,7 +29,7 @@
     },
     {
       "name": "pytest",
-      "run": "/data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs test_mlp.py",
+      "run": "PYTHONPATH=. /data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs test_mlp.py",
       "input": "",
       "output": "",
       "comparison": "included",
@@ -38,7 +38,7 @@
     },
     {
       "name": "pytest",
-      "run": "/data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs test_cnn.py",
+      "run": "PYTHONPATH=. /data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs test_cnn.py",
       "input": "",
       "output": "",
       "comparison": "included",
@@ -47,7 +47,7 @@
     },
     {
       "name": "pytest",
-      "run": "/data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs test_resnet.py -k test_resnet_forward",
+      "run": "PYTHONPATH=. /data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs test_resnet.py -k test_resnet_forward",
       "input": "",
       "output": "",
       "comparison": "included",
@@ -56,7 +56,7 @@
     },
     {
       "name": "pytest",
-      "run": "/data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs test_models.py -k test_model_mlp",
+      "run": "PYTHONPATH=. /data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs test_models.py -k test_model_mlp",
       "input": "",
       "output": "",
       "comparison": "included",
@@ -65,7 +65,7 @@
     },
     {
       "name": "pytest",
-      "run": "/data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs test_models.py -k test_model_cnn",
+      "run": "PYTHONPATH=. /data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs test_models.py -k test_model_cnn",
       "input": "",
       "output": "",
       "comparison": "included",
@@ -74,7 +74,7 @@
     },
     {
       "name": "pytest",
-      "run": "/data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs test_models.py -k test_model_resnet",
+      "run": "PYTHONPATH=. /data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs test_models.py -k test_model_resnet",
       "input": "",
       "output": "",
       "comparison": "included",
