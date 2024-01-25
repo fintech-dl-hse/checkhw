@@ -16,7 +16,7 @@ jobs:
     runs-on: self-hosted
     steps:
       - name: Checkout HW
-        uses: fintech-dl-hse/action-checkout-hw@v1.4
+        uses: fintech-dl-hse/action-checkout-hw@2e5bb868e35cb66e4289ab4a72c8bd6f558b283e
         with:
           autograding-file: autograding-activations.json
 
