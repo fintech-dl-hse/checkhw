@@ -2,7 +2,7 @@
   "tests": [
     {
       "name": "pytest",
-      "run": "/data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs test_notebook.py",
+      "run": "/data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs tests/activations/test_notebook.py",
       "input": "",
       "output": "",
       "comparison": "included",
@@ -11,7 +11,7 @@
     },
     {
       "name": "pytest",
-      "run": "/data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs test_activations.py -k test_relu",
+      "run": "/data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs tests/activations/test_activations.py -k test_relu",
       "input": "",
       "output": "",
       "comparison": "included",
@@ -20,7 +20,7 @@
     },
     {
       "name": "pytest",
-      "run": "/data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs test_activations.py -k test_leaky_relu",
+      "run": "/data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs tests/activations/test_activations.py -k test_leaky_relu",
       "input": "",
       "output": "",
       "comparison": "included",
@@ -29,7 +29,7 @@
     },
     {
       "name": "pytest",
-      "run": "/data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs test_activations.py -k test_sigmoid",
+      "run": "/data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs tests/activations/test_activations.py -k test_sigmoid",
       "input": "",
       "output": "",
       "comparison": "included",
@@ -38,7 +38,7 @@
     },
     {
       "name": "pytest",
-      "run": "/data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs test_activations.py -k test_elu",
+      "run": "/data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs tests/activations/test_activations.py -k test_elu",
       "input": "",
       "output": "",
       "comparison": "included",
