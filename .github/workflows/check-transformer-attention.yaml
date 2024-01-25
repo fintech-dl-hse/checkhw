@@ -16,7 +16,7 @@ jobs:
       cancel-in-progress: true
     steps:
       - name: Checkout HW
-        uses: fintech-dl-hse/action-checkout-hw@v1.3
+        uses: fintech-dl-hse/action-checkout-hw@main
         with:
           autograding-file: autograding-transformer-attention.json
 
