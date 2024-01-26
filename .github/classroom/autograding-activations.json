@@ -2,15 +2,6 @@
   "tests": [
     {
       "name": "pytest",
-      "run": "PYTHONPATH=. /data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs tests/activations/test_notebook.py",
-      "input": "",
-      "output": "",
-      "comparison": "included",
-      "timeout": 3600,
-      "points": 0
-    },
-    {
-      "name": "pytest",
       "run": "PYTHONPATH=. /data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs tests/activations/test_activations.py -k test_relu",
       "input": "",
       "output": "",

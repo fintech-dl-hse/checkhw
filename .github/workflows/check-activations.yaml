@@ -20,5 +20,17 @@ jobs:
         with:
           autograding-file: autograding-activations.json
 
+      - name: Extract MyReLu class
+        run: /data/bin/miniconda3/envs/jupyter-actions/bin/python scripts/extract_class_from_notebook.py --notebook "hw_activations.ipynb" --class_definition "class MyReLU(nn.Module):" --out_filename "myrelu.py"
+
+      - name: Extract MyLeackyReLu class
+        run: /data/bin/miniconda3/envs/jupyter-actions/bin/python scripts/extract_class_from_notebook.py --notebook "hw_activations.ipynb" --class_definition "class MyLeakyReLU(nn.Module):" --out_filename "myleakyrelu.py"
+
+      - name: Extract MySigmoid class
+        run: /data/bin/miniconda3/envs/jupyter-actions/bin/python scripts/extract_class_from_notebook.py --notebook "hw_activations.ipynb" --class_definition "class MySigmoid(nn.Module):" --out_filename "mysigmoid.py"
+
+      - name: Extract MyELU class
+        run: /data/bin/miniconda3/envs/jupyter-actions/bin/python scripts/extract_class_from_notebook.py --notebook "hw_activations.ipynb" --class_definition "class MyELU(nn.Module):" --out_filename "myelu.py"
+
       - name: Autograding
         uses: education/autograding@v1

@@ -21,7 +21,7 @@ jobs:
           autograding-file: autograding-transformer-attention.json
 
       - name: Extract transformer Attention Class
-        run: /data/bin/miniconda3/envs/jupyter-actions/bin/python extract_class_from_notebook.py --notebook "hw_transformer_attention.ipynb" --class_definition "class Seq2SeqTransformerAttention(PreTrainedModel):" --out_filename "transformer_attention.py"
+        run: /data/bin/miniconda3/envs/jupyter-actions/bin/python scripts/extract_class_from_notebook.py --notebook "hw_transformer_attention.ipynb" --class_definition "class Seq2SeqTransformerAttention(PreTrainedModel):" --out_filename "transformer_attention.py"
 
       - name: Extract transformer Tokenizer
         run: unzip transformer_attention_tokenizer.zip

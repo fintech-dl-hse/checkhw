@@ -21,10 +21,10 @@ jobs:
           autograding-file: autograding-batchnorm-dropout.json
 
       - name: Extract dropout class
-        run: /data/bin/miniconda3/envs/jupyter-actions/bin/python extract_class_from_notebook.py --notebook "hw_batchnorm_dropout.ipynb" --class_definition "class DropoutLayer(nn.Module):" --out_filename "dropout.py"
+        run: /data/bin/miniconda3/envs/jupyter-actions/bin/python scripts/extract_class_from_notebook.py --notebook "hw_batchnorm_dropout.ipynb" --class_definition "class DropoutLayer(nn.Module):" --out_filename "dropout.py"
 
       - name: Extract batchnorm2d class
-        run: /data/bin/miniconda3/envs/jupyter-actions/bin/python extract_class_from_notebook.py --notebook "hw_batchnorm_dropout.ipynb" --class_definition "class BatchNorm2dLayer(nn.Module):" --out_filename "batchnorm2d.py"
+        run: /data/bin/miniconda3/envs/jupyter-actions/bin/python scripts/extract_class_from_notebook.py --notebook "hw_batchnorm_dropout.ipynb" --class_definition "class BatchNorm2dLayer(nn.Module):" --out_filename "batchnorm2d.py"
 
       - name: Autograding
         uses: education/autograding@v1
