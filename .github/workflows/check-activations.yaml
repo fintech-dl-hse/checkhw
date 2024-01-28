@@ -15,7 +15,7 @@ jobs:
     name: Autograding
     runs-on: self-hosted
     outputs:
-      summary: ${{ steps.autograding.output }}
+      summary: ${{ steps.autograding.output.summary }}
     steps:
       - name: Checkout HW
         uses: fintech-dl-hse/action-checkout-hw@main
@@ -40,5 +40,5 @@ jobs:
 
       - name: Print outputs
         env:
-          MYOUTPUT: ${{ steps.autograding.outputs }}
+          MYOUTPUT: ${{ steps.autograding.outputs.summary }}
         run: echo ${MYOUTPUT}
