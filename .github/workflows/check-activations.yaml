@@ -14,6 +14,8 @@ jobs:
       cancel-in-progress: true
     name: Autograding
     runs-on: self-hosted
+    outputs:
+      summary: ${{ steps.autograding.output }}
     steps:
       - name: Checkout HW
         uses: fintech-dl-hse/action-checkout-hw@main
