@@ -2,7 +2,7 @@
   "tests": [
     {
       "name": "Run rnn attention tests",
-      "run": "PYTHONPATH=. /data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs test_rnn_attention.py",
+      "run": "PYTHONPATH=. /data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs tests/rnn-attention/test_rnn_attention.py",
       "input": "",
       "output": "",
       "comparison": "included",

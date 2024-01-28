@@ -2,7 +2,7 @@
   "tests": [
     {
       "name": "Run eval dropout tests",
-      "run": "PYTHONPATH=. /data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs test_dropout.py -k test_dropout_eval",
+      "run": "PYTHONPATH=. /data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs tests/batchnorm-dropout/test_dropout.py -k test_dropout_eval",
       "input": "",
       "output": "",
       "comparison": "included",
@@ -11,7 +11,7 @@
     },
     {
       "name": "Run train dropout tests",
-      "run": "PYTHONPATH=. /data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs test_dropout.py -k test_dropout_train",
+      "run": "PYTHONPATH=. /data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs tests/batchnorm-dropout/test_dropout.py -k test_dropout_train",
       "input": "",
       "output": "",
       "comparison": "included",
@@ -20,7 +20,7 @@
     },
     {
       "name": "Run batch norm tests: do_not_track_running_stats_not_affine",
-      "run": "PYTHONPATH=. /data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs test_batchnorm2d.py -k test_batch_norm_2d_do_not_track_running_stats_not_affine",
+      "run": "PYTHONPATH=. /data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs tests/batchnorm-dropout/test_batchnorm2d.py -k test_batch_norm_2d_do_not_track_running_stats_not_affine",
       "input": "",
       "output": "",
       "comparison": "included",
@@ -29,7 +29,7 @@
     },
     {
       "name": "Run batch norm tests: do_not_track_running_stats",
-      "run": "PYTHONPATH=. /data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs test_batchnorm2d.py -k test_batch_norm_2d_do_not_track_running_stats",
+      "run": "PYTHONPATH=. /data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs tests/batchnorm-dropout/test_batchnorm2d.py -k test_batch_norm_2d_do_not_track_running_stats",
       "input": "",
       "output": "",
       "comparison": "included",
@@ -38,7 +38,7 @@
     },
     {
       "name": "Run batch norm tests: track_running_stats, affine",
-      "run": "PYTHONPATH=. /data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs test_batchnorm2d.py -k test_batch_norm_2d",
+      "run": "PYTHONPATH=. /data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs tests/batchnorm-dropout/test_batchnorm2d.py -k test_batch_norm_2d",
       "input": "",
       "output": "",
       "comparison": "included",
