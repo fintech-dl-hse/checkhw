@@ -33,4 +33,10 @@ jobs:
         run: /data/bin/miniconda3/envs/jupyter-actions/bin/python scripts/extract_class_from_notebook.py --notebook "hw_activations.ipynb" --class_definition "class MyELU(nn.Module):" --out_filename "myelu.py"
 
       - name: Autograding
+        id: autograding
         uses: education/autograding@v1
+
+      - name: Print outputs
+        env:
+          MYOUTPUT: ${{ steps.autograding.outputs }}
+        run: echo ${MYOUTPUT}
