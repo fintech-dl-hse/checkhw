@@ -4,7 +4,7 @@ import copy
 
 import pytest
 import torch
-import torch.nn
+import torch.nn as nn
 
 from myoptimizers import MySGD, MyAdam
 
