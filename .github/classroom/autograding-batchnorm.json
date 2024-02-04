@@ -1,0 +1,31 @@
+{
+  "tests": [
+    {
+      "name": "Run batch norm tests: do_not_track_running_stats_not_affine",
+      "run": "PYTHONPATH=. /data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs tests/batchnorm/test_batchnorm2d.py -k test_batch_norm_2d_do_not_track_running_stats_not_affine",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 600,
+      "points": 25
+    },
+    {
+      "name": "Run batch norm tests: do_not_track_running_stats",
+      "run": "PYTHONPATH=. /data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs tests/batchnorm/test_batchnorm2d.py -k test_batch_norm_2d_do_not_track_running_stats",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 600,
+      "points": 25
+    },
+    {
+      "name": "Run batch norm tests: track_running_stats, affine",
+      "run": "PYTHONPATH=. /data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs tests/batchnorm/test_batchnorm2d.py -k test_batch_norm_2d",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 600,
+      "points": 50
+    }
+  ]
+}

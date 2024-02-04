@@ -1,0 +1,22 @@
+{
+  "tests": [
+    {
+      "name": "Run SGD tests",
+      "run": "PYTHONPATH=. /data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs tests/optimization/test_optimization.py -k test_my_sgd",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 600,
+      "points": 100
+    },
+    {
+      "name": "Run Adam tests",
+      "run": "PYTHONPATH=. /data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs tests/optimization/test_optimization.py -k test_my_adam",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 600,
+      "points": 100
+    }
+  ]
+}
