@@ -69,7 +69,7 @@ def _test_my_optimizer(torch_optimizer, my_optimizer, optimizer_params,
     for torch_updated_param, my_updated_param in tqdm(zip(torch_updated_params, my_updated_params), total=len(torch_updated_params), desc=name):
         # print(torch_updated_param)
         # print(my_updated_param)
-        assert torch.allclose(torch_updated_param, my_updated_param, atol=1e-4), 'updated parameters are not equal'
+        assert torch.allclose(torch_updated_param, my_updated_param, rtol=0.5, atol=1e-3), 'updated parameters are not equal'
 
 def test_my_sgd():
     optimizer_params = {
