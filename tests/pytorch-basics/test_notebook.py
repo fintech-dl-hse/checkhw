@@ -13,7 +13,7 @@ def test_notebook():
     Проверяем, что ноутбук запускается, отрабатывает без ошибок
     """
 
-    with open('./hw04_pytorch_basics.ipynb') as f:
+    with open('./hw_pytorch_basics.ipynb') as f:
         nb = nbformat.read(f, as_version=4)
 
     ep = ExecutePreprocessor(timeout=1800, kernel_name='python3', allow_errors=False)
