@@ -71,6 +71,7 @@
 
 - name: Install Miniconda and Dependencies
   hosts: github_runners
+  tags: [ 'miniconda' ]
   become: yes
   tasks:
     - name: Install Conda
