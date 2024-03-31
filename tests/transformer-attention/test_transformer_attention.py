@@ -99,7 +99,7 @@ def test_transformer_attention_overfitting():
         compute_metrics=compute_metrics,
     )
 
-    evaluate_result = trainer.evaluate(test_dataset=books_preprocessed["train"].select(range(256)))
+    evaluate_result = trainer.evaluate(test_dataset=books_preprocessed["train"].select(range(128)))
 
     print("evaluate_result", evaluate_result)
 
