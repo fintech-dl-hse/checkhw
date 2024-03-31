@@ -46,7 +46,7 @@ def _optimizer_step(model, model_state, optimizer_class, optimizer_params, model
 
 
 def _test_my_optimizer(torch_optimizer, my_optimizer, optimizer_params,
-                       model='linear', 
+                       model='linear',
                        batch_size = 3, num_batches = 10,
                        name=None,
                        ):

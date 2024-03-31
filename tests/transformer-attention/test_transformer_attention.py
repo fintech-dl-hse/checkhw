@@ -62,14 +62,16 @@ def test_transformer_attention_overfitting():
         return result
 
 
-    transformer_config = TransformerAttentionConfig(
+    test_transformer_config = TransformerAttentionConfig(
         pad_token_id=loaded_tokenizer.pad_token_id,
         bos_token_id=loaded_tokenizer.bos_token_id,
         eos_token_id=loaded_tokenizer.eos_token_id,
     )
 
-    transformer_attention_model_loaded = Seq2SeqTransformerAttention(transformer_config)
-    transformer_attention_model_loaded.load_state_dict( torch.load('./transformer_attention_model/pytorch_model.bin', map_location='cpu') )
+    transformer_attention_model_loaded, _ = Seq2SeqTransformerAttention.from_pretrained("./transformer_attention_model/", config=test_transformer_config, use_safetensors=True, map_location='cpu')
+
+    # transformer_attention_model_loaded = Seq2SeqTransformerAttention(transformer_config)
+    # transformer_attention_model_loaded.load_state_dict( torch.load('./transformer_attention_model/pytorch_model.bin', map_location='cpu') )
 
     training_args = Seq2SeqTrainingArguments(
         output_dir="my_awesome_opus_books_model",
@@ -91,7 +93,7 @@ def test_transformer_attention_overfitting():
     trainer = Seq2SeqTrainer(
         model=transformer_attention_model_loaded,
         args=training_args,
-        eval_dataset=books_preprocessed["train"].select(torch.tensor(range(256))),  # валидировать будем тоже на обучающих данных (дисклаймер: это можно делать только для тестирования)
+        eval_dataset=books_preprocessed["train"].select(torch.tensor(range(128))),  # валидировать будем тоже на обучающих данных (дисклаймер: это можно делать только для тестирования)
         tokenizer=loaded_tokenizer,
         data_collator=data_collator,
         compute_metrics=compute_metrics,

@@ -62,19 +62,19 @@ def test_rnn_attention_overfitting():
         return result
 
 
-    rnn_config = RNNAttentionConfig(
+    test_rnn_config = RNNAttentionConfig(
         pad_token_id=loaded_tokenizer.pad_token_id,
         bos_token_id=loaded_tokenizer.bos_token_id,
         eos_token_id=loaded_tokenizer.eos_token_id,
     )
 
-    rnn_attention_model_loaded = Seq2SeqRNNAttention(rnn_config).from_pretrained("./rnn_attention_model/", local_files_only=True)
+    rnn_attention_model_loaded, _ = Seq2SeqRNNAttention.from_pretrained("./rnn_attention_model/", config=test_rnn_config, use_safetensors=True)
 
-    training_args = Seq2SeqTrainingArguments(
+    test_training_args = Seq2SeqTrainingArguments(
         output_dir="my_awesome_opus_books_model",
         evaluation_strategy="steps",
-        eval_steps=1000,
-        learning_rate=3e-4,
+        eval_steps=500,
+        learning_rate=1e-3,
         per_device_train_batch_size=16,
         per_device_eval_batch_size=16,
         weight_decay=0.01,
@@ -87,16 +87,16 @@ def test_rnn_attention_overfitting():
 
     data_collator = DataCollatorForSeq2Seq(tokenizer=loaded_tokenizer, return_tensors="pt")
 
-    trainer = Seq2SeqTrainer(
+    test_trainer = Seq2SeqTrainer(
         model=rnn_attention_model_loaded,
-        args=training_args,
-        eval_dataset=books_preprocessed["train"].select(torch.tensor(range(256))),  # валидировать будем тоже на обучающих данных (дисклаймер: это можно делать только для тестирования)
+        args=test_training_args,
+        eval_dataset=books_preprocessed["train"].select(torch.tensor(range(128))),  # валидировать будем тоже на обучающих данных (дисклаймер: это можно делать только для тестирования)
         tokenizer=loaded_tokenizer,
         data_collator=data_collator,
         compute_metrics=compute_metrics,
     )
 
-    evaluate_result = trainer.evaluate(test_dataset=books_preprocessed["train"].select(range(256)))
+    evaluate_result = test_trainer.evaluate(test_dataset=books_preprocessed["train"].select(range(128)))
 
     print("evaluate_result", evaluate_result)
 
