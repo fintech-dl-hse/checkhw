@@ -68,7 +68,7 @@ def test_rnn_attention_overfitting():
         eos_token_id=loaded_tokenizer.eos_token_id,
     )
 
-    rnn_attention_model_loaded, _ = Seq2SeqRNNAttention.from_pretrained("./rnn_attention_model/", config=test_rnn_config, use_safetensors=True)
+    rnn_attention_model_loaded = Seq2SeqRNNAttention.from_pretrained("./rnn_attention_model/", config=test_rnn_config, use_safetensors=True)
 
     test_training_args = Seq2SeqTrainingArguments(
         output_dir="my_awesome_opus_books_model",
