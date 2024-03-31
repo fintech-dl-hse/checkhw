@@ -68,7 +68,7 @@ def test_transformer_attention_overfitting():
         eos_token_id=loaded_tokenizer.eos_token_id,
     )
 
-    transformer_attention_model_loaded, _ = Seq2SeqTransformerAttention.from_pretrained("./transformer_attention_model/", config=test_transformer_config, use_safetensors=True, map_location='cpu')
+    transformer_attention_model_loaded = Seq2SeqTransformerAttention.from_pretrained("./transformer_attention_model/", config=test_transformer_config, use_safetensors=True)
 
     # transformer_attention_model_loaded = Seq2SeqTransformerAttention(transformer_config)
     # transformer_attention_model_loaded.load_state_dict( torch.load('./transformer_attention_model/pytorch_model.bin', map_location='cpu') )
