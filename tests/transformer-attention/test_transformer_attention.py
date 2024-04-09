@@ -69,10 +69,7 @@ def test_transformer_attention_overfitting():
     )
 
     transformer_attention_model_loaded = Seq2SeqTransformerAttention(test_transformer_config)
-    transformer_attention_model_loaded.load_state_dict( torch.load("transformer_attention_model/pytorch_model.bin") )
-
-    # transformer_attention_model_loaded = Seq2SeqTransformerAttention(transformer_config)
-    # transformer_attention_model_loaded.load_state_dict( torch.load('./transformer_attention_model/pytorch_model.bin', map_location='cpu') )
+    transformer_attention_model_loaded.load_state_dict( torch.load("transformer_attention_model/pytorch_model.bin", map_location='cpu') )
 
     training_args = Seq2SeqTrainingArguments(
         output_dir="my_awesome_opus_books_model",
