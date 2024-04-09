@@ -70,8 +70,7 @@ def test_rnn_attention_overfitting():
 
 
     rnn_attention_model_loaded = Seq2SeqRNNAttention(test_rnn_config)
-    rnn_attention_model_loaded.load_state_dict( torch.load("./rnn_attention_model/pytorch_model.bin") )
-    # rnn_attention_model_loaded = Seq2SeqRNNAttention.from_pretrained("./rnn_attention_model/", config=test_rnn_config, use_safetensors=True)
+    rnn_attention_model_loaded.load_state_dict( torch.load("./rnn_attention_model/pytorch_model.bin", map_location='cpu') )
 
     test_training_args = Seq2SeqTrainingArguments(
         output_dir="my_awesome_opus_books_model",
