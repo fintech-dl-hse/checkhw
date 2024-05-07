@@ -1,0 +1,22 @@
+{
+  "tests": [
+    {
+      "name": "run vae tests",
+      "run": "PYTHONPATH=. /data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs tests/vae/test_vae.py",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 300,
+      "points": 100
+    },
+    {
+      "name": "run vae loss tests",
+      "run": "PYTHONPATH=. /data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs tests/vae/test_vae_loss.py",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 300,
+      "points": 100
+    }
+  ]
+}
