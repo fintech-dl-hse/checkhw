@@ -1,9 +1,7 @@
 
 import torch
 
-from .noise_scheduler import NoiseScheduler
-from .transformer_block import TransformerBlock
-
+from noise_scheduler import NoiseScheduler
 
 @torch.no_grad()
 def test_noise_scheduler_add_noise():

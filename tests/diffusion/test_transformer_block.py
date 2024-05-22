@@ -1,7 +1,7 @@
 
 import torch
 
-from .transformer_block import TransformerBlock
+from transformer_block import TransformerBlock
 
 @torch.no_grad()
 def test_transformer_block():
