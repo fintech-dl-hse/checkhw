@@ -1,0 +1,32 @@
+{
+  "tests": [
+    {
+      "name": "run noise scheduller add noise tests",
+      "run": "PYTHONPATH=. /data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs tests/diffusion/test_noise_scheduler.py -k test_noise_scheduler_add_noise",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 120,
+      "points": 50
+    },
+    {
+      "name": "run noise scheduller step tests",
+      "run": "PYTHONPATH=. /data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs tests/diffusion/test_noise_scheduler.py -k test_noise_scheduler_step",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 120,
+      "points": 50
+    },
+
+    {
+      "name": "run transformer block tests",
+      "run": "PYTHONPATH=. /data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs tests/diffusion/test_transformer_block.py",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 120,
+      "points": 100
+    }
+  ]
+}
