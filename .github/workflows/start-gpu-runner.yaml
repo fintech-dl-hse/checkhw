@@ -10,4 +10,4 @@ jobs:
     if: github.repository_owner  == 'fintech-dl-hse'
     steps:
       - name: Start Cloud GPU Runners
-        run: exit 1 # todo gpu runner
+        run: curl https://functions.yandexcloud.net/d4eghmbulitjuqka6l80

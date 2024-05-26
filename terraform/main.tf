@@ -18,7 +18,7 @@ provider "yandex" {
 resource "yandex_function" "start-compute" {
     name               = "start-compute"
     description        = "Test function to start compute instance"
-    user_hash          = "v0.0.8"
+    user_hash          = "v0.0.9"
     runtime            = "golang119"
     entrypoint         = "start_compute.StartComputeInstances"
     memory             = "128"
@@ -32,7 +32,7 @@ resource "yandex_function" "start-compute" {
 resource "yandex_function" "start-compute-gpu" {
     name               = "start-compute-gpu"
     description        = "Test function to start compute instance"
-    user_hash          = "v0.0.8"
+    user_hash          = "v0.0.9"
     runtime            = "golang119"
     entrypoint         = "start_compute.StartComputeInstancesGPU"
     memory             = "128"
@@ -46,7 +46,7 @@ resource "yandex_function" "start-compute-gpu" {
 resource "yandex_function" "stop-compute" {
     name               = "stop-compute"
     description        = "Test function to stop compute instance"
-    user_hash          = "v0.0.8"
+    user_hash          = "v0.0.9"
     runtime            = "golang119"
     entrypoint         = "stop_compute.StopComputeInstance"
     memory             = "128"
