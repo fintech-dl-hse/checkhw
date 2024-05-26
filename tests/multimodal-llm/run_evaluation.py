@@ -7,7 +7,6 @@ from torch.utils.data import DataLoader
 import torch
 import torch.nn as nn
 
-from llaaa import Llaaa
 from transformers import AutoTokenizer
 from transformers.generation import GenerationConfig
 
@@ -18,6 +17,9 @@ import pathlib
 import random
 
 from tqdm.auto import tqdm
+
+# Импоритруем зависимости из файлика из ноутбука
+from llaaa import Llaaa, llama_lm
 
 import logging
 
@@ -53,6 +55,13 @@ class TrainConfig:
 
     val_dataset_path = "data/CLOTHO_v2.1/clotho_hf_dataset/clotho_validation_imagebind_single.dataset/"
     audio_embeds_val_prefix = "data/CLOTHO_v2.1/clotho_audio_embeds_processed_imagebind_single/validation/"
+
+class DummyAudioEncoder(nn.Module):
+
+    hidden_size = 1024
+
+    def encode_audio(self, audio_melspec_values):
+        return torch.zeros([audio_melspec_values.shape[0], 1, self.hidden_size], device=audio_melspec_values.device)
 
 
 def data_preloader(audio_embeds_path_prefix):
@@ -325,10 +334,11 @@ if __name__ == '__main__':
 
     train_config = TrainConfig()
 
-    model = Llaaa.from_pretrained('./llaaa_pretrained/')
+    audio_encoder = DummyAudioEncoder()
+    lm_model, tokenizer = llama_lm()
 
-    model_name = "TinyLlama/TinyLlama-1.1B-Chat-v0.4"
-    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    model = Llaaa.from_pretrained(lm_model, audio_encoder, './llaaa_pretrained/')
+
 
     train_config.few_val_samples = None
     train_config.val_batch_size = 8
