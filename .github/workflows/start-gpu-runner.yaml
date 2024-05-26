@@ -1,0 +1,13 @@
+name: Start GitHub GPU Runner
+
+on:
+  workflow_call:
+  workflow_dispatch:
+
+jobs:
+  start-runner:
+    runs-on: ubuntu-latest
+    if: github.repository_owner  == 'fintech-dl-hse'
+    steps:
+      - name: Start Cloud GPU Runners
+        run: exit 1 # todo gpu runner

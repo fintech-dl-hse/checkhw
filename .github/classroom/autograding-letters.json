@@ -6,7 +6,7 @@
       "input": "",
       "output": "",
       "comparison": "included",
-      "timeout": 60,
+      "timeout": 5,
       "points": 200
     },
     {
@@ -15,7 +15,7 @@
       "input": "",
       "output": "",
       "comparison": "included",
-      "timeout": 60,
+      "timeout": 5,
       "points": 100
     },
     {
@@ -24,7 +24,7 @@
       "input": "",
       "output": "",
       "comparison": "included",
-      "timeout": 60,
+      "timeout": 5,
       "points": 100
     }
   ]

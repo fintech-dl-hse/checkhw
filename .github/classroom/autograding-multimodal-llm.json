@@ -1,0 +1,49 @@
+{
+  "tests": [
+    {
+      "name": "run noise scheduller add noise tests",
+      "run": "PYTHONPATH=. /data/bin/miniconda3/envs/jupyter-actions/bin/python -vs tests/multimodal-llm/run_evaluation.py --out clotho_captioning_bleu.txt",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 30,
+      "points": 50
+    },
+    {
+      "name": "evaluation bleu >= 5",
+      "run": "cat clotho_captioning_bleu.txt | perl -lnE ' exit(int($_) >= 5 ? 0 : 1) '",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 5,
+      "points": 100
+    },
+    {
+      "name": "evaluation bleu >= 6",
+      "run": "cat clotho_captioning_bleu.txt | perl -lnE ' exit(int($_) >= 6 ? 0 : 1) '",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 5,
+      "points": 100
+    },
+    {
+      "name": "evaluation bleu >= 7",
+      "run": "cat clotho_captioning_bleu.txt | perl -lnE ' exit(int($_) >= 7 ? 0 : 1) '",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 5,
+      "points": 100
+    },
+    {
+      "name": "evaluation bleu >= 8",
+      "run": "cat clotho_captioning_bleu.txt | perl -lnE ' exit(int($_) >= 8 ? 0 : 1) '",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 5,
+      "points": 100
+    }
+  ]
+}

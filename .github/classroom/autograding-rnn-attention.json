@@ -6,7 +6,7 @@
       "input": "",
       "output": "",
       "comparison": "included",
-      "timeout": 600,
+      "timeout": 5,
       "points": 200
     }
   ]
