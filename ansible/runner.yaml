@@ -97,7 +97,7 @@
     - role: monolithprojects.github_actions_runner
 
 - name: Install Miniconda and Dependencies
-  hosts: github_runners
+  hosts: [ 'github_runners', 'github_runners_gpu' ]
   tags: [ 'miniconda' ]
   become: yes
   tasks:
