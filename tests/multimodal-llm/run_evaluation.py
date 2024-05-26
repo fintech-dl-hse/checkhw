@@ -332,13 +332,17 @@ if __name__ == '__main__':
 
     output_file_name = args.out
 
+    device = 'cuda' if torch.cuda.is_available() else 'cpu'
+
     train_config = TrainConfig()
 
     audio_encoder = DummyAudioEncoder()
     lm_model, tokenizer = llama_lm()
+    lm_model.to(device)
+    audio_encoder.to(device)
 
     model = Llaaa.from_pretrained(lm_model, audio_encoder, './llaaa_pretrained/')
-
+    model.to(device)
 
     train_config.few_val_samples = None
     train_config.val_batch_size = 8
