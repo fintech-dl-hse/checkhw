@@ -1,6 +1,15 @@
 {
   "tests": [
     {
+      "name": "fetch lfs",
+      "run": "git lfs fetch --all",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 30,
+      "points": 0
+    },
+    {
       "name": "link dataset",
       "run": "mkdir data && ln -s $PWD/data/CLOTHO_v2.1 /var/lib/dlhse-hw-multimodal-llm && ls -l",
       "input": "",
