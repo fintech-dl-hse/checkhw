@@ -367,5 +367,5 @@ if __name__ == '__main__':
     print("validation_bleu", validation_bleu)
 
     with open(output_file_name, 'w') as f:
-        f.write(validation_bleu + "\n")
+        f.write("{validation_bleu:.2f}\n")
 
