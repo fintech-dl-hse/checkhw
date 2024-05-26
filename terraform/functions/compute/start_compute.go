@@ -23,6 +23,14 @@ type Response struct {
 }
 
 func StartComputeInstances(ctx context.Context) (*Response, error) {
+	return StartComputeInstancesNameContains(ctx, "runner")
+}
+
+func StartComputeInstancesGPU(ctx context.Context) (*Response, error) {
+	return StartComputeInstancesNameContains(ctx, "t4gpu")
+}
+
+func StartComputeInstancesNameContains(ctx context.Context, nameContains string) (*Response, error) {
 	// Авторизация в SDK при помощи сервисного аккаунта
 	sdk, err := ycsdk.Build(ctx, ycsdk.Config{
 		// Вызов InstanceServiceAccount автоматически запрашивает IAM-токен и формирует
@@ -43,8 +51,8 @@ func StartComputeInstances(ctx context.Context) (*Response, error) {
 	count := 0
 	// Фильтрация списка Compute Instance, фильтр: выключена, в тегах содержится тег, заданный запросом
 	for _, i := range instances {
-		if !strings.Contains(i.Name, "runner") {
-			fmt.Println("Skip instanse name", i.Name)
+		if !strings.Contains(i.Name, nameContains) {
+			fmt.Println("Skip instanse name", i.Name, "name must contain", nameContains)
 			continue
 		}
 
