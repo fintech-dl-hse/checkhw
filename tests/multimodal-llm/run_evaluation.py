@@ -349,6 +349,8 @@ if __name__ == '__main__':
     validation_metrics = val_loop(model, tokenizer, full_val_dataloader, epoch=-1, captioning_metrics=captioning_metrics)
     validation_bleu = validation_metrics['validation/evaluate_bleu']
 
+    print("validation_bleu", validation_bleu)
+
     with open(output_file_name, 'w') as f:
         f.write(validation_bleu + "\n")
 

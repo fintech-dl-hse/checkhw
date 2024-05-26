@@ -1,13 +1,13 @@
 {
   "tests": [
     {
-      "name": "run noise scheduller add noise tests",
-      "run": "PYTHONPATH=. /data/bin/miniconda3/envs/jupyter-actions/bin/python -vs tests/multimodal-llm/run_evaluation.py --out clotho_captioning_bleu.txt",
+      "name": "run evaluation",
+      "run": "PYTHONPATH=. /data/bin/miniconda3/envs/jupyter-actions/bin/python tests/multimodal-llm/run_evaluation.py --out clotho_captioning_bleu.txt",
       "input": "",
       "output": "",
       "comparison": "included",
       "timeout": 30,
-      "points": 50
+      "points": 0
     },
     {
       "name": "evaluation bleu >= 5",
