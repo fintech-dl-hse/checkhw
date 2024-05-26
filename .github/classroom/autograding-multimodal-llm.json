@@ -11,7 +11,7 @@
     },
     {
       "name": "evaluation bleu >= 5",
-      "run": "cat clotho_captioning_bleu.txt | perl -lnE ' exit(int($_) >= 5 ? 0 : 1) '",
+      "run": "ls clotho_captioning_bleu.txt && cat clotho_captioning_bleu.txt | perl -lnE ' exit(int($_) >= 5 ? 0 : 1) '",
       "input": "",
       "output": "",
       "comparison": "included",
@@ -20,7 +20,7 @@
     },
     {
       "name": "evaluation bleu >= 6",
-      "run": "cat clotho_captioning_bleu.txt | perl -lnE ' exit(int($_) >= 6 ? 0 : 1) '",
+      "run": "ls clotho_captioning_bleu.txt && cat clotho_captioning_bleu.txt | perl -lnE ' exit(int($_) >= 6 ? 0 : 1) '",
       "input": "",
       "output": "",
       "comparison": "included",
@@ -29,7 +29,7 @@
     },
     {
       "name": "evaluation bleu >= 7",
-      "run": "cat clotho_captioning_bleu.txt | perl -lnE ' exit(int($_) >= 7 ? 0 : 1) '",
+      "run": "ls clotho_captioning_bleu.txt && cat clotho_captioning_bleu.txt | perl -lnE ' exit(int($_) >= 7 ? 0 : 1) '",
       "input": "",
       "output": "",
       "comparison": "included",
@@ -38,7 +38,7 @@
     },
     {
       "name": "evaluation bleu >= 8",
-      "run": "cat clotho_captioning_bleu.txt | perl -lnE ' exit(int($_) >= 8 ? 0 : 1) '",
+      "run": "ls clotho_captioning_bleu.txt && cat clotho_captioning_bleu.txt | perl -lnE ' exit(int($_) >= 8 ? 0 : 1) '",
       "input": "",
       "output": "",
       "comparison": "included",
