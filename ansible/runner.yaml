@@ -1,6 +1,7 @@
 ---
 - name: Add github-runner user
-  hosts: github_runners
+  hosts: [ 'github_runners', 'github_runners_gpu' ]
+  tags: [ 'github-runner', 'github-runner-gpu' ]
   become: yes
   tasks:
     - name: create github runner user
@@ -8,7 +9,8 @@
         name: github-runner
 
 - name: Make data path
-  hosts: github_runners
+  hosts: [ 'github_runners', 'github_runners_gpu' ]
+  tags: [ 'github-runner', 'github-runner-gpu' ]
   become: yes
   tasks:
     - name: mkdir data
@@ -26,9 +28,9 @@
 
 
 - name: Install packages
-  hosts: github_runners
+  hosts: [ 'github_runners', 'github_runners_gpu' ]
   become: yes
-  tags: [ 'apt' ]
+  tags: [ 'github-runner', 'github-runner-gpu', 'apt' ]
   tasks:
     - name: install conda dependencies
       apt:
@@ -61,6 +63,31 @@
     github_api_url: "https://api.github.com"
     runner_org: yes
     runner_labels: [ 'self-hosted' ]
+    runner_download_repository: "actions/runner"
+    runner_extra_config_args: ""
+    runner_name: "ansible-runner {{inventory_hostname}}"
+    runner_on_ghes: no
+    github_account: "fintech-dl-hse"
+  roles:
+    - role: monolithprojects.github_actions_runner
+
+
+- name: Install GitHub Actions Runner GPU
+  hosts: [ 'github_runners_gpu' ]
+  tags: [ 'github-runner-gpu' ]
+  become: yes
+  vars:
+    runner_user: "github-runner"
+    runner_dir: /data/var/actions-runner
+    runner_pkg_tempdir: /tmp/gh_actions_runner
+    runner_version: "latest"
+    runner_state: "started"
+    reinstall_runner: no
+    hide_sensitive_logs: no
+    github_url: "https://github.com"
+    github_api_url: "https://api.github.com"
+    runner_org: yes
+    runner_labels: [ 'self-hosted-gpu' ]
     runner_download_repository: "actions/runner"
     runner_extra_config_args: ""
     runner_name: "ansible-runner {{inventory_hostname}}"
