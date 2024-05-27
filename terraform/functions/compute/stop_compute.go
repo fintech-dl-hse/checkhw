@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"strings"
 
 	"github.com/yandex-cloud/go-genproto/yandex/cloud/compute/v1"
 	"github.com/yandex-cloud/go-genproto/yandex/cloud/operation"
@@ -36,11 +35,6 @@ func StopComputeInstance(ctx context.Context) (*Response, error) {
 	count := 0
 	// Фильтрация списка Compute Instance, фильтр: выключена, в тегах содержится тег, заданный запросом
 	for _, i := range instances {
-		if !strings.Contains(i.Name, "runner") {
-			fmt.Println("Skip instanse name", i.Name)
-			continue
-		}
-
 		if i.Status == compute.Instance_RUNNING {
 			_, err := stopComputeInstance(ctx, sdk, i.GetId())
 			if err != nil {

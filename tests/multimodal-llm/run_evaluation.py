@@ -1,13 +1,10 @@
 
-import sys
-import json
 import argparse
 
 from torch.utils.data import DataLoader
 import torch
 import torch.nn as nn
 
-from transformers import AutoTokenizer
 from transformers.generation import GenerationConfig
 
 import evaluate
