@@ -10,4 +10,5 @@ jobs:
     if: github.repository_owner  == 'fintech-dl-hse'
     steps:
       - name: Start Cloud Runners
-        run: curl https://functions.yandexcloud.net/d4eldi0b3mve8re73mps
+        run: echo "Do nothing"
+        # run: curl https://functions.yandexcloud.net/d4eldi0b3mve8re73mps
