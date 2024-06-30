@@ -62,7 +62,7 @@
     github_url: "https://github.com"
     github_api_url: "https://api.github.com"
     runner_org: yes
-    runner_labels: [ 'self-hosted' ]
+    runner_labels: [ 'self-hosted-cpu' ]
     runner_download_repository: "actions/runner"
     runner_extra_config_args: ""
     runner_name: "ansible-runner {{inventory_hostname}}"
