@@ -2,7 +2,7 @@
   "tests": [
     {
       "name": "run evaluation",
-      "run": "PYTHONPATH=. /data/bin/miniconda3/envs/jupyter-actions/bin/python tests/multimodal-llm/run_evaluation.py --out clotho_captioning_bleu.txt",
+      "run": "/data/bin/miniconda3/envs/jupyter-actions/bin/python tests/multimodal-llm/run_evaluation.py --out clotho_captioning_bleu.txt",
       "input": "",
       "output": "",
       "comparison": "included",

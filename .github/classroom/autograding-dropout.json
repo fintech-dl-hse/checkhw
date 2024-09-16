@@ -2,7 +2,7 @@
   "tests": [
     {
       "name": "Run eval dropout tests",
-      "run": "PYTHONPATH=. /data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs tests/dropout/test_dropout.py -k test_dropout_eval",
+      "run": "/data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs tests/dropout/test_dropout.py -k test_dropout_eval",
       "input": "",
       "output": "",
       "comparison": "included",
@@ -11,7 +11,7 @@
     },
     {
       "name": "Run train dropout tests",
-      "run": "PYTHONPATH=. /data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs tests/dropout/test_dropout.py -k test_dropout_train",
+      "run": "/data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs tests/dropout/test_dropout.py -k test_dropout_train",
       "input": "",
       "output": "",
       "comparison": "included",

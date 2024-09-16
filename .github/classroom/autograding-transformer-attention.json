@@ -2,7 +2,7 @@
   "tests": [
     {
       "name": "Run transformer attention tests",
-      "run": "PYTHONPATH=. /data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs tests/transformer-attention/test_transformer_attention.py",
+      "run": "/data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs tests/transformer-attention/test_transformer_attention.py",
       "input": "",
       "output": "",
       "comparison": "included",
