@@ -57,12 +57,12 @@
     runner_pkg_tempdir: /tmp/gh_actions_runner
     runner_version: "latest"
     runner_state: "started"
-    reinstall_runner: no
+    reinstall_runner: yes
     hide_sensitive_logs: no
     github_url: "https://github.com"
     github_api_url: "https://api.github.com"
     runner_org: yes
-    runner_labels: [ 'self-hosted-cpu' ]
+    runner_labels: [ 'self-hosted-cpu', 'self-hosted' ]
     runner_download_repository: "actions/runner"
     runner_extra_config_args: ""
     runner_name: "ansible-runner {{inventory_hostname}}"

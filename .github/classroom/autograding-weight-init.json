@@ -2,7 +2,7 @@
   "tests": [
     {
       "name": "run weight init notebook",
-      "run": "PYTHONPATH=. /data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs tests/weight-init/test_notebook_weight_init.py",
+      "run": "/data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs tests/weight-init/test_notebook_weight_init.py",
       "input": "",
       "output": "",
       "comparison": "included",
@@ -11,7 +11,7 @@
     },
     {
       "name": "pytest test_constant.py",
-      "run": "PYTHONPATH=. /data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs tests/weight-init/test_constant.py",
+      "run": "/data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs tests/weight-init/test_constant.py",
       "input": "",
       "output": "",
       "comparison": "included",
@@ -20,7 +20,7 @@
     },
     {
       "name": "pytest test_uniform.py",
-      "run": "PYTHONPATH=. /data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs tests/weight-init/test_uniform.py",
+      "run": "/data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs tests/weight-init/test_uniform.py",
       "input": "",
       "output": "",
       "comparison": "included",
@@ -29,7 +29,7 @@
     },
     {
       "name": "pytest test_normal.py",
-      "run": "PYTHONPATH=. /data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs tests/weight-init/test_normal.py",
+      "run": "/data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs tests/weight-init/test_normal.py",
       "input": "",
       "output": "",
       "comparison": "included",
