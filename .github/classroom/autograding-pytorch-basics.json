@@ -80,6 +80,15 @@
       "comparison": "included",
       "timeout": 5,
       "points": 10
+    },
+    {
+      "name": "feedback",
+      "run": "echo -e '\\n\\n💬💬💬 Оставьте обратную связь по ДЗ https://forms.gle/ZpQh7TCyme5Hq1PTA 💬💬💬\\n\\n'",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 1,
+      "points": 0
     }
   ]
 }

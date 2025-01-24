@@ -37,7 +37,7 @@
       "points": 25
     },
     {
-      "name": "pytest",
+      "name": "feedback",
       "run": "echo -e '\\n\\n💬💬💬 Оставьте обратную связь по ДЗ https://forms.gle/iLjqp8SH75u78RsZ6 💬💬💬\\n\\n'",
       "input": "",
       "output": "",
