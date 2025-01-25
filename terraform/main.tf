@@ -6,6 +6,20 @@ terraform {
     }
   }
   required_version = ">= 0.13"
+
+  backend "s3" {
+    endpoints = {
+      s3 = "https://storage.yandexcloud.net"
+    }
+    bucket = "fintech-dl-hse-terraform-state"
+    region = "ru-central1"
+    key    = "terraform_state.tfstate"
+
+    skip_region_validation      = true
+    skip_credentials_validation = true
+    skip_requesting_account_id  = true # Необходимая опция Terraform для версии 1.6.1 и старше.
+    skip_s3_checksum            = true # Необходимая опция при описании бэкенда для Terraform версии 1.6.3 и старше.
+  }
 }
 
 provider "yandex" {
@@ -14,10 +28,10 @@ provider "yandex" {
   folder_id                = "b1gtgl0ktbrjt750ihta"
 }
 
-resource "yandex_function" "start-compute" {
-    name               = "start-compute"
+resource "yandex_function" "start-compute-tf" {
+    name               = "start-compute-tf"
     description        = "Test function to start compute instance"
-    user_hash          = "v0.0.12"
+    user_hash          = "v0.0.22"
     runtime            = "golang119"
     entrypoint         = "start_compute.StartComputeInstances"
     memory             = "128"
@@ -28,10 +42,10 @@ resource "yandex_function" "start-compute" {
     }
 }
 
-resource "yandex_function" "start-compute-gpu" {
-    name               = "start-compute-gpu"
+resource "yandex_function" "start-compute-gpu-tf" {
+    name               = "start-compute-gpu-tf"
     description        = "Test function to start compute instance"
-    user_hash          = "v0.0.12"
+    user_hash          = "v0.0.22"
     runtime            = "golang119"
     entrypoint         = "start_compute.StartComputeInstancesGPU"
     memory             = "128"
@@ -42,10 +56,10 @@ resource "yandex_function" "start-compute-gpu" {
     }
 }
 
-resource "yandex_function" "stop-compute" {
-    name               = "stop-compute"
+resource "yandex_function" "stop-compute-tf" {
+    name               = "stop-compute-tf"
     description        = "Test function to stop compute instance"
-    user_hash          = "v0.0.12"
+    user_hash          = "v0.0.22"
     runtime            = "golang119"
     entrypoint         = "stop_compute.StopComputeInstance"
     memory             = "128"
@@ -56,10 +70,10 @@ resource "yandex_function" "stop-compute" {
     }
 }
 
-resource "yandex_function" "homeworks-info" {
-    name               = "homeworks-info"
+resource "yandex_function" "homeworks-info-tf" {
+    name               = "homeworks-info-tf"
     description        = "Get HTML summary grades table"
-    user_hash          = "v0.0.1"
+    user_hash          = "v0.0.2"
     runtime            = "python312"
     entrypoint         = "index.handler_summary"
     memory             = "128"
@@ -74,10 +88,10 @@ resource "yandex_function" "homeworks-info" {
     }
 }
 
-resource "yandex_function" "homeworks-info-detailed" {
-    name               = "homeworks-info-detailed"
+resource "yandex_function" "homeworks-info-detailed-tf" {
+    name               = "homeworks-info-detailed-tf"
     description        = "Get HTML detailed grades table"
-    user_hash          = "v0.0.1"
+    user_hash          = "v0.0.2"
     runtime            = "python312"
     entrypoint         = "index.handler_detailed"
     memory             = "128"
@@ -92,10 +106,10 @@ resource "yandex_function" "homeworks-info-detailed" {
     }
 }
 
-resource "yandex_function" "handle-github-hook" {
-    name               = "handle-github-hook"
+resource "yandex_function" "handle-github-hook-tf" {
+    name               = "handle-github-hook-tf"
     description        = "Save github hook data to YDB"
-    user_hash          = "v0.0.1"
+    user_hash          = "v0.0.3"
     runtime            = "python312"
     entrypoint         = "index.handler"
     memory             = "128"
@@ -114,12 +128,4 @@ resource "yandex_function" "handle-github-hook" {
     content {
         zip_filename = "functions/github_actions_hook.zip"
     }
-}
-
-output "yandex_function_start-compute" {
-    value = "${yandex_function.start-compute.id}"
-}
-
-output "yandex_function_stop-compute" {
-    value = "${yandex_function.stop-compute.id}"
 }
