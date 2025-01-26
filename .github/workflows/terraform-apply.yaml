@@ -16,10 +16,14 @@ jobs:
         env:
           YC_SA_ACCESS_KEY: ${{ secrets.YC_SA_ACCESS_KEY }}
           YC_SA_SECRET_KEY: ${{ secrets.YC_SA_SECRET_KEY }}
+          YC_SERVICE_ACCOUNT_KEY_FILE: ./key.json
+          YC_SERVICE_ACCOUNT_KEY_FILE_DATA: ${{ secrets.YC_SERVICE_ACCOUNT_KEY_FILE_DATA }}
         run: |
           pwd
           ls -l
           cd terraform
+          echo "$YC_SERVICE_ACCOUNT_KEY_FILE_DATA" | base64 -d > $YC_SERVICE_ACCOUNT_KEY_FILE
+          ls -lrth
           # cp .terraformrc ~/
           terraform init -backend-config="access_key=$YC_SA_ACCESS_KEY" -backend-config="secret_key=$YC_SA_SECRET_KEY"
           make zip-functions
