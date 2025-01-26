@@ -1,0 +1,20 @@
+name: Apply terraform
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  stop-runner:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Init terraform
+        run: |
+          cd terraform
+          cp .terraformrc ~/
+          terraform init -backend-config="access_key=$YC_SA_ACCESS_KEY" -backend-config="secret_key=$YC_SA_SECRET_KEY"
+
+          make zip-functions
+          terraform apply -auto-approve
+

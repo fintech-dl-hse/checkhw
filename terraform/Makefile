@@ -11,7 +11,7 @@ plan: zip-functions
 	terraform plan
 
 apply: zip-functions
-	terraform apply -auto-approve
+	terraform apply
 
 destroy: zip-functions
 	terraform destroy
