@@ -109,7 +109,7 @@ resource "yandex_function" "homeworks-info-detailed-tf" {
 resource "yandex_function" "handle-github-hook-tf" {
     name               = "handle-github-hook-tf"
     description        = "Save github hook data to YDB"
-    user_hash          = "v0.0.3"
+    user_hash          = "v0.0.4"
     runtime            = "python312"
     entrypoint         = "index.handler"
     memory             = "128"
