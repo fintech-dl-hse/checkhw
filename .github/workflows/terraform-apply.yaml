@@ -20,7 +20,7 @@ jobs:
           pwd
           ls -l
           cd terraform
-          cp .terraformrc ~/
+          # cp .terraformrc ~/
           terraform init -backend-config="access_key=$YC_SA_ACCESS_KEY" -backend-config="secret_key=$YC_SA_SECRET_KEY"
           make zip-functions
           terraform apply -auto-approve
