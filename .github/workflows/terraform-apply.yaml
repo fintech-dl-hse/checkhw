@@ -15,6 +15,8 @@ jobs:
           sparse-checkout: .
       - name: Init terraform
         run: |
+          pwd
+          ls -l
           cd terraform
           cp .terraformrc ~/
           terraform init -backend-config="access_key=$YC_SA_ACCESS_KEY" -backend-config="secret_key=$YC_SA_SECRET_KEY"
