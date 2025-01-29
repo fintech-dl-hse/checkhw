@@ -166,30 +166,16 @@ def _handler(event, context, detailed=False):
     result_total_df['hse_grade'] = result_total_df['hse_grade'].apply(lambda x: f"{min(x, 10):.2f}")
     result_total_df['hse_grade_rounded'] = result_total_df['hse_grade'].apply(lambda x: int(float(x) + 0.5))
 
-    # with open(args.detailed_out, 'w') as f:
-    #     def highlight_exellent(x: str):
-    #         points_color = "color:darkgreen" if x['result_points'] == x['max_points'] else None
-    #         result = []
-    #         for c in x.index.to_numpy():
-    #             if c == 'result_points':
-    #                 if x['result_points'] == x['max_points']:
-    #                     result.append("background-color:lightgreen")
-    #                     continue
-    #             if c in [ 'penalty_days', 'penalty_percent' ]:
-    #                 if x[c] > 0:
-    #                     result.append("background-color:pink")
-    #                     continue
-    #             result.append(None)
-    #         return result
-    #     # result_df = result_df.style.apply(highlight_exellent, axis=1)
-    #     f.write(result_df.to_html())
+    df_to_render = result_total_df
+    if detailed:
+        df_to_render = result_df
 
     return {
         'statusCode': 200,
         'headers': {
             'Content-Type': 'text/html; charset=utf-8',
         },
-        'body': result_total_df.to_html(),
+        'body': df_to_render.to_html(),
     }
 
 
