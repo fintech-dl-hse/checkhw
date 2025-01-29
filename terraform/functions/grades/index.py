@@ -198,4 +198,4 @@ def handler_summary(event, context):
 
 
 def handler_detailed(event, context):
-    return _handler(event, context, detailed=False)
+    return _handler(event, context, detailed=True)
