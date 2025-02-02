@@ -134,12 +134,12 @@ resource "yandex_function" "handle-github-hook-tf" {
 resource "yandex_function" "check-letters-tf" {
     name               = "check-letters-tf"
     description        = "Check letters hw submit"
-    user_hash          = "v0.0.3"
+    user_hash          = "v0.0.4"
     runtime            = "golang119"
     entrypoint         = "letters.Handler"
     memory             = "128"
     execution_timeout  = "60"
-    service_account_id = "ajevd0tfv30vuibuhv6v" // todo create service account for this function
+    service_account_id = "ajevd0tfv30vuibuhv6v"
     mounts {
         name = "fintech-dl-hse-letters-answers"
         mode = "ro"
