@@ -78,10 +78,9 @@ def _handler(event, context, detailed=False):
             if hw_key_i.startswith(hw_key_j) or hw_key_j.startswith(hw_key_i):
                 raise Exception(f"homework names must not starts with each other {hw_key_i}, {hw_key_j}")
 
-    query_result_set = pool.execute_with_retries('SELECT event_data FROM github_events_log_v2')
+    query_result_set = pool.execute_with_retries('SELECT event_data FROM github_events_log_v2 limit 10000')
     print("len query_result_set", len(query_result_set))
     query_result = query_result_set[0]
-    print("len query_result", len(query_result))
     for i, row in enumerate(query_result.rows):
         sender = row.sender
         repo_name = row.repo_name
@@ -109,7 +108,7 @@ def _handler(event, context, detailed=False):
             continue
 
         student_login = repo_name[len(homework)+1:]
-        print("repo_name", repo_name, "homework", homework, "student_login", student_login)
+        print("i", i, "repo_name", repo_name, "homework", homework, "student_login", student_login)
 
         deadline: datetime.datetime = known_homeworks[homework]['deadline']
 
