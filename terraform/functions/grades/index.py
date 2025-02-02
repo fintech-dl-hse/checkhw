@@ -60,12 +60,12 @@ def _handler(event, context, detailed=False):
         "hw-diffusion": {
             "deadline": datetime.datetime.strptime("2024-06-16T11:05:00", "%Y-%m-%dT%H:%M:%S"),
         },
-        # "hw-multimodal-llm": {
-        #     "deadline": datetime.datetime.strptime("2024-06-26T11:05:00", "%Y-%m-%dT%H:%M:%S"),
-        # },
-        # "hw-letters": {
-        #     "deadline": datetime.datetime.strptime("2024-05-21T03:05:00", "%Y-%m-%dT%H:%M:%S"),
-        # },
+        "hw-multimodal-llm": {
+            "deadline": datetime.datetime.strptime("2024-06-16T11:05:00", "%Y-%m-%dT%H:%M:%S"),
+        },
+        "hw-letters": {
+            "deadline": datetime.datetime.strptime("2024-06-16T03:05:00", "%Y-%m-%dT%H:%M:%S"),
+        },
         # календарная дата дедлайна должна быть с запасом на 1 день больше
     })
 
