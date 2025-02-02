@@ -86,9 +86,11 @@ def _handler(event, context, detailed=False):
         repo_name = row.repo_name
         completed_at_str = row.completed_at_str
         check_run_summary = row.check_run_summary
+        print("i", i, "repo_name", repo_name, "sender", sender, "check_run_summary", check_run_summary)
 
         points = check_run_summary
         if points is None or points == "":
+            print(i, "SKIP no points summary")
             continue
 
         points = points.split(' ')[1]
@@ -96,6 +98,7 @@ def _handler(event, context, detailed=False):
         completed_at = datetime.datetime.strptime(completed_at_str, "%Y-%m-%dT%H:%M:%SZ")
 
         if sender.endswith('[bot]'):
+            print(i, "SKIP sender is bot")
             continue
 
         homework = None
@@ -104,7 +107,7 @@ def _handler(event, context, detailed=False):
                 homework = homework_key
 
         if homework is None or homework not in known_homeworks:
-            print("unknown hw:", homework)
+            print(i, "SKIP unknown hw:", homework)
             continue
 
         student_login = repo_name[len(homework)+1:]
