@@ -2,7 +2,7 @@
   "tests": [
     {
       "name": "Check letters classification 200 points",
-      "run": "cat ./letters.csv | /usr/bin/letters200points",
+      "run": "curl -vX POST https://functions.yandexcloud.net/d4en1ufd9vthf8hbrioc -d \"repo_name=$( cat .repo_name )&result_points=200&max_invalid_letters_count=1000&submit=$( cat letters.csv | perl -pe 's/\\n/%0D%0A/g' )\"",
       "input": "",
       "output": "",
       "comparison": "included",
@@ -11,7 +11,7 @@
     },
     {
       "name": "Check letters classification 300 points",
-      "run": "cat ./letters.csv | /usr/bin/letters300points",
+      "run": "curl -vX POST https://functions.yandexcloud.net/d4en1ufd9vthf8hbrioc -d \"repo_name=$( cat .repo_name )&result_points=300&max_invalid_letters_count=300&submit=$( cat letters.csv | perl -pe 's/\\n/%0D%0A/g' )\"",
       "input": "",
       "output": "",
       "comparison": "included",
@@ -20,7 +20,7 @@
     },
     {
       "name": "Check letters classification 400 points",
-      "run": "cat ./letters.csv | /usr/bin/letters400points",
+      "run": "curl -vX POST https://functions.yandexcloud.net/d4en1ufd9vthf8hbrioc -d \"repo_name=$( cat .repo_name )&result_points=400&max_invalid_letters_count=0&submit=$( cat letters.csv | perl -pe 's/\\n/%0D%0A/g' )\"",
       "input": "",
       "output": "",
       "comparison": "included",
