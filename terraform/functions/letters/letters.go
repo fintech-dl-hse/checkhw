@@ -132,6 +132,7 @@ func CheckLetters(repoName string, submitCSV string, maxInvalidLettersCount int,
 		seenLetters[letter] = struct{}{}
 
 		if extpectedCount, ok := correctCounts[letter]; ok {
+			delete(correctCounts, letter)
 			if extpectedCount != count {
 				invalidLetters = append(invalidLetters, letter)
 				sumInvalidLettersCount += int(math.Abs(float64(extpectedCount - count)))
@@ -143,6 +144,15 @@ func CheckLetters(repoName string, submitCSV string, maxInvalidLettersCount int,
 	}
 
 	fmt.Printf("unique invalid letters cnt=%d; sum invalid letters count=%d; step threshold=%d\n", len(invalidLetters), sumInvalidLettersCount, maxInvalidLettersCount)
+
+	if len(correctCounts) > 0 {
+		leftKeys := make([]string, 0, len(correctCounts))
+		for k, _ := range correctCounts {
+			leftKeys = leftKeys.append(k)
+		}
+		fmt.Printf("not all letters were passed in input file: %#v\n", leftKeys)
+		return false
+	}
 
 	if sumInvalidLettersCount > maxInvalidLettersCount {
 		return false
