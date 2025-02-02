@@ -1,9 +1,8 @@
 package main
 
 import (
-	"context"
-	"bufio"
 	"fmt"
+	"http"
 	"io"
 	"math"
 	"os"
@@ -21,9 +20,17 @@ type Response struct {
 func Handler(rw http.ResponseWriter, req *http.Request) {
 	submitCSV := req.FormValue("submit")
 	repoName := req.FormValue("repo_name")
-	maxInvalidLettersCount := strconv.Atoi(req.FormValue("max_invalid_letters_count"))
-	resultPoints := strconv.Atoi(req.FormValue("result_points"))
-
+	maxInvalidLettersCount, err := strconv.Atoi(req.FormValue("max_invalid_letters_count"))
+	if err != nil {
+		rw.WriteHeader(400)
+		return
+	}
+	resultPoints, err := strconv.Atoi(req.FormValue("result_points"))
+	if err != nil {
+		rw.WriteHeader(400)
+		fmt.Printf("result_points is invalid %s", req.FormValue("result_points"))
+		return
+	}
 	if CheckLetters(repoName, submitCSV, maxInvalidLettersCount, resultPoints) {
 		rw.WriteHeader(200)
 	} else {
@@ -83,13 +90,6 @@ func CheckLetters(repoName string, submitCSV string, maxInvalidLettersCount int,
 		}
 
 		correctCounts[letter] = count
-	}
-
-
-	bytes, err := io.ReadAll(reader)
-	if err != nil {
-		fmt.Println("Call to d.tarasov")
-		return false
 	}
 
 	sumInvalidLettersCount := 0
