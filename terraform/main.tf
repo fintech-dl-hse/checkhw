@@ -148,6 +148,6 @@ resource "yandex_function" "check-letters-tf" {
         }
     }
     content {
-        zip_filename = "functions/.zip"
+        zip_filename = "functions/letters.zip"
     }
 }
