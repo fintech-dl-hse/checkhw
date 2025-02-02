@@ -12,6 +12,8 @@ import (
 	"hash/crc32"
 )
 
+const CSV_FILES_PATH_PREFIX = "/function/storage/fintech-dl-hse-letters-answers"
+
 type Response struct {
 	StatusCode int         `json:"statusCode"`
 	Body       interface{} `json:"body"`
@@ -22,6 +24,7 @@ func Handler(rw http.ResponseWriter, req *http.Request) {
 	repoName := req.FormValue("repo_name")
 	maxInvalidLettersCount, err := strconv.Atoi(req.FormValue("max_invalid_letters_count"))
 	if err != nil {
+		fmt.Printf("max_invalid_letters_count is invalid %s", req.FormValue("max_invalid_letters_count"))
 		rw.WriteHeader(400)
 		return
 	}
@@ -53,10 +56,10 @@ func CheckLetters(repoName string, submitCSV string, maxInvalidLettersCount int,
 
 	fmt.Println("variant ", variant, " repo name ", string(repoName), "variant image url:", fmt.Sprintf("https://storage.yandexcloud.net/fintech-dl-hse-letters/letters_%d.png", variant))
 
-	lettersFileName := fmt.Sprintf("/var/letters_pregenerated/letters-hse-dl/letters_%d.csv", variant)
+	lettersFileName := fmt.Sprintf("%s/letters_%d.csv", CSV_FILES_PATH_PREFIX, variant)
 	lettersFileHandle, err := os.Open(lettersFileName)
 	if err != nil {
-		fmt.Println("Can't open variant")
+		fmt.Printf("Can't open variant: %s\n", err.Error())
 		return false
 	}
 	correctResult, err := io.ReadAll(lettersFileHandle)
