@@ -79,44 +79,26 @@ def _handler(event, context, detailed=False):
                 raise Exception(f"homework names must not starts with each other {hw_key_i}, {hw_key_j}")
 
     query_result_set = pool.execute_with_retries('SELECT event_data FROM github_events_log_v2')
+    print("len query_result_set", len(query_result_set))
     query_result = query_result_set[0]
+    print("len query_result", len(query_result))
     for i, row in enumerate(query_result.rows):
-        line = row.event_data
-        try:
-            json_line = json.loads(line)
-        except Exception as e:
-            print("Can't load json (line): ", e)
-            continue
+        sender = row.sender
+        repo_name = row.repo_name
+        completed_at_str = row.completed_at_str
+        check_run_summary = row.check_run_summary
 
-        if 'action' not in json_line:
-            # print("no action in json:", json_line)
-            continue
-
-        if json_line['action'] != 'completed':
-            continue
-
-        if 'check_run' not in json_line:
-            # print("idx", i)
-            continue
-
-        points = json_line['check_run']['output']['summary']
-        if points is None:
+        points = check_run_summary
+        if points is None or points == "":
             continue
 
         points = points.split(' ')[1]
 
-        # gh_token = os.environ['GITHUB_ACCESS_TOKEN']
-        # dlhse_github = Github(gh_token)
+        completed_at = datetime.datetime.strptime(completed_at_str, "%Y-%m-%dT%H:%M:%SZ")
 
-        # commit_sha = json_line['workflow_job']['head_sha']
-        # todo check commit date
-
-        completed_at = datetime.datetime.strptime(json_line['check_run']['completed_at'], "%Y-%m-%dT%H:%M:%SZ")
-
-        if json_line['sender']['login'].endswith('[bot]'):
+        if sender.endswith('[bot]'):
             continue
 
-        repo_name: str = json_line["repository"]["name"]
         homework = None
         for homework_key in known_homeworks_keys:
             if repo_name.startswith(homework_key):
