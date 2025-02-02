@@ -44,7 +44,7 @@ func Handler(rw http.ResponseWriter, req *http.Request) {
 
 	variant := repoNameToVariant([]byte(repoName))
 
-	fmt.Fprintf(w, "ok=%#v\nvariant %d repo name hw-letters variant image url: https://storage.yandexcloud.net/fintech-dl-hse-letters/letters_%d.png", ok, variant, variant)
+	fmt.Fprintf(rw, "ok=%#v\nvariant %d repo name hw-letters variant image url: https://storage.yandexcloud.net/fintech-dl-hse-letters/letters_%d.png", ok, variant, variant)
 
 	return
 }
