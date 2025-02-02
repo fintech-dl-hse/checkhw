@@ -1,4 +1,4 @@
-package letters
+package main
 
 import (
 	"context"
