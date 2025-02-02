@@ -37,8 +37,6 @@ func Handler(rw http.ResponseWriter, req *http.Request) {
 		rw.WriteHeader(400)
 	}
 
-	rw.close()
-
 	return
 }
 
