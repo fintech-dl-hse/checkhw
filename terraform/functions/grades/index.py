@@ -80,64 +80,64 @@ def _handler(event, context, detailed=False):
 
     query_result_set = pool.execute_with_retries('SELECT * FROM github_events_log_v2 limit 10000')
     print("len query_result_set", len(query_result_set))
-    query_result = query_result_set[0]
-    for i, row in enumerate(query_result.rows):
-        sender = row.sender
-        repo_name = row.repo_name
-        completed_at_str = row.completed_at_str
-        check_run_summary = row.check_run_summary
-        print("i", i, "repo_name", repo_name, "sender", sender, "check_run_summary", check_run_summary)
 
-        points = check_run_summary
-        if points is None or points == "":
-            print(i, "SKIP no points summary")
-            continue
+    for query_result in query_result_set:
+        for i, row in enumerate(query_result.rows):
+            sender = row.sender
+            repo_name = row.repo_name
+            completed_at_str = row.completed_at_str
+            check_run_summary = row.check_run_summary
+            # print("i", i, "repo_name", repo_name, "sender", sender, "check_run_summary", check_run_summary)
 
-        points = points.split(' ')[1]
+            points = check_run_summary
+            if points is None or points == "":
+                # print(i, "SKIP no points summary")
+                continue
 
-        completed_at = datetime.datetime.strptime(completed_at_str, "%Y-%m-%dT%H:%M:%SZ")
+            points = points.split(' ')[1]
 
-        if sender.endswith('[bot]'):
-            print(i, "SKIP sender is bot")
-            continue
+            completed_at = datetime.datetime.strptime(completed_at_str, "%Y-%m-%dT%H:%M:%SZ")
 
-        homework = None
-        for homework_key in known_homeworks_keys:
-            if repo_name.startswith(homework_key):
-                homework = homework_key
+            if sender.endswith('[bot]'):
+                # print(i, "SKIP sender is bot")
+                continue
 
-        if homework is None or homework not in known_homeworks:
-            print(i, "SKIP unknown hw:", homework)
-            continue
+            homework = None
+            for homework_key in known_homeworks_keys:
+                if repo_name.startswith(homework_key):
+                    homework = homework_key
 
-        student_login = repo_name[len(homework)+1:]
-        print("i", i, "repo_name", repo_name, "homework", homework, "student_login", student_login)
+            if homework is None or homework not in known_homeworks:
+                # print(i, "SKIP unknown hw:", homework)
+                continue
 
-        deadline: datetime.datetime = known_homeworks[homework]['deadline']
+            student_login = repo_name[len(homework)+1:]
+            print("i", i, "repo_name", repo_name, "homework", homework, "student_login", student_login)
 
-        penalty_days = 0
+            deadline: datetime.datetime = known_homeworks[homework]['deadline']
 
-        deadline_delta = (completed_at - deadline)
-        deadline_seconds = deadline_delta.total_seconds()
-        if deadline_delta > datetime.timedelta(seconds=0):
-            penalty_days = (deadline_seconds // 86400) + 1
-            penalty_days = min(penalty_days, 3)
+            penalty_days = 0
 
-        if repo_name in forced_penalty_days:
-            penalty_days = forced_penalty_days[repo_name]
-            print(f"use forced penalty days for {repo_name}: {penalty_days}")
+            deadline_delta = (completed_at - deadline)
+            deadline_seconds = deadline_delta.total_seconds()
+            if deadline_delta > datetime.timedelta(seconds=0):
+                penalty_days = (deadline_seconds // 86400) + 1
+                penalty_days = min(penalty_days, 3)
 
-        penalty_percent = penalty_days * 10
-        accumulated_data.append({
-            "sender": student_login,
-            "max_points": int(points.split('/')[1]),
-            "result_points": int(points.split('/')[0]) * (100 - penalty_percent) / 100,
-            "homework": homework,
-            "penalty_days": penalty_days,
-            "penalty_percent": penalty_percent,
-            "completed_at": completed_at,
-        })
+            if repo_name in forced_penalty_days:
+                penalty_days = forced_penalty_days[repo_name]
+                # print(f"use forced penalty days for {repo_name}: {penalty_days}")
 
+            penalty_percent = penalty_days * 10
+            accumulated_data.append({
+                "sender": student_login,
+                "max_points": int(points.split('/')[1]),
+                "result_points": int(points.split('/')[0]) * (100 - penalty_percent) / 100,
+                "homework": homework,
+                "penalty_days": penalty_days,
+                "penalty_percent": penalty_percent,
+                "completed_at": completed_at,
+            })
 
     df = pd.DataFrame(accumulated_data)
 
