@@ -148,7 +148,7 @@ func CheckLetters(repoName string, submitCSV string, maxInvalidLettersCount int,
 	if len(correctCounts) > 0 {
 		leftKeys := make([]string, 0, len(correctCounts))
 		for k, _ := range correctCounts {
-			leftKeys = leftKeys.append(k)
+			leftKeys = append(leftKeys, k)
 		}
 		fmt.Printf("not all letters were passed in input file: %#v\n", leftKeys)
 		return false

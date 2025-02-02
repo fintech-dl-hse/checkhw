@@ -134,7 +134,7 @@ resource "yandex_function" "handle-github-hook-tf" {
 resource "yandex_function" "check-letters-tf" {
     name               = "check-letters-tf"
     description        = "Check letters hw submit"
-    user_hash          = "v0.0.9"
+    user_hash          = "v0.0.10"
     runtime            = "golang119"
     entrypoint         = "letters.Handler"
     memory             = "128"
