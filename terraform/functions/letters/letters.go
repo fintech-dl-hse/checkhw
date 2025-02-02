@@ -120,7 +120,6 @@ func CheckLetters(repoName string, submitCSV string, maxInvalidLettersCount int,
 
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Can't parse letter count: `%s` (row number: %d)\n", letterCount[1], lineNo)
-			os.Exit(1)
 			return false
 		}
 
