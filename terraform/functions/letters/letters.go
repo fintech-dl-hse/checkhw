@@ -34,11 +34,17 @@ func Handler(rw http.ResponseWriter, req *http.Request) {
 		fmt.Printf("result_points is invalid %s", req.FormValue("result_points"))
 		return
 	}
-	if CheckLetters(repoName, submitCSV, maxInvalidLettersCount, resultPoints) {
+
+	ok := CheckLetters(repoName, submitCSV, maxInvalidLettersCount, resultPoints)
+	if ok {
 		rw.WriteHeader(200)
 	} else {
 		rw.WriteHeader(400)
 	}
+
+	variant := repoNameToVariant([]byte(repoName))
+
+	fmt.Fprintf(w, "ok=%#v\nvariant %d repo name hw-letters variant image url: https://storage.yandexcloud.net/fintech-dl-hse-letters/letters_%d.png", ok, variant, variant)
 
 	return
 }
