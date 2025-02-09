@@ -35,16 +35,16 @@ def _handler(event, context, detailed=False):
             "deadline": datetime.datetime.strptime("2025-02-10T03:05:00", "%Y-%m-%dT%H:%M:%S"),
         },
         "hw-optimization": {
-            "deadline": datetime.datetime.strptime("2025-03-03T03:05:00", "%Y-%m-%dT%H:%M:%S"),
+            "deadline": datetime.datetime.strptime("2025-03-05T03:05:00", "%Y-%m-%dT%H:%M:%S"),
         },
         "hw-dropout": {
-            "deadline": datetime.datetime.strptime("2025-03-03T03:05:00", "%Y-%m-%dT%H:%M:%S"),
+            "deadline": datetime.datetime.strptime("2025-03-05T03:05:00", "%Y-%m-%dT%H:%M:%S"),
         },
         "hw-batchnorm": {
-            "deadline": datetime.datetime.strptime("2025-03-03T03:05:00", "%Y-%m-%dT%H:%M:%S"),
+            "deadline": datetime.datetime.strptime("2025-03-05T03:05:00", "%Y-%m-%dT%H:%M:%S"),
         },
         "hw-pytorch-basics": {
-            "deadline": datetime.datetime.strptime("2025-03-03T03:05:00", "%Y-%m-%dT%H:%M:%S"),
+            "deadline": datetime.datetime.strptime("2025-03-05T03:05:00", "%Y-%m-%dT%H:%M:%S"),
         },
         # TODO tokenization
         "hw-rnn-attention": {
