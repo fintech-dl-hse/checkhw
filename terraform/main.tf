@@ -170,7 +170,7 @@ resource "yandex_message_queue" "ymq-giga-review-failure-tf" {
 resource "yandex_function" "giga-review-queue-tf" {
     name               = "giga-review-queue-tf"
     description        = "Giga review queue"
-    user_hash          = "v0.0.19"
+    user_hash          = "v0.0.20"
     runtime            = "python312"
     entrypoint         = "index.handler"
     memory             = "512"
@@ -197,7 +197,7 @@ resource "yandex_function" "giga-review-queue-tf" {
 resource "yandex_function" "giga-review-tf" {
     name               = "giga-review-tf"
     description        = "Giga review"
-    user_hash          = "v0.0.19"
+    user_hash          = "v0.0.20"
     runtime            = "python312"
     entrypoint         = "index.handler_async"
     memory             = "512"
@@ -225,7 +225,7 @@ resource "yandex_function" "giga-review-tf" {
         zip_filename = "functions/giga-review.zip"
     }
     async_invocation {
-        retries_count       = 0
+        retries_count       = 1
         service_account_id  = "ajevd0tfv30vuibuhv6v"
         ymq_success_target {
             service_account_id = "ajevd0tfv30vuibuhv6v"

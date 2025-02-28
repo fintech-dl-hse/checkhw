@@ -235,7 +235,7 @@ def handler(event, context):
         timeout=10,
     )
 
-    if resp.status_code != 200:
+    if resp.status_code > 299:
         return {
             'statusCode': resp.status_code,
             'body': '',
