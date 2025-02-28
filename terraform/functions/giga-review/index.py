@@ -159,7 +159,7 @@ class TelegramBot():
 
 def handler(event, context):
 
-    if event['secret_token'] != os.environ['TELEGRAM_BOT_WEBHOOK_SECRET_TOKEN']:
+    if event['headers']['X-Telegram-Bot-Api-Secret-Token'] != os.environ['TELEGRAM_BOT_WEBHOOK_SECRET_TOKEN']:
         print("invalid secret token")
         return {
             'statusCode': 200,
