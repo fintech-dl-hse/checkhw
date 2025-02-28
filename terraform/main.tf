@@ -150,4 +150,30 @@ resource "yandex_function" "check-letters-tf" {
     content {
         zip_filename = "functions/letters.zip"
     }
+
+    resource "yandex_function" "giga-review-tf" {
+        name               = "giga-review-tf"
+        description        = "Giga review"
+        user_hash          = "v0.0.1"
+        runtime            = "python312"
+        entrypoint         = "index.handler"
+        memory             = "2048"
+        execution_timeout  = "300"
+        service_account_id = "ajevd0tfv30vuibuhv6v"
+        secrets {
+            id                   = "e6qcoml5i8pd749m2pi7"
+            version_id           = "e6q6fukbt0r6bdh6qege"
+            key                  = "TELEGRAM_BOT_TOKEN"
+            environment_variable = "TELEGRAM_BOT_TOKEN"
+        }
+        secrets {
+            id                   = "e6qsp6kj884e4tfgvcrq"
+            version_id           = "e6qg7466ek0qt8k5o0d0"
+            key                  = "GIGACHAT_CREDENTIALS"
+            environment_variable = "GIGACHAT_CREDENTIALS"
+        }
+        content {
+            zip_filename = "functions/giga-review.zip"
+        }
+    }
 }

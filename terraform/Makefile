@@ -4,6 +4,7 @@ zip-functions:
 	(rm functions/grades.zip || true)  && zip -rj functions/grades.zip functions/grades
 	(rm functions/github_actions_hook.zip || true)  && zip -rj functions/github_actions_hook.zip functions/github_actions_hook
 	(rm functions/letters.zip || true)  && zip -rj functions/letters.zip functions/letters
+	(rm functions/giga-review.zip || true)  && zip -rj functions/giga-review.zip functions/giga-review
 
 validate: zip-functions
 	terraform validate
