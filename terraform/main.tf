@@ -171,7 +171,7 @@ resource "yandex_message_queue" "ymq-giga-review-failure-tf" {
 resource "yandex_function" "giga-review-tf" {
     name               = "giga-review-tf"
     description        = "Giga review"
-    user_hash          = "v0.0.11"
+    user_hash          = "v0.0.12"
     runtime            = "python312"
     entrypoint         = "index.handler"
     memory             = "512"
@@ -203,11 +203,11 @@ resource "yandex_function" "giga-review-tf" {
         service_account_id  = "ajevd0tfv30vuibuhv6v"
         ymq_success_target {
             service_account_id = "ajevd0tfv30vuibuhv6v"
-            arn                = "ymq-giga-review-success-tf"
+            arn                = "yrn:yc:ymq:ru-central1:b1gtgl0ktbrjt750ihta:ymq-giga-review-success-tf"
         }
         ymq_failure_target {
             service_account_id = "ajevd0tfv30vuibuhv6v"
-            arn                = "ymq-giga-review-failure-tf"
+            arn                = "yrn:yc:ymq:ru-central1:b1gtgl0ktbrjt750ihta:ymq-giga-review-failure-tf"
         }
     }
 }
