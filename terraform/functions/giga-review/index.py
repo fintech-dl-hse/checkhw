@@ -230,8 +230,9 @@ Answer in English.
 
     tbot = TelegramBot()
 
-    response_chat_id = event_body['chat']['id']
+    response_chat_id = event_body['message']['chat']['id']
     message_id = event_body['message']['message_id']
+    message_text = event_body['message']['text']
     tbot.send_message_reaction(response_chat_id, message_id, "👀")
 
     # review_text, error_text = giga_review(model, SYSTEM_PROMPT_EN, paper_link)
