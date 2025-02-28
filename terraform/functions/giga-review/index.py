@@ -2,30 +2,58 @@ import re
 import os
 import sys
 import json
-
+import time
 import requests
 
 from gigachat import GigaChat
 
 
-def paper_link_to_file_name(paper_link):
-    papers_prefix = "data/papers/"
-    os.makedirs(papers_prefix, exist_ok=True)
+SYSTEM_PROMPT_EN = """
+Give a brief review of the scientific article. Rely solely on the provided data and facts from the text of the article. Avoid assumptions and conjectures if information is missing. Structure the review as follows:
 
-    filename = os.path.join(papers_prefix, paper_link.split('/')[-1])
+1. Title: Briefly. What is paper title?
+
+2. Affiliations: What organizations are in the authors affiliations?
+
+3. Problem: Briefly, in less than 15 words. What problem are the authors solving?
+
+4. Results: Briefly. Describe the main results.
+
+5. Methods: Briefly. Describe what the authors suggested.
+
+6. Model: Briefly. The architecture of the model. The number of parameters.
+
+7. Data: Briefly. What datasets were used in this paper?
+
+8. Strengths: Briefly. What are the advantages of the proposed method?
+
+9. Weaknesses: Briefly. What are the disadvantages of the proposed method?
+
+10. Computational resources. Briefly. Give me specific numbers.
+How many GPUs were used in the work? How many GPU hours were used for training?
+
+Follow the order and names of the points. Don't number the items. Highlight the title of each item in bold. Add new line after each item.
+Answer in English.
+"""
+
+
+
+def paper_link_to_file_name(paper_link):
+
+    filename = paper_link.split('/')[-1]
     if not filename.endswith('.pdf'):
         filename = filename + '.pdf'
 
     return filename
 
 
-def upload_to_gigachat_cloud(model, paper_bytes):
+def upload_to_gigachat_cloud(model, file_name, paper_bytes):
 
     if len(paper_bytes) > 30000000:
         print("too large file size:", len(paper_bytes), "limit is 30MB")
         return None
 
-    gc_file = model.upload_file(paper_bytes)
+    gc_file = model.upload_file((file_name, paper_bytes))
     return gc_file.id_
 
     # with open(paper_file_name, "rb") as f:
@@ -92,15 +120,17 @@ def giga_review(model, prompt, paper_link):
     if '/abs/' in paper_link:
         paper_link = paper_link.replace('/abs/', '/pdf/')
 
-    print("download paper")
+    print("download paper", time.time())
     content = download_paper_pdf(paper_link)
     if content is None:
         return None, "Failed to download paper"
 
-    print("upload to gigachat")
-    file_id = upload_to_gigachat_cloud(model, content)
+    file_name = paper_link_to_file_name(paper_link)
 
-    print("run giga review")
+    print("upload to gigachat", time.time())
+    file_id = upload_to_gigachat_cloud(model, file_name, content)
+
+    print("run giga review", time.time())
     result = model.chat(
         {
             "messages": [
@@ -127,7 +157,7 @@ def giga_review(model, prompt, paper_link):
 # **Strengths**: Efficiency (requires less data and training time), effectiveness (surpasses state-of-the-art), and applicability (broad compatibility with libraries like Flash Attention 2).
 # **Weaknesses**: Specific to models trained with RoPE, potential sensitivity to hyperparameter tuning for optimal results.
 # **Computational Resources**: Details on GPU usage and hours are not explicitly stated in the provided excerpt."""
-
+    print("model returned ansver", time.time())
     print(model_output_content)
 
     print("\nresult total tokens:", total_tokens, "\n\n")
@@ -197,13 +227,14 @@ def handler(event, context):
         json=event_body,
         timeout=10,
     )
-    print("resp", resp.json())
 
     if resp.status_code != 200:
         return {
             'statusCode': resp.status_code,
             'body': '',
         }
+
+    print("resp", resp.content)
 
     tbot = TelegramBot()
 
@@ -236,34 +267,6 @@ def handler_async(event_body, context):
         verify_ssl_certs=False,
         timeout=300,
     )
-
-    SYSTEM_PROMPT_EN = """
-Give a brief review of the scientific article. Rely solely on the provided data and facts from the text of the article. Avoid assumptions and conjectures if information is missing. Structure the review as follows:
-
-1. Title: Briefly. What is paper title?
-
-2. Affiliations: What organizations are in the authors affiliations?
-
-3. Problem: Briefly, in less than 15 words. What problem are the authors solving?
-
-4. Results: Briefly. Describe the main results.
-
-5. Methods: Briefly. Describe what the authors suggested.
-
-6. Model: Briefly. The architecture of the model. The number of parameters.
-
-7. Data: Briefly. What datasets were used in this paper?
-
-8. Strengths: Briefly. What are the advantages of the proposed method?
-
-9. Weaknesses: Briefly. What are the disadvantages of the proposed method?
-
-10. Computational resources. Briefly. Give me specific numbers.
-How many GPUs were used in the work? How many GPU hours were used for training?
-
-Follow the order and names of the points. Don't number the items. Highlight the title of each item in bold. Add new line after each item.
-Answer in English.
-"""
 
     # paper_link = 'https://arxiv.org/pdf/2501.00544'
 
@@ -309,4 +312,18 @@ Answer in English.
 
 if __name__ == "__main__":
 
-    handler(None, None)
+    assert os.environ['GIGACHAT_CREDENTIALS'] is not None
+
+    model = GigaChat(
+        model="GigaChat-Pro",
+        scope="GIGACHAT_API_PERS",
+        verify_ssl_certs=False,
+        timeout=300,
+    )
+    paper_link = 'https://arxiv.org/pdf/2501.00544'
+
+    review_text, error_text = giga_review(model, SYSTEM_PROMPT_EN, paper_link)
+    print("review_text", review_text)
+    print("error_text", error_text)
+
+    breakpoint()
