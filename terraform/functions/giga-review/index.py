@@ -240,7 +240,9 @@ def handler(event, context):
 
     response_chat_id = event_body['message']['chat']['id']
     message_id = event_body['message']['message_id']
-    tbot.send_message_reaction(response_chat_id, message_id, "👀")
+    resp = tbot.send_message_reaction(response_chat_id, message_id, "👀")
+    print("response_chat_id, message_id", response_chat_id, message_id)
+    print("resp", resp.content)
 
     return {
         'statusCode': 200,
@@ -261,12 +263,15 @@ def handler_async(event_body, context):
 
     assert os.environ['GIGACHAT_CREDENTIALS'] is not None
 
+    gigachat_timeout = 30
     model = GigaChat(
         model="GigaChat-Pro",
         scope="GIGACHAT_API_PERS",
         verify_ssl_certs=False,
-        timeout=300,
+        timeout=gigachat_timeout,
     )
+    import httpx
+    model._client.timeout = httpx.Timeout(gigachat_timeout, connect=gigachat_timeout)
 
     # paper_link = 'https://arxiv.org/pdf/2501.00544'
 
@@ -318,7 +323,8 @@ if __name__ == "__main__":
         model="GigaChat-Pro",
         scope="GIGACHAT_API_PERS",
         verify_ssl_certs=False,
-        timeout=300,
+        timeout=30,
+
     )
     paper_link = 'https://arxiv.org/pdf/2501.00544'
 
