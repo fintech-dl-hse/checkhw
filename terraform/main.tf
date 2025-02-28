@@ -155,7 +155,7 @@ resource "yandex_function" "check-letters-tf" {
 resource "yandex_function" "giga-review-tf" {
     name               = "giga-review-tf"
     description        = "Giga review"
-    user_hash          = "v0.0.3"
+    user_hash          = "v0.0.4"
     runtime            = "python312"
     entrypoint         = "index.handler"
     memory             = "2048"

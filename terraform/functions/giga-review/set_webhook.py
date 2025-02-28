@@ -13,6 +13,7 @@ if __name__ == "__main__":
         json={
             'url': webhook_url,
             "secret_token": secret_token,
+            'drop_pending_updates': 'True',
         },
         timeout=10,
     )

@@ -1,6 +1,7 @@
 import re
 import os
 import sys
+import json
 
 import requests
 
@@ -158,8 +159,23 @@ class TelegramBot():
 
 def handler(event, context):
 
-    print("event", event)
-    print("context", context)
+    if event['secret_token'] != os.environ['TELEGRAM_BOT_WEBHOOK_SECRET_TOKEN']:
+        print("invalid secret token")
+        return {
+            'statusCode': 200,
+            'body': '',
+        }
+
+    try:
+        event_body = json.loads(event['body'])
+    except Exception as e:
+        print("invalid body, can't parse json", e)
+        return {
+            'statusCode': 200,
+            'body': '',
+        }
+
+    print("event_body", event_body)
 
     model = GigaChat(
         model="GigaChat-Pro",
@@ -196,10 +212,11 @@ Follow the order and names of the points. Don't number the items. Highlight the 
 Answer in English.
 """
 
-    paper_link = 'https://arxiv.org/pdf/2501.00544'
+    # paper_link = 'https://arxiv.org/pdf/2501.00544'
 
     tbot = TelegramBot()
-    review_text, error_text = giga_review(model, SYSTEM_PROMPT_EN, paper_link)
+    # review_text, error_text = giga_review(model, SYSTEM_PROMPT_EN, paper_link)
+    review_text, error_text = "test", None
 
     if review_text is not None:
         review_text_escaped = review_text.replace('.', '\\.').replace('-', '\\-').replace('_', '\\_').replace('**', '*')
@@ -209,6 +226,10 @@ Answer in English.
     else:
         tbot.send_message(chat_id=-4615588701, message=error_text)
 
+    return {
+        'statusCode': 200,
+        'body': '',
+    }
 
 if __name__ == "__main__":
 
