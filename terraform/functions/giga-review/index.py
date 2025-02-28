@@ -20,49 +20,40 @@ def paper_link_to_file_name(paper_link):
     return filename
 
 
-def upload_to_gigachat_cloud(model, paper_file_name):
+def upload_to_gigachat_cloud(model, paper_bytes):
 
-    mapping_filename = paper_file_name + '.mapping'
-
-    stat_info = os.stat(paper_file_name)
-    if stat_info.st_size > 30000000:
-        print("too large file size:", paper_file_name, stat_info.st_size)
+    if len(paper_bytes) > 30000000:
+        print("too large file size:", len(paper_bytes), "limit is 30MB")
         return None
 
-    with open(paper_file_name, "rb") as f:
+    gc_file = model.upload_file(paper_bytes)
+    return gc_file.id_
 
-        mapping_filename = paper_file_name + '.mapping'
+    # with open(paper_file_name, "rb") as f:
 
-        if os.path.exists(mapping_filename):
-            print("mapping file already exists:", mapping_filename)
-            return mapping_filename
+    #     mapping_filename = paper_file_name + '.mapping'
 
-        gc_file = model.upload_file(f)
-
-        with open(mapping_filename, "w", encoding='UTF-8') as mapping_file:
-            mapping_file.write(str(gc_file.id_))
-            print("mapping saved", gc_file.id_)
-
-    return mapping_filename
+    #     if os.path.exists(mapping_filename):
+    #         print("mapping file already exists:", mapping_filename)
+    #         return mapping_filename
 
 
-def download_paper_pdf(filename, paper_link):
-    if os.path.exists(filename):
-        print(f"file {filename} already exists")
-        return filename
+    #     with open(mapping_filename, "w", encoding='UTF-8') as mapping_file:
+    #         mapping_file.write(str(gc_file.id_))
+    #         print("mapping saved", gc_file.id_)
 
+    # return mapping_filename
+
+
+def download_paper_pdf(paper_link):
     response = requests.get(paper_link, timeout=10)
 
     if response.status_code == 200:
-        with open(filename, 'wb') as f:
-            f.write(response.content)
-        print(f"File {filename} saved successfully")
-    else:
-        print("Failed to download file", filename)
-        breakpoint()
-        return None
+        return response.content
 
-    return filename
+    print("Failed to download file", paper_link)
+    breakpoint()
+    return None
 
 
 def parse_model_outputs(model_generated_content: str):
@@ -102,18 +93,11 @@ def giga_review(model, prompt, paper_link):
     if '/abs/' in paper_link:
         paper_link = paper_link.replace('/abs/', '/pdf/')
 
-    file_name = paper_link_to_file_name(paper_link)
-
-    ok = download_paper_pdf(file_name, paper_link)
-    if ok is None:
+    content = download_paper_pdf(paper_link)
+    if content is None:
         return None, "Failed to download paper"
 
-    mapping_file_name = upload_to_gigachat_cloud(model, file_name)
-
-    with open(mapping_file_name, 'r', encoding='UTF-8') as f:
-        file_id = f.read()
-
-    print("file_id", file_id)
+    file_id = upload_to_gigachat_cloud(model, content)
 
     result = model.chat(
         {
@@ -173,6 +157,9 @@ class TelegramBot():
 
 
 def handler(event, context):
+
+    print("event", event)
+    print("context", context)
 
     model = GigaChat(
         model="GigaChat-Pro",
