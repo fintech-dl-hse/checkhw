@@ -155,7 +155,7 @@ resource "yandex_function" "check-letters-tf" {
 resource "yandex_function" "giga-review-tf" {
     name               = "giga-review-tf"
     description        = "Giga review"
-    user_hash          = "v0.0.1"
+    user_hash          = "v0.0.2"
     runtime            = "python312"
     entrypoint         = "index.handler"
     memory             = "2048"
@@ -172,6 +172,12 @@ resource "yandex_function" "giga-review-tf" {
         version_id           = "e6qg7466ek0qt8k5o0d0"
         key                  = "GIGACHAT_CREDENTIALS"
         environment_variable = "GIGACHAT_CREDENTIALS"
+    }
+    secrets {
+        id                   = "e6qabpm2adbfjq16919k"
+        version_id           = "e6qkeviqvd3jvo1jniju"
+        key                  = "TELEGRAM_BOT_WEBHOOK_SECRET_TOKEN"
+        environment_variable = "TELEGRAM_BOT_WEBHOOK_SECRET_TOKEN"
     }
     content {
         zip_filename = "functions/giga-review.zip"
