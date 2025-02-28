@@ -31,7 +31,7 @@ provider "yandex" {
 resource "yandex_function" "start-compute-tf" {
     name               = "start-compute-tf"
     description        = "Test function to start compute instance"
-    user_hash          = "v0.0.22"
+    user_hash          = "v0.0.23"
     runtime            = "golang119"
     entrypoint         = "start_compute.StartComputeInstances"
     memory             = "128"
@@ -45,7 +45,7 @@ resource "yandex_function" "start-compute-tf" {
 resource "yandex_function" "start-compute-gpu-tf" {
     name               = "start-compute-gpu-tf"
     description        = "Test function to start compute instance"
-    user_hash          = "v0.0.22"
+    user_hash          = "v0.0.23"
     runtime            = "golang119"
     entrypoint         = "start_compute.StartComputeInstancesGPU"
     memory             = "128"
@@ -59,7 +59,7 @@ resource "yandex_function" "start-compute-gpu-tf" {
 resource "yandex_function" "stop-compute-tf" {
     name               = "stop-compute-tf"
     description        = "Test function to stop compute instance"
-    user_hash          = "v0.0.22"
+    user_hash          = "v0.0.23"
     runtime            = "golang119"
     entrypoint         = "stop_compute.StopComputeInstance"
     memory             = "128"
@@ -170,7 +170,7 @@ resource "yandex_message_queue" "ymq-giga-review-failure-tf" {
 resource "yandex_function" "giga-review-queue-tf" {
     name               = "giga-review-queue-tf"
     description        = "Giga review queue"
-    user_hash          = "v0.0.22"
+    user_hash          = "v0.0.23"
     runtime            = "python312"
     entrypoint         = "index.handler"
     memory             = "512"
@@ -197,7 +197,7 @@ resource "yandex_function" "giga-review-queue-tf" {
 resource "yandex_function" "giga-review-tf" {
     name               = "giga-review-tf"
     description        = "Giga review"
-    user_hash          = "v0.0.22"
+    user_hash          = "v0.0.23"
     runtime            = "python312"
     entrypoint         = "index.handler_async"
     memory             = "512"

@@ -127,21 +127,37 @@ def giga_review(model, prompt, paper_link):
 
     file_name = paper_link_to_file_name(paper_link)
 
+    import logging
+    logging.basicConfig(
+        format="%(levelname)s [%(asctime)s] %(name)s - %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+        level=logging.DEBUG
+    )
+    logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
+
+
     import requests
+    print("file_name", file_name)
+
     resp = requests.post(
         "https://gigachat.devices.sberbank.ru/api/v1/files",
         timeout=(10, 10),
+        headers={
+            "Authorization": f"Bearer {model.get_token().access_token}",
+            "Content-Type": "multipart/form-data",
+        },
+        files={
+            "file": (file_name, content),
+        },
+        data={
+            "purpose": "general",
+        },
+        verify=False,
     )
     print("resp", resp.status_code, resp.content)
 
     # print("upload to gigachat", time.time())
 
-    # import logging
-    # logging.basicConfig(
-    #     format="%(levelname)s [%(asctime)s] %(name)s - %(message)s",
-    #     datefmt="%Y-%m-%d %H:%M:%S",
-    #     level=logging.DEBUG
-    # )
     # file_id = upload_to_gigachat_cloud(model, file_name, content)
     print("run giga review", time.time())
     result = model.chat(
@@ -297,6 +313,7 @@ def handler_async(event_body, context):
     )
     import httpx
     model._client.timeout = httpx.Timeout(gigachat_timeout, connect=gigachat_timeout)
+    model._auth_client.timeout = httpx.Timeout(gigachat_timeout, connect=gigachat_timeout)
 
     # paper_link = 'https://arxiv.org/pdf/2501.00544'
 
