@@ -167,13 +167,39 @@ resource "yandex_message_queue" "ymq-giga-review-failure-tf" {
   message_retention_seconds  = 1209600
 }
 
+resource "yandex_function" "giga-review-queue-tf" {
+    name               = "giga-review-queue-tf"
+    description        = "Giga review queue"
+    user_hash          = "v0.0.1"
+    runtime            = "python312"
+    entrypoint         = "index.handler"
+    memory             = "512"
+    execution_timeout  = "300"
+    service_account_id = "ajevd0tfv30vuibuhv6v"
+    secrets {
+        id                   = "e6qcoml5i8pd749m2pi7"
+        version_id           = "e6q6fukbt0r6bdh6qege"
+        key                  = "TELEGRAM_BOT_TOKEN"
+        environment_variable = "TELEGRAM_BOT_TOKEN"
+    }
+    secrets {
+        id                   = "e6qabpm2adbfjq16919k"
+        version_id           = "e6qkeviqvd3jvo1jniju"
+        key                  = "TELEGRAM_BOT_WEBHOOK_SECRET_TOKEN"
+        environment_variable = "TELEGRAM_BOT_WEBHOOK_SECRET_TOKEN"
+    }
+    content {
+        zip_filename = "functions/giga-review.zip"
+    }
+}
+
 
 resource "yandex_function" "giga-review-tf" {
     name               = "giga-review-tf"
     description        = "Giga review"
-    user_hash          = "v0.0.14"
+    user_hash          = "v0.0.15"
     runtime            = "python312"
-    entrypoint         = "index.handler"
+    entrypoint         = "index.handler_async"
     memory             = "512"
     execution_timeout  = "300"
     service_account_id = "ajevd0tfv30vuibuhv6v"

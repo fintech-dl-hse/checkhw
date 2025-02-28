@@ -175,9 +175,6 @@ class TelegramBot():
 
 
 def handler(event, context):
-
-    print("event", event)
-
     if event['headers']['X-Telegram-Bot-Api-Secret-Token'] != os.environ['TELEGRAM_BOT_WEBHOOK_SECRET_TOKEN']:
         print("invalid secret token")
         return {
@@ -194,7 +191,44 @@ def handler(event, context):
             'body': '',
         }
 
+    event_body['X-Telegram-Bot-Api-Secret-Token'] = event['headers']['X-Telegram-Bot-Api-Secret-Token']
     print("event_body", event_body)
+
+    resp = requests.post(
+        "https://functions.yandexcloud.net/d4eekb5q97upoaot6dbf?integration=async",
+        json=event_body,
+        timeout=10,
+    )
+    print("resp", resp.json())
+
+    if resp.status_code != 200:
+        return {
+            'statusCode': resp.status_code,
+            'body': '',
+        }
+
+    tbot = TelegramBot()
+
+    response_chat_id = event_body['message']['chat']['id']
+    message_id = event_body['message']['message_id']
+    tbot.send_message_reaction(response_chat_id, message_id, "👀")
+
+    return {
+        'statusCode': 200,
+        'body': '',
+    }
+
+
+def handler_async(event_body, context):
+
+    print("event_body", event_body)
+
+    if event_body['X-Telegram-Bot-Api-Secret-Token'] != os.environ['TELEGRAM_BOT_WEBHOOK_SECRET_TOKEN']:
+        print("invalid secret token")
+        return {
+            'statusCode': 200,
+            'body': '',
+        }
 
     model = GigaChat(
         model="GigaChat-Pro",
@@ -236,8 +270,6 @@ Answer in English.
     tbot = TelegramBot()
 
     response_chat_id = event_body['message']['chat']['id']
-    message_id = event_body['message']['message_id']
-    tbot.send_message_reaction(response_chat_id, message_id, "👀")
 
     message_text = event_body['message']['text']
 
