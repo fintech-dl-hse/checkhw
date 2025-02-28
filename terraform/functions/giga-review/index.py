@@ -156,6 +156,20 @@ class TelegramBot():
 
         return resp
 
+    def send_message_reaction(self, chat_id, message_id, reaction_emoji, **kwargs):
+        resp = requests.post(
+            f"https://api.telegram.org/bot{self._telegram_bot_token}/setMessageReaction",
+            json={
+                'chat_id': chat_id,
+                'message_id': message_id,
+                'reaction': [{"type": "emoji", "emoji": reaction_emoji}],
+                **kwargs
+            },
+            timeout=10,
+        )
+
+        return resp
+
 
 def handler(event, context):
 
@@ -215,16 +229,21 @@ Answer in English.
     # paper_link = 'https://arxiv.org/pdf/2501.00544'
 
     tbot = TelegramBot()
+
+    response_chat_id = event_body['chat']['id']
+    message_id = event_body['message']['message_id']
+    tbot.send_message_reaction(response_chat_id, message_id, "👀")
+
     # review_text, error_text = giga_review(model, SYSTEM_PROMPT_EN, paper_link)
     review_text, error_text = "test", None
 
     if review_text is not None:
         review_text_escaped = review_text.replace('.', '\\.').replace('-', '\\-').replace('_', '\\_').replace('**', '*')
 
-        resp = tbot.send_message(chat_id=-4615588701, message=review_text_escaped)
+        resp = tbot.send_message(chat_id=response_chat_id, message=review_text_escaped)
         print(resp.json())
     else:
-        tbot.send_message(chat_id=-4615588701, message=error_text)
+        tbot.send_message(chat_id=response_chat_id, message=error_text)
 
     return {
         'statusCode': 200,

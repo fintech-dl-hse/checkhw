@@ -14,6 +14,7 @@ if __name__ == "__main__":
             'url': webhook_url,
             "secret_token": secret_token,
             'drop_pending_updates': 'True',
+            "ip_address": "",
         },
         timeout=10,
     )
