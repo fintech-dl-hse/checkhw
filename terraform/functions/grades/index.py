@@ -29,42 +29,42 @@ def _handler(event, context, detailed=False):
 
     known_homeworks = dict({
         "hw-activations": {
-            "deadline": datetime.datetime.strptime("2025-02-10T03:05:00", "%Y-%m-%dT%H:%M:%S"),
+            "deadline": datetime.datetime.strptime("2025-02-11T03:05:00", "%Y-%m-%dT%H:%M:%S"),
         },
         "hw-weight-init": {
-            "deadline": datetime.datetime.strptime("2025-02-10T03:05:00", "%Y-%m-%dT%H:%M:%S"),
+            "deadline": datetime.datetime.strptime("2025-02-11T03:05:00", "%Y-%m-%dT%H:%M:%S"),
         },
         "hw-optimization": {
-            "deadline": datetime.datetime.strptime("2025-03-03T03:05:00", "%Y-%m-%dT%H:%M:%S"),
+            "deadline": datetime.datetime.strptime("2025-03-13T03:05:00", "%Y-%m-%dT%H:%M:%S"),
         },
         "hw-dropout": {
-            "deadline": datetime.datetime.strptime("2025-03-03T03:05:00", "%Y-%m-%dT%H:%M:%S"),
+            "deadline": datetime.datetime.strptime("2025-03-13T03:05:00", "%Y-%m-%dT%H:%M:%S"),
         },
         "hw-batchnorm": {
-            "deadline": datetime.datetime.strptime("2025-03-03T03:05:00", "%Y-%m-%dT%H:%M:%S"),
+            "deadline": datetime.datetime.strptime("2025-03-13T03:05:00", "%Y-%m-%dT%H:%M:%S"),
         },
         "hw-pytorch-basics": {
-            "deadline": datetime.datetime.strptime("2025-03-03T03:05:00", "%Y-%m-%dT%H:%M:%S"),
+            "deadline": datetime.datetime.strptime("2025-03-13T03:05:00", "%Y-%m-%dT%H:%M:%S"),
         },
         # TODO tokenization
         "hw-rnn-attention": {
-            "deadline": datetime.datetime.strptime("2025-05-13T03:05:00", "%Y-%m-%dT%H:%M:%S"),
+            "deadline": datetime.datetime.strptime("2025-05-22T03:05:00", "%Y-%m-%dT%H:%M:%S"),
         },
         "hw-transformer-attention": {
-            "deadline": datetime.datetime.strptime("2025-05-13T03:05:00", "%Y-%m-%dT%H:%M:%S"),
+            "deadline": datetime.datetime.strptime("2025-05-22T03:05:00", "%Y-%m-%dT%H:%M:%S"),
         },
         # TODO llm
         "hw-vae": {
-            "deadline": datetime.datetime.strptime("2025-06-16T11:05:00", "%Y-%m-%dT%H:%M:%S"),
+            "deadline": datetime.datetime.strptime("2025-06-17T11:05:00", "%Y-%m-%dT%H:%M:%S"),
         },
         "hw-diffusion": {
-            "deadline": datetime.datetime.strptime("2025-06-16T11:05:00", "%Y-%m-%dT%H:%M:%S"),
+            "deadline": datetime.datetime.strptime("2025-06-17T11:05:00", "%Y-%m-%dT%H:%M:%S"),
         },
         "hw-multimodal-llm": {
-            "deadline": datetime.datetime.strptime("2025-06-16T11:05:00", "%Y-%m-%dT%H:%M:%S"),
+            "deadline": datetime.datetime.strptime("2025-06-17T11:05:00", "%Y-%m-%dT%H:%M:%S"),
         },
         "hw-letters": {
-            "deadline": datetime.datetime.strptime("2025-06-16T03:05:00", "%Y-%m-%dT%H:%M:%S"),
+            "deadline": datetime.datetime.strptime("2025-06-17T03:05:00", "%Y-%m-%dT%H:%M:%S"),
         },
         # календарная дата дедлайна должна быть с запасом на 1 день больше
     })
