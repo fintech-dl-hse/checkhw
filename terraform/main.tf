@@ -152,6 +152,22 @@ resource "yandex_function" "check-letters-tf" {
     }
 }
 
+
+resource "yandex_message_queue" "ymq-giga-review-success-tf" {
+  name                       = "ymq-giga-review-success-tf"
+  visibility_timeout_seconds = 600
+  receive_wait_time_seconds  = 20
+  message_retention_seconds  = 1209600
+}
+
+resource "yandex_message_queue" "ymq-giga-review-failure-tf" {
+  name                       = "ymq-giga-review-failure-tf"
+  visibility_timeout_seconds = 600
+  receive_wait_time_seconds  = 20
+  message_retention_seconds  = 1209600
+}
+
+
 resource "yandex_function" "giga-review-tf" {
     name               = "giga-review-tf"
     description        = "Giga review"
@@ -181,5 +197,17 @@ resource "yandex_function" "giga-review-tf" {
     }
     content {
         zip_filename = "functions/giga-review.zip"
+    }
+    async_invocation {
+        retries_count       = 1
+        service_account_id  = "ajevd0tfv30vuibuhv6v"
+        ymq_success_target {
+            service_account_id = "ajevd0tfv30vuibuhv6v"
+            arn                = "ymq-giga-review-success-tf"
+        }
+        ymq_failure_target {
+            service_account_id = "ajevd0tfv30vuibuhv6v"
+            arn                = "ymq-giga-review-failure-tf"
+        }
     }
 }
