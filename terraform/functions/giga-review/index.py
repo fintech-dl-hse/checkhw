@@ -7,8 +7,6 @@ import requests
 
 from gigachat import GigaChat
 
-assert os.environ['GIGACHAT_CREDENTIALS'] is not None
-
 
 def paper_link_to_file_name(paper_link):
     papers_prefix = "data/papers/"
@@ -229,6 +227,8 @@ def handler_async(event_body, context):
             'statusCode': 200,
             'body': '',
         }
+
+    assert os.environ['GIGACHAT_CREDENTIALS'] is not None
 
     model = GigaChat(
         model="GigaChat-Pro",
