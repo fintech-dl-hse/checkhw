@@ -127,6 +127,13 @@ def giga_review(model, prompt, paper_link):
 
     file_name = paper_link_to_file_name(paper_link)
 
+    import requests
+    resp = requests.post(
+        "https://gigachat.devices.sberbank.ru/api/v1/files",
+        timeout=(10, 10),
+    )
+    print("resp", resp.status_code, resp.content)
+
     # print("upload to gigachat", time.time())
 
     # import logging
