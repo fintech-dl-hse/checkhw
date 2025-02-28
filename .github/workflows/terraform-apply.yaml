@@ -16,6 +16,8 @@ jobs:
         env:
           YC_SA_ACCESS_KEY: ${{ secrets.YC_SA_ACCESS_KEY }}
           YC_SA_SECRET_KEY: ${{ secrets.YC_SA_SECRET_KEY }}
+          YC_MESSAGE_QUEUE_ACCESS_KEY: ${{ secrets.YC_SA_ACCESS_KEY }}
+          YC_MESSAGE_QUEUE_SECRET_KEY: ${{ secrets.YC_SA_SECRET_KEY }}
           YC_SERVICE_ACCOUNT_KEY_FILE: ./key.json
           YC_SERVICE_ACCOUNT_KEY_FILE_DATA: ${{ secrets.YC_SERVICE_ACCOUNT_KEY_FILE_DATA }}
         run: |
