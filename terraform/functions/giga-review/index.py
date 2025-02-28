@@ -94,12 +94,15 @@ def giga_review(model, prompt, paper_link):
     if '/abs/' in paper_link:
         paper_link = paper_link.replace('/abs/', '/pdf/')
 
+    print("download paper")
     content = download_paper_pdf(paper_link)
     if content is None:
         return None, "Failed to download paper"
 
+    print("upload to gigachat")
     file_id = upload_to_gigachat_cloud(model, content)
 
+    print("run giga review")
     result = model.chat(
         {
             "messages": [
@@ -253,7 +256,9 @@ Answer in English.
 
     print("command", command, "paper_link", paper_link)
     review_text = 'Test ' + paper_link
-    # review_text, error_text = giga_review(model, SYSTEM_PROMPT_EN, paper_link)
+
+    print("run giga review")
+    review_text, error_text = giga_review(model, SYSTEM_PROMPT_EN, paper_link)
 
     if review_text is not None:
         review_text_escaped = review_text.replace('.', '\\.').replace('-', '\\-').replace('_', '\\_').replace('**', '*')
