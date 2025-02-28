@@ -232,11 +232,28 @@ Answer in English.
 
     response_chat_id = event_body['message']['chat']['id']
     message_id = event_body['message']['message_id']
-    message_text = event_body['message']['text']
     tbot.send_message_reaction(response_chat_id, message_id, "👀")
 
+    message_text = event_body['message']['text']
+
+    review_text, error_text, paper_link = None, None, None
+
+    command_parts = message_text.split(' ')
+    if len(command_parts) == 0:
+        error_text = "No command provided"
+    else:
+        command = command_parts[0]
+        if command == "/review":
+            if len(command_parts) > 1:
+                paper_link = command_parts[1]
+            else:
+                error_text = "No paper link provided"
+        else:
+            error_text = "Unknown command"
+
+    print("command", command, "paper_link", paper_link)
+    review_text = 'Test ' + paper_link
     # review_text, error_text = giga_review(model, SYSTEM_PROMPT_EN, paper_link)
-    review_text, error_text = "test", None
 
     if review_text is not None:
         review_text_escaped = review_text.replace('.', '\\.').replace('-', '\\-').replace('_', '\\_').replace('**', '*')

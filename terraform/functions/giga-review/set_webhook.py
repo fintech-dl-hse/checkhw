@@ -15,6 +15,7 @@ if __name__ == "__main__":
             "secret_token": secret_token,
             'drop_pending_updates': 'True',
             "ip_address": "",
+            "allowed_updates": ["message"],
         },
         timeout=10,
     )
