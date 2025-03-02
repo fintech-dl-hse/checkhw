@@ -8,10 +8,14 @@ import nbformat
 from nbconvert.preprocessors import ExecutePreprocessor
 from nbconvert.preprocessors import CellExecutionError
 
+import wandb
+
 def test_notebook():
     """
     Проверяем, что ноутбук запускается, отрабатывает без ошибок
     """
+
+    wandb.disabled = True
 
     with open('./hw_pytorch_basics.ipynb') as f:
         nb = nbformat.read(f, as_version=4)
