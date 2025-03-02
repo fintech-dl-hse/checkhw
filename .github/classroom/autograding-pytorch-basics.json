@@ -2,7 +2,7 @@
   "tests": [
     {
       "name": "disable wandb",
-      "run": "wandb disabled || 1",
+      "run": "wandb disabled || true",
       "input": "",
       "output": "",
       "comparison": "included",
