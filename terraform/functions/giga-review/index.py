@@ -139,6 +139,8 @@ def giga_review(model, prompt, paper_link):
     import requests
     print("file_name", file_name)
 
+    print("model.get_token().access_token", model.get_token().access_token)
+
     resp = requests.post(
         "https://gigachat.devices.sberbank.ru/api/v1/files",
         timeout=(10, 10),
