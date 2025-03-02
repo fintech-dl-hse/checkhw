@@ -2,7 +2,7 @@
   "tests": [
     {
       "name": "disable wandb",
-      "run": "wandb disabled || true",
+      "run": "/data/bin/miniconda3/envs/jupyter-actions/bin/wandb disabled || true",
       "input": "",
       "output": "",
       "comparison": "included",
