@@ -139,14 +139,15 @@ def giga_review(model, prompt, paper_link):
     import requests
     print("file_name", file_name)
 
-    print("model.get_token().access_token", model.get_token().access_token)
+    access_token = model.get_token().access_token
+    print("model.get_token().access_token", access_token)
 
     resp = requests.post(
         "https://gigachat.devices.sberbank.ru/api/v1/files",
         timeout=(10, 10),
         headers={
-            "Authorization": f"Bearer {model.get_token().access_token}",
-            "Content-Type": "multipart/form-data",
+            "Authorization": f"Bearer {access_token}",
+            "Content-Type": "text/plain",
         },
         files={
             "file": (file_name, content),
@@ -317,9 +318,10 @@ def handler_async(event_body, context):
     model._client.timeout = httpx.Timeout(gigachat_timeout, connect=gigachat_timeout)
     model._auth_client.timeout = httpx.Timeout(gigachat_timeout, connect=gigachat_timeout)
 
-    print("model.get_token().access_token", model.get_token().access_token)
+    access_token = model.get_token().access_token
+    print("model.get_token().access_token", access_token)
 
-    auth_header = f'Authorization: Bearer {model.get_token().access_token}'
+    auth_header = f'Authorization: Bearer {access_token}'
 
     import subprocess
 
@@ -328,6 +330,7 @@ def handler_async(event_body, context):
 
     print("curl out", result.stdout)  # Prints the response body
 
+    time.sleep(5)
 
     print("model.get_models()", model.get_models())
 
