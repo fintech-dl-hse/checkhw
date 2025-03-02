@@ -1,6 +1,15 @@
 {
   "tests": [
     {
+      "name": "disable wandb",
+      "run": "wandb disabled || 1",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 10,
+      "points": 0
+    },
+    {
       "name": "pytest",
       "run": "PYTHONPATH=. /data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs tests/pytorch-basics/test_notebook.py",
       "input": "",
