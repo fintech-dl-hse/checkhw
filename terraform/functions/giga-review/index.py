@@ -317,6 +317,8 @@ def handler_async(event_body, context):
     model._client.timeout = httpx.Timeout(gigachat_timeout, connect=gigachat_timeout)
     model._auth_client.timeout = httpx.Timeout(gigachat_timeout, connect=gigachat_timeout)
 
+    print("model.get_models()", model.get_models())
+
     # paper_link = 'https://arxiv.org/pdf/2501.00544'
 
     tbot = TelegramBot()
@@ -372,8 +374,10 @@ if __name__ == "__main__":
     )
     paper_link = 'https://arxiv.org/pdf/2501.00544'
 
-    review_text, error_text = giga_review(model, SYSTEM_PROMPT_EN, paper_link)
-    print("review_text", review_text)
-    print("error_text", error_text)
+    print("model.get_models()", model.get_models())
+
+    # review_text, error_text = giga_review(model, SYSTEM_PROMPT_EN, paper_link)
+    # print("review_text", review_text)
+    # print("error_text", error_text)
 
     breakpoint()
