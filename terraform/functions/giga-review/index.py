@@ -317,6 +317,18 @@ def handler_async(event_body, context):
     model._client.timeout = httpx.Timeout(gigachat_timeout, connect=gigachat_timeout)
     model._auth_client.timeout = httpx.Timeout(gigachat_timeout, connect=gigachat_timeout)
 
+    print("model.get_token().access_token", model.get_token().access_token)
+
+    auth_header = f'Authorization: Bearer {model.get_token().access_token}'
+
+    import subprocess
+
+    url = "https://gigachat.devices.sberbank.ru/api/v1/models"
+    result = subprocess.run(["curl", '--max-time', '10', "-k", url, '-H', auth_header], capture_output=True, text=True)
+
+    print("curl out", result.stdout)  # Prints the response body
+
+
     print("model.get_models()", model.get_models())
 
     # paper_link = 'https://arxiv.org/pdf/2501.00544'
