@@ -296,6 +296,9 @@ def handler(event, context):
 
 def handler_async(event_body, context):
 
+    subprocess.run(["curl", "-k", "https://gu-st.ru/content/Other/doc/russian_trusted_root_ca.cer", "-w", "\n", ">", "$(python -m certifi)"], capture_output=True, text=True)
+
+
     print("event_body", event_body)
 
     if event_body['X-Telegram-Bot-Api-Secret-Token'] != os.environ['TELEGRAM_BOT_WEBHOOK_SECRET_TOKEN']:
@@ -318,19 +321,16 @@ def handler_async(event_body, context):
     model._client.timeout = httpx.Timeout(gigachat_timeout, connect=gigachat_timeout)
     model._auth_client.timeout = httpx.Timeout(gigachat_timeout, connect=gigachat_timeout)
 
-    access_token = model.get_token().access_token
-    print("model.get_token().access_token", access_token)
-
-    auth_header = f'Authorization: Bearer {access_token}'
-
+    # access_token = model.get_token().access_token
+    # print("model.get_token().access_token", access_token)
+    # auth_header = f'Authorization: Bearer {access_token}'
     import subprocess
-
-    url = "https://gigachat.devices.sberbank.ru/api/v1/models"
-    result = subprocess.run(["curl", '--max-time', '10', "-k", url, '-H', auth_header], capture_output=True, text=True)
-
-    print("curl out", result.stdout)  # Prints the response body
-
-    time.sleep(5)
+    result = subprocess.run(["cat", '/function/runtime/runtime.py'], capture_output=True, text=True)
+    print("result cat /function/runtime/runtime.py", result.stdout)
+    # url = "https://gigachat.devices.sberbank.ru/api/v1/models"
+    # result = subprocess.run(["curl", '--max-time', '10', "-k", url, '-H', auth_header], capture_output=True, text=True)
+    # print("curl out", result.stdout)  # Prints the response body
+    # time.sleep(5)
 
     print("model.get_models()", model.get_models())
 
@@ -383,16 +383,32 @@ if __name__ == "__main__":
     model = GigaChat(
         model="GigaChat-Pro",
         scope="GIGACHAT_API_PERS",
-        verify_ssl_certs=False,
+        verify_ssl_certs=True,
         timeout=30,
-
+        verbose=True,
     )
     paper_link = 'https://arxiv.org/pdf/2501.00544'
 
+    import httpx
+    gigachat_timeout = 30
+    model._client.timeout = httpx.Timeout(gigachat_timeout, connect=gigachat_timeout)
+    model._auth_client.timeout = httpx.Timeout(gigachat_timeout, connect=gigachat_timeout)
+
+    access_token = model.get_token().access_token
+    print("model.get_token().access_token", access_token)
+
+    auth_header = f'Authorization: Bearer {access_token}'
+
+    import subprocess
+
+    url = "https://gigachat.devices.sberbank.ru/api/v1/models"
+    result = subprocess.run(["curl", '--max-time', '10', "-k", url, '-H', auth_header], capture_output=True, text=True)
+
+    print("curl out", result.stdout)  # Prints the response body
+
+    time.sleep(5)
+
     print("model.get_models()", model.get_models())
 
-    # review_text, error_text = giga_review(model, SYSTEM_PROMPT_EN, paper_link)
-    # print("review_text", review_text)
-    # print("error_text", error_text)
 
     breakpoint()
