@@ -170,7 +170,7 @@ resource "yandex_message_queue" "ymq-giga-review-failure-tf" {
 resource "yandex_function" "giga-review-queue-tf" {
     name               = "giga-review-queue-tf"
     description        = "Giga review queue"
-    user_hash          = "v0.0.28"
+    user_hash          = "v0.0.29"
     runtime            = "python39"
     entrypoint         = "index.handler"
     memory             = "512"
@@ -197,7 +197,7 @@ resource "yandex_function" "giga-review-queue-tf" {
 resource "yandex_function" "giga-review-tf" {
     name               = "giga-review-tf"
     description        = "Giga review"
-    user_hash          = "v0.0.28"
+    user_hash          = "v0.0.29"
     runtime            = "python39"
     entrypoint         = "index.handler_async"
     memory             = "512"

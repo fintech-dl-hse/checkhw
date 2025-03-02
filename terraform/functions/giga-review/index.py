@@ -296,8 +296,6 @@ def handler(event, context):
 
 def handler_async(event_body, context):
 
-    subprocess.run(["curl", "-k", "https://gu-st.ru/content/Other/doc/russian_trusted_root_ca.cer", "-w", "\n", ">", "$(python -m certifi)"], capture_output=True, text=True)
-
 
     print("event_body", event_body)
 
