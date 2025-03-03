@@ -98,7 +98,7 @@ def handler_async(event_body, context):
     resp = requests.post(
         "https://bbag2h4ru428rgr0tta2.containers.yandexcloud.net/",
         json=event_body,
-        timeout=10,
+        timeout=300,
     )
 
     print("resp", resp.content)

@@ -260,13 +260,9 @@ def handler_sanic(event_body, context):
     # access_token = model.get_token().access_token
     # print("model.get_token().access_token", access_token)
     # auth_header = f'Authorization: Bearer {access_token}'
-    import subprocess
-    result = subprocess.run(["cat", '/function/runtime/runtime.py'], capture_output=True, text=True)
-    print("result cat /function/runtime/runtime.py", result.stdout)
     # url = "https://gigachat.devices.sberbank.ru/api/v1/models"
     # result = subprocess.run(["curl", '--max-time', '10', "-k", url, '-H', auth_header], capture_output=True, text=True)
     # print("curl out", result.stdout)  # Prints the response body
-    # time.sleep(5)
 
     print("model.get_models()", model.get_models())
 
