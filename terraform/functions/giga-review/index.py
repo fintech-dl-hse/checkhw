@@ -257,10 +257,12 @@ def handler_async(event_body, context):
     tbot = TelegramBot()
 
     response_chat_id = event_body['message']['chat']['id']
-    message_thread_id = event_body['message']['chat']['message_thread_id']
+    message_thread_id = event_body['message']['chat'].get('message_thread_id', 0)
 
-    if response_chat_id not in [-1001948862463]:
-        print("bad chat id", response_chat_id)
+    if response_chat_id not in [-1001948862463, -4615588701]:
+        print("BAD CHAT id", response_chat_id)
+        resp = tbot.send_message_reaction(response_chat_id, message_id, "👎")
+        print("resp", resp.content)
         return
 
     message_text = event_body['message']['text']
