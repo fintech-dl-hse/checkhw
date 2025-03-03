@@ -11,25 +11,25 @@ from gigachat import GigaChat
 SYSTEM_PROMPT_EN = """
 Give a brief review of the scientific article. Rely solely on the provided data and facts from the text of the article. Avoid assumptions and conjectures if information is missing. Structure the review as follows:
 
-1. Title: Briefly. What is paper title?
+1. **Title**: Briefly. What is paper title?
 
-2. Affiliations: What organizations are in the authors affiliations?
+2. **Affiliations**: What organizations are in the authors affiliations?
 
-3. Problem: Briefly, in less than 15 words. What problem are the authors solving?
+3. **Problem**: Briefly, in less than 15 words. What problem are the authors solving?
 
-4. Results: Briefly. Describe the main results.
+4. **Results**: Briefly. Describe the main results.
 
-5. Methods: Briefly. Describe what the authors suggested.
+5. **Methods**: Briefly. Describe what the authors suggested.
 
-6. Model: Briefly. The architecture of the model. The number of parameters.
+6. **Model**: Briefly. The architecture of the model. The number of parameters.
 
-7. Data: Briefly. What datasets were used in this paper?
+7. **Data**: Briefly. What datasets were used in this paper?
 
-8. Strengths: Briefly. What are the advantages of the proposed method?
+8. **Strengths**: Briefly. What are the advantages of the proposed method?
 
-9. Weaknesses: Briefly. What are the disadvantages of the proposed method?
+9. **Weaknesses**: Briefly. What are the disadvantages of the proposed method?
 
-10. Computational resources. Briefly. Give me specific numbers.
+10. **Computational resources**. Briefly. Give me specific numbers.
 How many GPUs were used in the work? How many GPU hours were used for training?
 
 Follow the order and names of the points. Don't number the items. Highlight the title of each item in bold with **.
@@ -257,20 +257,16 @@ def handler_async(event_body, context):
     tbot = TelegramBot()
 
     response_chat_id = event_body['message']['chat']['id']
-    message_thread_id = event_body['message']['chat'].get('message_thread_id', 0)
+    message_thread_id = event_body['message'].get('message_thread_id', 0)
+    message_id = event_body['message']['message_id']
 
-    if response_chat_id not in [-1001948862463, -4615588701]:
+    if response_chat_id not in [-1001948862463, -4615588701, -1002434078215]:
         print("BAD CHAT id", response_chat_id)
         resp = tbot.send_message_reaction(response_chat_id, message_id, "👎")
         print("resp", resp.content)
         return
 
-    message_text = event_body['message']['text']
-
-    message_id = event_body['message']['message_id']
-    resp = tbot.send_message_reaction(response_chat_id, message_id, "👀")
-    print("response_chat_id, message_id, message_thread_id", response_chat_id, message_id, message_thread_id)
-    print("resp", resp.content)
+    message_text = event_body['message'].get('text', '')
 
     review_text, error_text, paper_link = None, None, None
 
@@ -288,10 +284,18 @@ def handler_async(event_body, context):
             error_text = "Unknown command"
 
     print("command", command, "paper_link", paper_link)
-    review_text = 'Test ' + paper_link
+    if paper_link is not None:
+        review_text = 'Test ' + paper_link
+        print("run giga review")
 
-    print("run giga review")
-    review_text, error_text = giga_review(model, SYSTEM_PROMPT_EN, paper_link)
+        message_id = event_body['message']['message_id']
+        resp = tbot.send_message_reaction(response_chat_id, message_id, "👀")
+        print("response_chat_id, message_id, message_thread_id", response_chat_id, message_id, message_thread_id)
+        print("resp", resp.content)
+
+        review_text, error_text = giga_review(model, SYSTEM_PROMPT_EN, paper_link)
+    else:
+        error_text = "No paper link provided"
 
     if review_text is not None:
         review_text_escaped = review_text.replace('.', '\\.').replace('-', '\\-').replace('_', '\\_').replace('**', '*').replace('(', '\\(').replace(')', '\\)').replace('{', '\\{').replace('}', '\\}').replace('#', '\\#')
@@ -318,7 +322,7 @@ if __name__ == "__main__":
 
     while True:
         time.sleep(2)
-        resp = requests.get(f"https://api.telegram.org/bot{telegram_bot_token}/getUpdates?offset={offset}")
+        resp = requests.get(f"https://api.telegram.org/bot{telegram_bot_token}/getUpdates", params={'offset': offset, "allowed_updates": '["message"]'})
         resp_json = resp.json()
         print("resp_json", resp_json)
         for update in resp_json['result']:
