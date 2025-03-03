@@ -157,7 +157,7 @@ class TelegramBot():
         if self._telegram_bot_token is None:
             raise ValueError("TELEGRAM_BOT_TOKEN env var is required")
 
-    def send_message(self, chat_id, message, parse_mode='MarkdownV2', **kwargs):
+    def send_message(self, chat_id, message, message_thread_id=message_thread_id, parse_mode='MarkdownV2', **kwargs):
         resp = requests.post(
             f"https://api.telegram.org/bot{self._telegram_bot_token}/sendMessage",
             json={
@@ -165,6 +165,7 @@ class TelegramBot():
                 'parse_mode': parse_mode,
                 'link_preview_options': {'is_disabled': True},
                 'chat_id': chat_id,
+                'message_thread_id': message_thread_id,
                 **kwargs
             },
             timeout=10,
@@ -256,6 +257,7 @@ def handler_async(event_body, context):
     tbot = TelegramBot()
 
     response_chat_id = event_body['message']['chat']['id']
+    message_thread_id = event_body['message']['chat']['message_thread_id']
 
     if response_chat_id not in [-1001948862463]:
         print("bad chat id", response_chat_id)
@@ -292,15 +294,15 @@ def handler_async(event_body, context):
     if review_text is not None:
         review_text_escaped = review_text.replace('.', '\\.').replace('-', '\\-').replace('_', '\\_').replace('**', '*').replace('(', '\\(').replace(')', '\\)').replace('{', '\\{').replace('}', '\\}')
 
-        resp = tbot.send_message(chat_id=response_chat_id, message=review_text_escaped)
+        resp = tbot.send_message(chat_id=response_chat_id, message_thread_id=message_thread_id, message=review_text_escaped)
 
         print(resp.json())
 
         if resp.status_code != 200:
             print("error sending message", resp.json())
-            tbot.send_message(chat_id=response_chat_id, message=f"Error: ```{resp.json()}```")
+            tbot.send_message(chat_id=response_chat_id, message_thread_id=message_thread_id, message=f"Error: ```{resp.json()}```")
     else:
-        tbot.send_message(chat_id=response_chat_id, message=f"Error: ```{error_text}```")
+        tbot.send_message(chat_id=response_chat_id, message_thread_id=message_thread_id, message=f"Error: ```{error_text}```")
 
     return
 
