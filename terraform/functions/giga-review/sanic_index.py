@@ -270,7 +270,7 @@ def handler_sanic(event_body, context):
 
     print("model.get_models()", model.get_models())
 
-    # paper_link = 'https://arxiv.org/pdf/2501.00544'
+    paper_link = 'https://arxiv.org/pdf/2501.00544'
 
     tbot = TelegramBot()
 
@@ -293,11 +293,12 @@ def handler_sanic(event_body, context):
         else:
             error_text = "Unknown command"
 
-    print("command", command, "paper_link", paper_link)
-    review_text = 'Test ' + paper_link
+    if error_text is None:
+        print("command", command, "paper_link", paper_link)
+        review_text = 'Test ' + paper_link
 
-    print("run giga review")
-    review_text, error_text = giga_review(model, SYSTEM_PROMPT_EN, paper_link)
+        print("run giga review")
+        review_text, error_text = giga_review(model, SYSTEM_PROMPT_EN, paper_link)
 
     if review_text is not None:
         review_text_escaped = review_text.replace('.', '\\.').replace('-', '\\-').replace('_', '\\_').replace('**', '*')
@@ -305,7 +306,8 @@ def handler_sanic(event_body, context):
         resp = tbot.send_message(chat_id=response_chat_id, message=review_text_escaped)
         print(resp.json())
     else:
-        tbot.send_message(chat_id=response_chat_id, message=error_text)
+        resp = tbot.send_message(chat_id=response_chat_id, message=error_text)
+        print(resp.json())
 
     return {
         'statusCode': 200,
@@ -318,14 +320,11 @@ def handler_sanic(event_body, context):
 async def after_server_start(app, loop):
     print(f"App listening at port {os.environ['PORT']}")
 
-@app.route("/")
+@app.post("/")
 async def hello(request):
-    ip = request.headers["X-Forwarded-For"]
-    print(f"Request from {ip}")
-
     handler_sanic(request.json, None)
 
-    return text("Ok")
+    return text("ok")
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=int(os.environ['PORT']), motd=False, access_log=False)
