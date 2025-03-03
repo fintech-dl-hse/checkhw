@@ -32,7 +32,7 @@ Give a brief review of the scientific article. Rely solely on the provided data 
 10. Computational resources. Briefly. Give me specific numbers.
 How many GPUs were used in the work? How many GPU hours were used for training?
 
-Follow the order and names of the points. Don't number the items. Highlight the title of each item in bold.
+Follow the order and names of the points. Don't number the items. Highlight the title of each item in bold with **.
 Add 2 new lines after each item.
 
 Answer in English.
@@ -269,7 +269,7 @@ def handler_async(event_body, context):
 
     message_id = event_body['message']['message_id']
     resp = tbot.send_message_reaction(response_chat_id, message_id, "👀")
-    print("response_chat_id, message_id", response_chat_id, message_id)
+    print("response_chat_id, message_id, message_thread_id", response_chat_id, message_id, message_thread_id)
     print("resp", resp.content)
 
     review_text, error_text, paper_link = None, None, None
@@ -294,7 +294,7 @@ def handler_async(event_body, context):
     review_text, error_text = giga_review(model, SYSTEM_PROMPT_EN, paper_link)
 
     if review_text is not None:
-        review_text_escaped = review_text.replace('.', '\\.').replace('-', '\\-').replace('_', '\\_').replace('**', '*').replace('(', '\\(').replace(')', '\\)').replace('{', '\\{').replace('}', '\\}')
+        review_text_escaped = review_text.replace('.', '\\.').replace('-', '\\-').replace('_', '\\_').replace('**', '*').replace('(', '\\(').replace(')', '\\)').replace('{', '\\{').replace('}', '\\}').replace('#', '\\#')
 
         resp = tbot.send_message(chat_id=response_chat_id, message_thread_id=message_thread_id, message=review_text_escaped)
 
