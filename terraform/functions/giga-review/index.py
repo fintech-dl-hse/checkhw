@@ -157,7 +157,7 @@ class TelegramBot():
         if self._telegram_bot_token is None:
             raise ValueError("TELEGRAM_BOT_TOKEN env var is required")
 
-    def send_message(self, chat_id, message, message_thread_id=message_thread_id, parse_mode='MarkdownV2', **kwargs):
+    def send_message(self, chat_id, message, message_thread_id=0, parse_mode='MarkdownV2', **kwargs):
         resp = requests.post(
             f"https://api.telegram.org/bot{self._telegram_bot_token}/sendMessage",
             json={
