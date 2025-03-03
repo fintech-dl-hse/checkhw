@@ -157,12 +157,12 @@ class TelegramBot():
         if self._telegram_bot_token is None:
             raise ValueError("TELEGRAM_BOT_TOKEN env var is required")
 
-    def send_message(self, chat_id, message, **kwargs):
+    def send_message(self, chat_id, message, parse_mode='MarkdownV2', **kwargs):
         resp = requests.post(
             f"https://api.telegram.org/bot{self._telegram_bot_token}/sendMessage",
             json={
                 'text': message,
-                'parse_mode': 'MarkdownV2',
+                'parse_mode': parse_mode,
                 'link_preview_options': {'is_disabled': True},
                 'chat_id': chat_id,
                 **kwargs
@@ -286,12 +286,17 @@ def handler_async(event_body, context):
     review_text, error_text = giga_review(model, SYSTEM_PROMPT_EN, paper_link)
 
     if review_text is not None:
-        review_text_escaped = review_text.replace('.', '\\.').replace('-', '\\-').replace('_', '\\_').replace('**', '*')
+        review_text_escaped = review_text.replace('.', '\\.').replace('-', '\\-').replace('_', '\\_').replace('**', '*').replace('(', '\\(').replace(')', '\\)').replace('{', '\\{').replace('}', '\\}')
 
         resp = tbot.send_message(chat_id=response_chat_id, message=review_text_escaped)
+
         print(resp.json())
+
+        if resp.status_code != 200:
+            print("error sending message", resp.json())
+            tbot.send_message(chat_id=response_chat_id, message=f"Error: ```{resp.json()}```")
     else:
-        tbot.send_message(chat_id=response_chat_id, message=error_text)
+        tbot.send_message(chat_id=response_chat_id, message=f"Error: ```{error_text}```")
 
     return {
         'statusCode': 200,
