@@ -47,7 +47,7 @@ def test_model_mlp():
     from custom_mlp import CustomMLP
 
     cmlp = CustomMLP()
-    cmlp.load_state_dict( torch.load("custom_mlp.pt") )
+    cmlp.load_state_dict( torch.load("custom_mlp.pt", map_location='cpu') )
     cmlp.eval()
 
     _test_model(cmlp, 0.8, flatten=True)
@@ -56,7 +56,7 @@ def test_model_cnn():
     from custom_cnn import CustomCNN
 
     ccnn = CustomCNN()
-    ccnn.load_state_dict( torch.load("custom_cnn.pt") )
+    ccnn.load_state_dict( torch.load("custom_cnn.pt", map_location='cpu') )
     ccnn.eval()
 
     _test_model(ccnn, 0.8, flatten=False)
@@ -66,7 +66,7 @@ def test_model_resnet():
     from custom_resnet import CustomResNet
 
     cresnet = CustomResNet()
-    cresnet.load_state_dict( torch.load("custom_resnet.pt") )
+    cresnet.load_state_dict( torch.load("custom_resnet.pt", map_location='cpu') )
     cresnet.eval()
 
     _test_model(cresnet, 0.8, flatten=False)
