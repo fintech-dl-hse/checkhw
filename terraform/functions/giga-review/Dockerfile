@@ -1,11 +1,13 @@
-FROM python:3.11-alpine
+FROM ubuntu:25.04
 
-COPY requirements.txt /app/
-RUN cd /app && pip install --no-cache-dir -r requirements.txt && apk add --no-cache curl
+WORKDIR /app/
+COPY requirements.txt .
 
-COPY index.py sanic_index.py /app/
+RUN apt update && apt-get upgrade -y && apt install -y curl python3-pip
+RUN pip3 install --no-cache-dir --break-system-packages -r requirements.txt
 
-RUN curl -k "https://gu-st.ru/content/Other/doc/russian_trusted_root_ca.cer" -w "\n" >> $(python -m certifi)
+RUN curl -k "https://gu-st.ru/content/Other/doc/russian_trusted_root_ca.cer" -w "\n" >> $(python3 -m certifi)
 
-WORKDIR /app
-CMD ["python", "sanic_index.py"]
+COPY index.py sanic_index.py .
+
+CMD ["python3", "sanic_index.py"]
