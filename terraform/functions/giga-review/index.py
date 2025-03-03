@@ -257,6 +257,10 @@ def handler_async(event_body, context):
 
     response_chat_id = event_body['message']['chat']['id']
 
+    if response_chat_id not in [-1001948862463]:
+        print("bad chat id", response_chat_id)
+        return
+
     message_text = event_body['message']['text']
 
     message_id = event_body['message']['message_id']
@@ -298,10 +302,7 @@ def handler_async(event_body, context):
     else:
         tbot.send_message(chat_id=response_chat_id, message=f"Error: ```{error_text}```")
 
-    return {
-        'statusCode': 200,
-        'body': '',
-    }
+    return
 
 if __name__ == "__main__":
 
