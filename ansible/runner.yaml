@@ -101,8 +101,8 @@
   roles:
     - role: ansible-github_actions_runner
 
-- name: Install Miniconda and Dependencies
-  hosts: [ 'github_runners', 'github_runners_gpu' ]
+- name: Install Miniconda and Dependencies CPU
+  hosts: [ 'github_runners' ]
   tags: [ 'miniconda' ]
   become: yes
   tasks:
@@ -142,6 +142,59 @@
         - name: conda env jupyter-actions - install pytorch
           become: True
           shell: /data/bin/miniconda3/envs/jupyter-actions/bin/pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
+        - name: conda env jupyter-actions - install other dependencies
+          become: True
+          shell: /data/bin/miniconda3/envs/jupyter-actions/bin/pip3 install jupyter nbformat nbconvert numpy requests pytest scikit-learn pandas opencv-python tqdm tensorboard matplotlib scipy datasets pytorch-lightning transformers evaluate sacrebleu accelerate
+        - name: conda - execution permission for all
+          become: True
+          file:
+            path: /data/bin/miniconda3
+            mode: +x
+            owner: github-runner
+            group: github-runner
+            recurse: yes
+
+- name: Install Miniconda and Dependencies GPU
+  hosts: [ 'github_runners_gpu' ]
+  tags: [ 'miniconda' ]
+  become: yes
+  tasks:
+    - name: Install Conda
+      block:
+        - name: Download Miniconda
+          get_url:
+            url: https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+            dest: /tmp/install-miniconda.sh
+            mode: 0550
+        - name: Create conda folder
+          become: True
+          file:
+            path: /data/bin/miniconda3
+            state: directory
+            owner: github-runner
+            mode: 755
+            recurse: yes
+        - name: Run the installer
+          shell: /tmp/install-miniconda.sh -b -u -p /data/bin/miniconda3
+        - name: Remove the installer
+          file:
+            state: absent
+            path: /tmp/install-miniconda.sh
+        - name: Add miniconda bin to path
+          become: True
+          shell: echo 'export PATH=/data/bin/miniconda3/bin:$PATH' >> /etc/profile
+        - name: conda - read permission for all
+          become: True
+          file:
+            path: /data/bin/miniconda3
+            mode: +r
+            recurse: yes
+        - name: conda - create jupyter-actions env
+          become: True
+          shell: /data/bin/miniconda3/bin/conda create -p /data/bin/miniconda3/envs/jupyter-actions python=3.11
+        - name: conda env jupyter-actions - install pytorch
+          become: True
+          shell: /data/bin/miniconda3/envs/jupyter-actions/bin/pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu116
         - name: conda env jupyter-actions - install other dependencies
           become: True
           shell: /data/bin/miniconda3/envs/jupyter-actions/bin/pip3 install jupyter nbformat nbconvert numpy requests pytest scikit-learn pandas opencv-python tqdm tensorboard matplotlib scipy datasets pytorch-lightning transformers evaluate sacrebleu accelerate
