@@ -69,36 +69,23 @@ def download_paper_pdf(paper_link):
     return None
 
 
-def parse_model_outputs(model_generated_content: str):
+def process_review_text(review_text: str) -> str:
 
-    # [ { title: "**1. Authors**", content: "Blablalba" } ]
-    parsed_content = []
+    # Escaping
+    review_text_processed = review_text.replace('.', '\\.')
+    review_text_processed = review_text_processed.replace('-', '\\-')
+    review_text_processed = review_text_processed.replace('_', '\\_')
+    review_text_processed = review_text_processed.replace('**', '*')
+    review_text_processed = review_text_processed.replace('(', '\\(')
+    review_text_processed = review_text_processed.replace(')', '\\)')
+    review_text_processed = review_text_processed.replace('{', '\\{')
+    review_text_processed = review_text_processed.replace('}', '\\}')
+    review_text_processed = review_text_processed.replace('#', '\\#')
 
-    current_title = None
-    current_content = ''
-    for line in model_generated_content.split("\n"):
-        if line.startswith("**"):
-            # Cut of the number
+    # Fix formatting
+    review_text_processed = re.sub(r'^(#+)\s+(.+)', r'**\2**', review_text_processed, flags=re.MULTILINE)
 
-            if current_title is not None:
-                # save the prev title
-                parsed_content.append({
-                    "title": current_title,
-                    "content": current_content,
-                })
-                current_content = ''
-
-            current_title = line
-        else:
-            current_content += line + '\n'
-
-    # the last one
-    parsed_content.append({
-        "title": current_title,
-        "content": current_content,
-    })
-
-    return parsed_content
+    return review_text_processed
 
 
 def giga_review(model, prompt, paper_link):
@@ -147,7 +134,7 @@ def giga_review(model, prompt, paper_link):
 
     print("\nresult total tokens:", total_tokens, "\n\n")
 
-    return model_output_content, None
+    return process_model_outputs(model_output_content), None
 
 
 class TelegramBot():
@@ -304,9 +291,8 @@ def handler_async(event_body, context):
         error_text = "No paper link provided"
 
     if review_text is not None:
-        review_text_escaped = review_text.replace('.', '\\.').replace('-', '\\-').replace('_', '\\_').replace('**', '*').replace('(', '\\(').replace(')', '\\)').replace('{', '\\{').replace('}', '\\}').replace('#', '\\#')
 
-        resp = tbot.send_message(chat_id=response_chat_id, message_thread_id=message_thread_id, message=review_text_escaped)
+        resp = tbot.send_message(chat_id=response_chat_id, message_thread_id=message_thread_id, message=review_text)
 
         print(resp.json())
 
