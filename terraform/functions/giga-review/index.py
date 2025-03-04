@@ -260,7 +260,8 @@ def handler_async(event_body, context):
     message_thread_id = event_body['message'].get('message_thread_id', 0)
     message_id = event_body['message']['message_id']
 
-    if response_chat_id not in [-1001948862463, -4615588701, -1002434078215]:
+    chats_whitelist = [-1001948862463, -4615588701, -1002434078215, -4795660059]
+    if response_chat_id not in chats_whitelist:
         print("BAD CHAT id", response_chat_id)
         resp = tbot.send_message_reaction(response_chat_id, message_id, "👎")
         print("resp", resp.content)
