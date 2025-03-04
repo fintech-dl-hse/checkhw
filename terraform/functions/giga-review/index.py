@@ -337,7 +337,6 @@ if __name__ == "__main__":
             continue
 
         resp_json = resp.json()
-        print("resp_json", resp_json)
         for update in resp_json['result']:
             print("update", update)
             try:
