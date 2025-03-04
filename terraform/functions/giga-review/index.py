@@ -240,7 +240,7 @@ def handler_async(event_body, context):
 
     assert os.environ['GIGACHAT_CREDENTIALS'] is not None
 
-    gigachat_timeout = 60
+    gigachat_timeout = 300
     model = GigaChat(
         model="GigaChat-Pro",
         scope="GIGACHAT_API_PERS",
@@ -293,7 +293,12 @@ def handler_async(event_body, context):
         print("response_chat_id, message_id, message_thread_id", response_chat_id, message_id, message_thread_id)
         print("resp", resp.content)
 
-        review_text, error_text = giga_review(model, SYSTEM_PROMPT_EN, paper_link)
+        try:
+            review_text, error_text = giga_review(model, SYSTEM_PROMPT_EN, paper_link)
+        except Exception as e:
+            print("error", e)
+
+            error_text = 'failed to get review: \n```\n' + str(e) + '\n```'
     else:
         error_text = "No paper link provided"
 
@@ -322,11 +327,22 @@ if __name__ == "__main__":
 
     while True:
         time.sleep(2)
-        resp = requests.get(f"https://api.telegram.org/bot{telegram_bot_token}/getUpdates", params={'offset': offset, "allowed_updates": '["message"]'})
+
+        try:
+            resp = requests.get(f"https://api.telegram.org/bot{telegram_bot_token}/getUpdates", params={'offset': offset, "allowed_updates": '["message"]'})
+            if resp.status_code != 200:
+                raise ValueError("Failed to get updates", resp.content)
+        except Exception as e:
+            print("error getting updates:", e)
+            continue
+
         resp_json = resp.json()
         print("resp_json", resp_json)
         for update in resp_json['result']:
             print("update", update)
-            handler_async(update, None)
+            try:
+                handler_async(update, None)
+            except Exception as e:
+                print("error handling update:", e)
 
             offset = update['update_id'] + 1
