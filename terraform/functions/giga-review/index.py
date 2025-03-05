@@ -69,7 +69,7 @@ def download_paper_pdf(paper_link):
     return None
 
 
-def process_review_text(review_text: str) -> str:
+def process_model_outputs(review_text: str) -> str:
 
     # Escaping
     tokens_to_escape = ['_', '*', '[', ']', '(', ')', '~', '`', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!']
