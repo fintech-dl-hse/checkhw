@@ -72,14 +72,19 @@ def download_paper_pdf(paper_link):
 def process_model_outputs(review_text: str) -> str:
 
     # Escaping
-    tokens_to_escape = ['_', '*', '[', ']', '(', ')', '~', '`', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!']
-    review_text_processed = review_text.replace('.', '\\.')
+    tokens_to_escape = ['_', '[', ']', '(', ')', '~', '`', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!']
+
+    review_text_processed = review_text
+    review_text_processed = re.sub(r'^(#+)\s+(.+)', r'*\2*', review_text_processed, flags=re.MULTILINE)
 
     for token in tokens_to_escape:
         review_text_processed = review_text_processed.replace(token, f'\\{token}')
 
+    review_text_processed = review_text_processed.replace('**', '*')
+
     # Fix formatting
-    review_text_processed = re.sub(r'^(#+)\s+(.+)', r'**\2**', review_text_processed, flags=re.MULTILINE)
+
+    print("review_text_processed", review_text_processed)
 
     return review_text_processed
 
@@ -125,7 +130,7 @@ def giga_review(model, prompt, paper_link):
 # **Strengths**: Efficiency (requires less data and training time), effectiveness (surpasses state-of-the-art), and applicability (broad compatibility with libraries like Flash Attention 2).
 # **Weaknesses**: Specific to models trained with RoPE, potential sensitivity to hyperparameter tuning for optimal results.
 # **Computational Resources**: Details on GPU usage and hours are not explicitly stated in the provided excerpt."""
-    print("model returned ansver", time.time())
+    print("model returned answer", time.time())
     print(model_output_content)
 
     print("\nresult total tokens:", total_tokens, "\n\n")
@@ -296,7 +301,7 @@ def handler_async(event_body, context):
             print("error sending message", resp.json())
             tbot.send_message(chat_id=response_chat_id, message_thread_id=message_thread_id, message=f"Error: ```{resp.json()}```")
     else:
-        tbot.send_message(chat_id=response_chat_id, message_thread_id=message_thread_id, message=f"Error: ```{error_text}```")
+        tbot.send_message(chat_id=response_chat_id, message_thread_id=message_thread_id, message=f"Error: ```\n{error_text}\n```")
 
     return
 
