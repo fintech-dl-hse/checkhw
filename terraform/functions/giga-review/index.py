@@ -72,15 +72,11 @@ def download_paper_pdf(paper_link):
 def process_review_text(review_text: str) -> str:
 
     # Escaping
+    tokens_to_escape = ['_', '*', '[', ']', '(', ')', '~', '`', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!']
     review_text_processed = review_text.replace('.', '\\.')
-    review_text_processed = review_text_processed.replace('-', '\\-')
-    review_text_processed = review_text_processed.replace('_', '\\_')
-    review_text_processed = review_text_processed.replace('**', '*')
-    review_text_processed = review_text_processed.replace('(', '\\(')
-    review_text_processed = review_text_processed.replace(')', '\\)')
-    review_text_processed = review_text_processed.replace('{', '\\{')
-    review_text_processed = review_text_processed.replace('}', '\\}')
-    review_text_processed = review_text_processed.replace('#', '\\#')
+
+    for token in tokens_to_escape:
+        review_text_processed = review_text_processed.replace(token, f'\\{token}')
 
     # Fix formatting
     review_text_processed = re.sub(r'^(#+)\s+(.+)', r'**\2**', review_text_processed, flags=re.MULTILINE)
@@ -272,8 +268,8 @@ def handler_async(event_body, context):
             error_text = "Unknown command"
 
     print("command", command, "paper_link", paper_link)
+
     if paper_link is not None:
-        review_text = 'Test ' + paper_link
         print("run giga review")
 
         message_id = event_body['message']['message_id']
