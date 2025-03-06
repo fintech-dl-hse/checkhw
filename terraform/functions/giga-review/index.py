@@ -52,10 +52,10 @@ def upload_to_gigachat_cloud(model, file_name, paper_bytes):
 
     if len(paper_bytes) > 30000000:
         print("too large file size:", len(paper_bytes), "limit is 30MB")
-        return None
+        return None, "too large file size"
 
     gc_file = model.upload_file((file_name, paper_bytes))
-    return gc_file.id_
+    return gc_file.id_, None
 
 
 def download_paper_pdf(paper_link):
@@ -101,7 +101,10 @@ def giga_review(model, prompt, paper_link):
 
     file_name = paper_link_to_file_name(paper_link)
 
-    file_id = upload_to_gigachat_cloud(model, file_name, content)
+    file_id, error_upload = upload_to_gigachat_cloud(model, file_name, content)
+    if file_id is None:
+        return None, error_upload
+
     print("run giga review", time.time())
 
     result = model.chat(
@@ -287,7 +290,7 @@ def handler_async(event_body, context):
         except Exception as e:
             print("error", e)
 
-            error_text = 'failed to get review: \n```\n' + str(e) + '\n```'
+            error_text = str(e)
     else:
         error_text = "No paper link provided"
 
@@ -299,7 +302,7 @@ def handler_async(event_body, context):
 
         if resp.status_code != 200:
             print("error sending message", resp.json())
-            tbot.send_message(chat_id=response_chat_id, message_thread_id=message_thread_id, message=f"Error: ```{resp.json()}```")
+            tbot.send_message(chat_id=response_chat_id, message_thread_id=message_thread_id, message=f"Error: ```\n{resp.json()}\n```")
     else:
         tbot.send_message(chat_id=response_chat_id, message_thread_id=message_thread_id, message=f"Error: ```\n{error_text}\n```")
 
