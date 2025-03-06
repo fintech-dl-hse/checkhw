@@ -19,17 +19,19 @@ Give a brief review of the scientific article. Rely solely on the provided data 
 
 4. **Results**: Briefly. Describe the main results.
 
-5. **Methods**: Briefly. Describe what the authors suggested.
+5. **Main contributions**: Briefly. Describe the main contributions. Extract it from the introduction section if possible.
 
-6. **Model**: Briefly. The architecture of the model. The number of parameters.
+6. **Methods**: Briefly. Describe what the authors suggested.
 
-7. **Data**: Briefly. What datasets were used in this paper?
+7. **Model**: Briefly. The architecture of the model. The number of parameters.
 
-8. **Strengths**: Briefly. What are the advantages of the proposed method?
+8. **Data**: Briefly. What datasets were used in this paper?
 
-9. **Weaknesses**: Briefly. What are the disadvantages of the proposed method?
+9. **Strengths**: Briefly. What are the advantages of the proposed method?
 
-10. **Computational resources**. Briefly. Give me specific numbers.
+10. **Weaknesses**: Briefly. What are the disadvantages of the proposed method?
+
+11. **Computational resources**. Briefly. Give me specific numbers.
 How many GPUs were used in the work? How many GPU hours were used for training?
 
 Follow the order and names of the points. Don't number the items. Highlight the title of each item in bold with **.
@@ -234,7 +236,7 @@ def handler_async(event_body, context):
     gigachat_timeout = 300
     model = GigaChat(
         model="GigaChat-Pro",
-        scope="GIGACHAT_API_PERS",
+        scope="GIGACHAT_API_CORP",
         verify_ssl_certs=True,
         timeout=gigachat_timeout,
     )
