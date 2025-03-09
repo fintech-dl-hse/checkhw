@@ -47,6 +47,9 @@ def _handler(event, context, detailed=False):
             "deadline": datetime.datetime.strptime("2025-03-13T03:05:00", "%Y-%m-%dT%H:%M:%S"),
         },
         # TODO tokenization
+        "hw-tokenization": {
+            "deadline": datetime.datetime.strptime("2025-04-17T03:05:00", "%Y-%m-%dT%H:%M:%S"),
+        },
         "hw-rnn-attention": {
             "deadline": datetime.datetime.strptime("2025-05-22T03:05:00", "%Y-%m-%dT%H:%M:%S"),
         },
