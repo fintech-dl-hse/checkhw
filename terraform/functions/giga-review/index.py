@@ -235,7 +235,7 @@ def handler_async(event_body, context):
 
     gigachat_timeout = 300
     model = GigaChat(
-        model="GigaChat-Pro",
+        model="GigaChat-Max",
         scope="GIGACHAT_API_CORP",
         verify_ssl_certs=True,
         timeout=gigachat_timeout,
@@ -252,13 +252,6 @@ def handler_async(event_body, context):
     response_chat_id = event_body['message']['chat']['id']
     message_thread_id = event_body['message'].get('message_thread_id', 0)
     message_id = event_body['message']['message_id']
-
-    chats_whitelist = [-1001948862463, -4615588701, -1002434078215, -4795660059]
-    if response_chat_id not in chats_whitelist:
-        print("BAD CHAT id", response_chat_id)
-        resp = tbot.send_message_reaction(response_chat_id, message_id, "👎")
-        print("resp", resp.content)
-        return
 
     message_text = event_body['message'].get('text', '')
 
