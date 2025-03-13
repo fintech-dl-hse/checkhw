@@ -9,13 +9,13 @@ from gigachat import GigaChat
 
 
 SYSTEM_PROMPT_EN = """
-Give a brief review of the scientific article. Rely solely on the provided data and facts from the text of the article. Avoid assumptions and conjectures if information is missing. Structure the review as follows:
+Give a review of the scientific article. Rely solely on the provided data and facts from the text of the article. Avoid assumptions and conjectures if information is missing. Structure the review as follows:
 
 1. **Title**: What is paper title?
 
 2. **Affiliations**: What organizations are in the authors affiliations?
 
-3. **Problem**: Briefly, in less than 15 words. What problem are the authors solving?
+3. **Problem**: What problem are the authors solving?
 
 4. **Results**: Describe the main results.
 
