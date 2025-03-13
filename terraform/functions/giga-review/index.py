@@ -11,27 +11,27 @@ from gigachat import GigaChat
 SYSTEM_PROMPT_EN = """
 Give a brief review of the scientific article. Rely solely on the provided data and facts from the text of the article. Avoid assumptions and conjectures if information is missing. Structure the review as follows:
 
-1. **Title**: Briefly. What is paper title?
+1. **Title**: What is paper title?
 
 2. **Affiliations**: What organizations are in the authors affiliations?
 
 3. **Problem**: Briefly, in less than 15 words. What problem are the authors solving?
 
-4. **Results**: Briefly. Describe the main results.
+4. **Results**: Describe the main results.
 
-5. **Main contributions**: Briefly. Describe the main contributions. Extract it from the introduction section if possible.
+5. **Main contributions**: Describe the main contributions. Extract it from the introduction section if possible.
 
-6. **Methods**: Briefly. Describe what the authors suggested.
+6. **Methods**: Describe what the authors suggested.
 
-7. **Model**: Briefly. The architecture of the model. The number of parameters.
+7. **Model**: The architecture of the model. The number of parameters.
 
-8. **Data**: Briefly. What datasets were used in this paper?
+8. **Data**: What datasets were used in this paper?
 
-9. **Strengths**: Briefly. What are the advantages of the proposed method?
+9. **Strengths**: What are the advantages of the proposed method?
 
-10. **Weaknesses**: Briefly. What are the disadvantages of the proposed method?
+10. **Weaknesses**: What are the disadvantages of the proposed method?
 
-11. **Computational resources**. Briefly. Give me specific numbers.
+11. **Computational resources**. Give me specific numbers.
 How many GPUs were used in the work? How many GPU hours were used for training?
 
 Follow the order and names of the points. Don't number the items. Highlight the title of each item in bold with **.
