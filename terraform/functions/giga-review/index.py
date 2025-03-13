@@ -235,7 +235,7 @@ def handler_async(event_body, context):
 
     gigachat_timeout = 300
     model = GigaChat(
-        model="GigaChat-Max",
+        model="GigaChat-2-Max",
         scope="GIGACHAT_API_CORP",
         verify_ssl_certs=True,
         timeout=gigachat_timeout,
