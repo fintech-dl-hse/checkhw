@@ -23,6 +23,31 @@ driver.wait(fail_fast=True, timeout=5)
 pool = ydb.QuerySessionPool(driver)
 
 
+def _force_hw_grades():
+    forced_grades = [
+        {
+            "sender": 'Vejeja',
+            "max_points": 100,
+            "result_points": 100,
+            "homework": 'hw-activations',
+            "penalty_days": 0,
+            "penalty_percent": 0,
+            "completed_at": datetime.datetime.now(),
+        },
+        {
+            "sender": 'Vejeja',
+            "max_points": 100,
+            "result_points": 100,
+            "homework": 'hw-weight-init',
+            "penalty_days": 0,
+            "penalty_percent": 0,
+            "completed_at": datetime.datetime.now(),
+        },
+    ]
+
+    return forced_grades
+
+
 def _handler(event, context, detailed=False):
 
     accumulated_data = []
@@ -144,11 +169,21 @@ def _handler(event, context, detailed=False):
                 "completed_at": completed_at,
             })
 
+    # Hands forced grades
+    accumulated_data += _force_hw_grades()
+
     df = pd.DataFrame(accumulated_data)
 
-    result_df = df.groupby(by=['sender', 'homework']).last()
+    # Get the submission with highest points for each student and homework
+    result_df = df.groupby(by=['sender', 'homework']).agg({'result_points': 'max'}).reset_index()
+    result_df = pd.merge(
+        result_df,
+        df,
+        on=['sender', 'homework', 'result_points']
+    )
 
-    result_total_df = df.groupby(by=['sender', 'homework']).last().reset_index().groupby('sender')['result_points'].sum().reset_index()
+    # Calculate total points using the best submissions
+    result_total_df = result_df.groupby('sender')['result_points'].sum().reset_index()
 
     hw_max_points = 2000
     result_total_df['hse_grade'] = result_total_df['result_points'] / hw_max_points * 10
