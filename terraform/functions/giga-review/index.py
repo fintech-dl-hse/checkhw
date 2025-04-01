@@ -327,6 +327,7 @@ if __name__ == "__main__":
             print("update", update)
             if 'message' in update and 'reply_to_message' in update['message']:
                 print("ignore reply")
+                offset = update['update_id'] + 1
                 continue
             try:
                 handler_async(update, None)
