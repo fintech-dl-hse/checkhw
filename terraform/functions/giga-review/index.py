@@ -325,6 +325,9 @@ if __name__ == "__main__":
         resp_json = resp.json()
         for update in resp_json['result']:
             print("update", update)
+            if 'reply_to_message' in update:
+                print("ignore reply")
+                continue
             try:
                 handler_async(update, None)
             except Exception as e:
