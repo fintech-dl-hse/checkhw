@@ -325,7 +325,7 @@ if __name__ == "__main__":
         resp_json = resp.json()
         for update in resp_json['result']:
             print("update", update)
-            if 'reply_to_message' in update:
+            if 'message' in update and 'reply_to_message' in update['message']:
                 print("ignore reply")
                 continue
             try:
