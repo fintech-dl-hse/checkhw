@@ -174,13 +174,14 @@ def _handler(event, context, detailed=False):
 
     df = pd.DataFrame(accumulated_data)
 
-    # Get the submission with highest points for each student and homework
-    result_df = df.groupby(by=['sender', 'homework']).agg({'result_points': 'max'}).reset_index()
-    result_df = pd.merge(
-        result_df,
-        df,
-        on=['sender', 'homework', 'result_points']
-    )
+    # Sort by completion time descending to handle ties (prefer latest submission)
+    # then find the index of the row with the maximum result_points for each group
+    idx = df.sort_values('completed_at', ascending=False)\
+            .groupby(['sender', 'homework'])['result_points']\
+            .idxmax()
+
+    # Select the rows using the obtained indices - these are the best submissions
+    result_df = df.loc[idx]
 
     # Calculate total points using the best submissions
     result_total_df = result_df.groupby('sender')['result_points'].sum().reset_index()
