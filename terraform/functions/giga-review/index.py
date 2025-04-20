@@ -67,7 +67,6 @@ def download_paper_pdf(paper_link):
         return response.content
 
     print("Failed to download file", paper_link)
-    breakpoint()
     return None
 
 
