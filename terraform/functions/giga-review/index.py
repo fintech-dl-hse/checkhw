@@ -287,6 +287,7 @@ def handler_async(event_body, context):
             error_text = str(e)
     else:
         error_text = "No paper link provided"
+        return
 
     if review_text is not None:
 
