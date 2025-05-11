@@ -1,0 +1,40 @@
+{
+  "tests": [
+    {
+      "name": "run evaluation",
+      "run": "/data/bin/miniconda3/envs/jupyter-actions/bin/python tests/llm-agent/run_evaluation.py --out llm-agent-score.txt",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 30,
+      "points": 0
+    },
+    {
+      "name": "score >= 60",
+      "run": "ls llm-agent-score.txt && perl -lnE ' exit(int($_) >= 60 ? 0 : 1) ' llm-agent-score.txt",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 5,
+      "points": 100
+    },
+    {
+      "name": "score >= 80",
+      "run": "ls llm-agent-score.txt && perl -lnE ' exit(int($_) >= 80 ? 0 : 1) ' llm-agent-score.txt",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 5,
+      "points": 100
+    },
+    {
+      "name": "feedback",
+      "run": "echo -e '\\n\\n💬💬💬 Оставьте обратную связь по ДЗ https://forms.gle/ySbswCdyRzGYTBwL6 💬💬💬\\n\\n'",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 1,
+      "points": 0
+    }
+  ]
+}
