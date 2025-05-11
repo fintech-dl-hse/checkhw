@@ -194,7 +194,7 @@
             recurse: yes
         - name: Install latest git version
           become: True
-          shell: apt-add-repository ppa:git-core/ppa && apt-get update && apt-get install git
+          shell: apt-add-repository ppa:git-core/ppa -y && apt-get update -y && apt-get install -y git
 
 
 - name: Install Miniconda and Dependencies GPU
@@ -251,4 +251,4 @@
             recurse: yes
         - name: Install latest git version
           become: True
-          shell: apt-add-repository ppa:git-core/ppa && apt-get update && apt-get install git
+          shell: apt-add-repository ppa:git-core/ppa -y && apt-get update -y && apt-get install -y git
