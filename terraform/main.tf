@@ -57,7 +57,7 @@ resource "yandex_function" "start-compute-gpu-tf" {
 }
 
 resource "yandex_function" "start-compute-gpu-agent-tf" {
-    name               = "start-compute-gpu-tf"
+    name               = "start-compute-gpu-agent-tf"
     description        = "Test function to start compute instance for agents"
     user_hash          = "v0.0.23"
     runtime            = "golang119"
