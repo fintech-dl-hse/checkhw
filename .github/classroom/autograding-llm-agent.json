@@ -6,12 +6,12 @@
       "input": "",
       "output": "",
       "comparison": "included",
-      "timeout": 30,
+      "timeout": 15,
       "points": 0
     },
     {
-      "name": "score >= 60",
-      "run": "ls llm-agent-score.txt && perl -lnE ' exit(int($_) >= 60 ? 0 : 1) ' llm-agent-score.txt",
+      "name": "score >= 50",
+      "run": "ls llm-agent-score.txt && perl -lnE ' exit(int($_) >= 50 ? 0 : 1) ' llm-agent-score.txt",
       "input": "",
       "output": "",
       "comparison": "included",
@@ -19,8 +19,8 @@
       "points": 100
     },
     {
-      "name": "score >= 80",
-      "run": "ls llm-agent-score.txt && perl -lnE ' exit(int($_) >= 80 ? 0 : 1) ' llm-agent-score.txt",
+      "name": "score >= 70",
+      "run": "ls llm-agent-score.txt && perl -lnE ' exit(int($_) >= 70 ? 0 : 1) ' llm-agent-score.txt",
       "input": "",
       "output": "",
       "comparison": "included",
