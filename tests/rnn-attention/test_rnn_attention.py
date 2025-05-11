@@ -74,7 +74,7 @@ def test_rnn_attention_overfitting():
 
     test_training_args = Seq2SeqTrainingArguments(
         output_dir="my_awesome_opus_books_model",
-        evaluation_strategy="steps",
+        eval_strategy="steps",
         eval_steps=500,
         learning_rate=1e-3,
         per_device_train_batch_size=16,

@@ -75,7 +75,7 @@ def test_transformer_attention_overfitting():
 
     training_args = Seq2SeqTrainingArguments(
         output_dir="my_awesome_opus_books_model",
-        evaluation_strategy="steps",
+        eval_strategy="steps",
         eval_steps=1000,
         learning_rate=3e-4,
         per_device_train_batch_size=16,
