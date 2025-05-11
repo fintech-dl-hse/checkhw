@@ -56,6 +56,21 @@ resource "yandex_function" "start-compute-gpu-tf" {
     }
 }
 
+resource "yandex_function" "start-compute-gpu-agent-tf" {
+    name               = "start-compute-gpu-tf"
+    description        = "Test function to start compute instance for agents"
+    user_hash          = "v0.0.23"
+    runtime            = "golang119"
+    entrypoint         = "start_compute.StartComputeInstancesGPUAgent"
+    memory             = "128"
+    execution_timeout  = "60"
+    service_account_id = "ajevd0tfv30vuibuhv6v"
+    content {
+        zip_filename = "functions/compute.zip"
+    }
+}
+
+
 resource "yandex_function" "stop-compute-tf" {
     name               = "stop-compute-tf"
     description        = "Test function to stop compute instance"

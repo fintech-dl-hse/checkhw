@@ -27,7 +27,11 @@ func StartComputeInstances(ctx context.Context) (*Response, error) {
 }
 
 func StartComputeInstancesGPU(ctx context.Context) (*Response, error) {
-	return StartComputeInstancesNameContains(ctx, "t4gpu")
+	return StartComputeInstancesNameContains(ctx, "t4gpu-common")
+}
+
+func StartComputeInstancesGPUAgent(ctx context.Context) (*Response, error) {
+	return StartComputeInstancesNameContains(ctx, "t4gpu-agent")
 }
 
 func StartComputeInstancesNameContains(ctx context.Context, nameContains string) (*Response, error) {
