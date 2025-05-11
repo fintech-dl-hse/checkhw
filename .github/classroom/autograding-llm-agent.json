@@ -2,7 +2,7 @@
   "tests": [
     {
       "name": "run evaluation",
-      "run": "/data/bin/miniconda3/envs/jupyter-actions/bin/python tests/llm-agent/run_evaluation.py --out llm-agent-score.txt",
+      "run": "PYTHONPATH=. /data/bin/miniconda3/envs/jupyter-actions/bin/python tests/llm-agent/run_evaluation.py --out llm-agent-score.txt",
       "input": "",
       "output": "",
       "comparison": "included",
