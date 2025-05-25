@@ -46,6 +46,8 @@ def test_transformer_attention_overfitting():
         preds, labels = eval_preds
         if isinstance(preds, tuple):
             preds = preds[0]
+
+        preds = np.where(preds != -100, preds, loaded_tokenizer.pad_token_id)
         decoded_preds = loaded_tokenizer.batch_decode(preds, skip_special_tokens=True)
 
         labels = np.where(labels != -100, labels, loaded_tokenizer.pad_token_id)
