@@ -263,3 +263,39 @@
           become: True
           shell: apt-add-repository ppa:git-core/ppa -y && apt-get update -y && apt-get install -y git
 
+
+- name: Setup vllm systemd service
+  hosts: [ 'github_runners_gpu_agent' ]
+  tags: [ 'vllm' ]
+  become: yes
+  tasks:
+    - name: Create systemd service file
+      copy:
+        dest: /etc/systemd/system/vllm_qwen2.5_7b_instruct_awq.service
+        content: |
+          [Unit]
+          Description=VLLM API Server Qwen2.5-7B-Instruct-AWQ
+          After=network.target
+
+          [Service]
+          Type=simple
+          User=github-runner
+          WorkingDirectory=/data
+          ExecStart=/data/bin/miniconda3/envs/jupyter-actions/bin/python -m vllm.entrypoints.openai.api_server --model Qwen/Qwen2.5-7B-Instruct-AWQ --quantization awq --port 8000 --host 127.0.0.1
+          Restart=always
+          RestartSec=10
+
+          [Install]
+          WantedBy=multi-user.target
+        mode: '0644'
+
+    - name: Reload systemd daemon
+      systemd:
+        daemon_reload: yes
+
+    - name: Enable and start vllm service
+      systemd:
+        name: vllm_qwen2.5_7b_instruct_awq
+        state: started
+        enabled: yes
+
