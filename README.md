@@ -2,5 +2,6 @@
 
 ```
  PERSONAL_ACCESS_TOKEN=ghp_*** # see keepass
-ansible-playbook -i inventory.ini ./runner.yaml
+~/miniconda3/envs/ansible/bin/ansible-playbook -i inventory.ini ./runner.yaml --tags github-runner-gpu
+~/miniconda3/envs/ansible/bin/ansible-playbook -i inventory.ini ./runner.yaml --tags miniconda
 ```
