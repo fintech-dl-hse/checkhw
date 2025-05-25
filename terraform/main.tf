@@ -88,7 +88,7 @@ resource "yandex_function" "stop-compute-tf" {
 resource "yandex_function" "homeworks-info-tf" {
     name               = "homeworks-info-tf"
     description        = "Get HTML summary grades table"
-    user_hash          = "v0.0.18"
+    user_hash          = "v0.0.19"
     runtime            = "python312"
     entrypoint         = "index.handler_summary"
     memory             = "128"
@@ -106,7 +106,7 @@ resource "yandex_function" "homeworks-info-tf" {
 resource "yandex_function" "homeworks-info-detailed-tf" {
     name               = "homeworks-info-detailed-tf"
     description        = "Get HTML detailed grades table"
-    user_hash          = "v0.0.18"
+    user_hash          = "v0.0.19"
     runtime            = "python312"
     entrypoint         = "index.handler_detailed"
     memory             = "128"
