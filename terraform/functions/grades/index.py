@@ -187,7 +187,7 @@ def _handler(event, context, detailed=False):
     # Calculate total points using the best submissions
     result_total_df = result_df.groupby('sender')['result_points'].sum().reset_index()
 
-    hw_max_points = 2000
+    hw_max_points = 1600
     result_total_df['hse_grade'] = result_total_df['result_points'] / hw_max_points * 10
     result_total_df['hse_grade'] = result_total_df['hse_grade'].apply(lambda x: f"{min(x, 10):.2f}")
     result_total_df['hse_grade_rounded'] = result_total_df['hse_grade'].apply(lambda x: int(float(x) + 0.5))
