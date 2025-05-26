@@ -1,6 +1,15 @@
 {
   "tests": [
     {
+      "name": "Wait for VLLM to start. This could take up to 5 minutes.",
+      "run": "while ! curl http://127.0.0.1:8000/v1/models | grep -q 'Qwen/Qwen2.5-7B-Instruct-AWQ'; do sleep 1; done",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 10,
+      "points": 0
+    },
+    {
       "name": "run evaluation",
       "run": "PYTHONPATH=. /data/bin/miniconda3/envs/jupyter-actions/bin/python tests/llm-agent/run_evaluation.py --out llm-agent-score.txt",
       "input": "",
