@@ -103,6 +103,28 @@ def _handler(event, context, detailed=False):
 
     }
 
+    rnn_attention_repos_whitelist = set([
+        "hw-rnn-attention-DanSmirnoff",
+        "hw-rnn-attention-dimontmf7",
+        "hw-rnn-attention-Uritskii",
+        "hw-rnn-attention-Menako778",
+        "hw-rnn-attention-yellowssnake",
+        "hw-rnn-attention-Ripchic",
+        "hw-rnn-attention-borodulinad",
+        "hw-rnn-attention-GudkovNikolay",
+        "hw-rnn-attention-Dushese",
+        "hw-rnn-attention-heartcatched",
+        "hw-rnn-attention-anyrozh",
+        "hw-rnn-attention-kultattiana",
+        "hw-rnn-attention-nuotstan",
+        "hw-rnn-attention-sergey-khatuntsev",
+        "hw-rnn-attention-tatianasor",
+        "hw-rnn-attention-chtozaserikova",
+        "hw-rnn-attention-nvoronetskaya",
+        "hw-rnn-attention-seemsGoodNow",
+        "hw-rnn-attention-UralTime",
+    ])
+
     known_homeworks_keys = sorted(list(known_homeworks.keys()), key=lambda x: len(x), reverse=True)
     for i, hw_key_i in enumerate(known_homeworks_keys):
         for hw_key_j in known_homeworks_keys[i+1:]:
@@ -139,11 +161,14 @@ def _handler(event, context, detailed=False):
                     homework = homework_key
 
             if homework is None or homework not in known_homeworks:
-                # print(i, "SKIP unknown hw:", homework)
                 continue
 
             student_login = repo_name[len(homework)+1:]
             print("i", i, "repo_name", repo_name, "homework", homework, "student_login", student_login)
+
+            if repo_name.startswith("hw-rnn-attention-") and repo_name not in rnn_attention_repos_whitelist:
+                print(f"skip {repo_name}: not in whitelist for hw rnn attention")
+                continue
 
             deadline: datetime.datetime = known_homeworks[homework]['deadline']
 
