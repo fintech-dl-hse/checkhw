@@ -81,19 +81,19 @@ def _handler(event, context, detailed=False):
             "deadline": datetime.datetime.strptime("2025-05-22T03:05:00", "%Y-%m-%dT%H:%M:%S"),
         },
         "hw-llm-agent": {
-            "deadline": datetime.datetime.strptime("2025-06-17T11:05:00", "%Y-%m-%dT%H:%M:%S"),
+            "deadline": datetime.datetime.strptime("2025-06-23T06:05:00", "%Y-%m-%dT%H:%M:%S"),
         },
         "hw-vae": {
-            "deadline": datetime.datetime.strptime("2025-06-17T11:05:00", "%Y-%m-%dT%H:%M:%S"),
+            "deadline": datetime.datetime.strptime("2025-06-23T06:05:00", "%Y-%m-%dT%H:%M:%S"),
         },
         "hw-diffusion": {
-            "deadline": datetime.datetime.strptime("2025-06-17T11:05:00", "%Y-%m-%dT%H:%M:%S"),
+            "deadline": datetime.datetime.strptime("2025-06-23T06:05:00", "%Y-%m-%dT%H:%M:%S"),
         },
         "hw-multimodal-llm": {
-            "deadline": datetime.datetime.strptime("2025-06-17T11:05:00", "%Y-%m-%dT%H:%M:%S"),
+            "deadline": datetime.datetime.strptime("2025-06-23T06:05:00", "%Y-%m-%dT%H:%M:%S"),
         },
         "hw-letters": {
-            "deadline": datetime.datetime.strptime("2025-06-17T03:05:00", "%Y-%m-%dT%H:%M:%S"),
+            "deadline": datetime.datetime.strptime("2025-06-23T06:05:00", "%Y-%m-%dT%H:%M:%S"),
         },
         # календарная дата дедлайна должна быть с запасом на 1 день больше
     })
@@ -123,6 +123,7 @@ def _handler(event, context, detailed=False):
         "hw-rnn-attention-nvoronetskaya",
         "hw-rnn-attention-seemsGoodNow",
         "hw-rnn-attention-UralTime",
+        "hw-rnn-attention-Astemlr",
     ])
 
     known_homeworks_keys = sorted(list(known_homeworks.keys()), key=lambda x: len(x), reverse=True)
