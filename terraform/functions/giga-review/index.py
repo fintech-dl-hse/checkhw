@@ -150,15 +150,19 @@ class TelegramBot():
             raise ValueError("TELEGRAM_BOT_TOKEN env var is required")
 
     def send_message(self, chat_id, message, message_thread_id=0, parse_mode='MarkdownV2', **kwargs):
+
+        extra_params = { **kwargs }
+        if parse_mode is not None:
+            extra_params['parse_mode'] = parse_mode
+
         resp = requests.post(
             f"https://api.telegram.org/bot{self._telegram_bot_token}/sendMessage",
             json={
                 'text': message,
-                'parse_mode': parse_mode,
                 'link_preview_options': {'is_disabled': True},
                 'chat_id': chat_id,
                 'message_thread_id': message_thread_id,
-                **kwargs
+                **extra_params,
             },
             timeout=10,
         )
@@ -257,7 +261,7 @@ def handler_async(event_body, context):
     review_text, error_text, paper_link = None, None, None
 
     message_text = message_text.removeprefix('@omni_fusion_ops_bot')
-    message_text = message_text.strip()
+    message_text = message_text.tr
 
     command_parts = message_text.split(' ')
     if len(command_parts) == 0:
@@ -270,8 +274,8 @@ def handler_async(event_body, context):
             else:
                 error_text = "No paper link provided"
         elif command == "/get_chat_id":
-            chat_id = event_body['message']['chat']['id']
-            tbot.send_message(chat_id=response_chat_id, message_thread_id=message_thread_id, message=f"Chat ID: {chat_id}")
+            message_text = f"Chat ID: {response_chat_id} message_thread_id={message_thread_id}"
+            resp = tbot.send_message(chat_id=response_chat_id, message_thread_id=message_thread_id, message=message_text, parse_mode=None)
             return
         else:
             error_text = "Unknown command"
