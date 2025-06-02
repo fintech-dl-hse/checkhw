@@ -266,6 +266,10 @@ def handler_async(event_body, context):
                 paper_link = command_parts[1]
             else:
                 error_text = "No paper link provided"
+        elif command == "/get_chat_id":
+            chat_id = event_body['message']['chat']['id']
+            tbot.send_message(chat_id=response_chat_id, message_thread_id=message_thread_id, message=f"Chat ID: {chat_id}")
+            return
         else:
             error_text = "Unknown command"
 
