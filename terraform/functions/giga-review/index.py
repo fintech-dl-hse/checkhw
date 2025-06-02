@@ -256,6 +256,9 @@ def handler_async(event_body, context):
 
     review_text, error_text, paper_link = None, None, None
 
+    message_text = message_text.removeprefix('@omni_fusion_ops_bot')
+    message_text = message_text.strip()
+
     command_parts = message_text.split(' ')
     if len(command_parts) == 0:
         error_text = "No command provided"
