@@ -213,14 +213,14 @@ def _handler(event, context, detailed=False):
     # Calculate total points using the best submissions
     result_total_df = result_df.groupby('sender')['result_points'].sum().reset_index()
 
-    try: 
+    try:
         all_senders = set(result_total_df['sender'])
-        
-        placeholders = ', '.join(['?'] * len(all_senders))
-        senders_fios = pool.execute_with_retries(f'SELECT github_nick, fio FROM github_nick_to_fio WHERE github_nick IN ({placeholders})', all_senders)
+
+        placeholders = ', '.join([f'$github_nick{i}' for i in range(len(all_senders))])
+        senders_fios = pool.execute_with_retries(f'SELECT github_nick, fio FROM github_nick_to_fio WHERE github_nick IN ({placeholders})', { f'$github_nick{i}': all_senders[i] for i in range(len(all_senders)) })
 
         senders_fios_dict = dict()
-        for row in senders_fios:
+        for row in senders_fios[0].rows:
             senders_fios_dict[row.github_nick] = row.fio
 
         result_total_df['ФИО'] = result_total_df['sender'].map(senders_fios_dict)
@@ -262,7 +262,11 @@ def save_nick_to_fio(event, context):
 
     # save to ydb table github_nick_to_fio
     # with replace if exists
-    pool.execute_with_retries('REPLACE INTO github_nick_to_fio (github_nick, fio, created_at) VALUES (?, ?, ?)', [ github_nick, fio, datetime.datetime.now() ])
+    pool.execute_with_retries('REPLACE INTO github_nick_to_fio (github_nick, fio, created_at) VALUES ($github_nick, $fio, $created_at)', {
+        '$github_nick': github_nick,
+        '$fio': fio,
+        '$created_at': datetime.datetime.now(),
+    })
 
     return {
         'statusCode': 200,
