@@ -224,7 +224,7 @@ def _handler(event, context, detailed=False):
 
         senders_fios_dict = dict()
         for row in senders_fios[0].rows:
-            senders_fios_dict[str(row.github_nick)] = row.fio
+            senders_fios_dict[row.github_nick.decode('utf-8')] = row.fio.decode('utf-8')
 
         print("senders_fios_dict", senders_fios_dict)
 
