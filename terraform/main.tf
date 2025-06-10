@@ -121,6 +121,25 @@ resource "yandex_function" "homeworks-info-detailed-tf" {
     }
 }
 
+resource "yandex_function" "homeworks-info-save-fio-tf" {
+    name               = "homeworks-info-save-fio-tf"
+    description        = "Save FIO to ydb"
+    user_hash          = "v0.0.22"
+    runtime            = "python312"
+    entrypoint         = "index.save_nick_to_fio"
+    memory             = "128"
+    execution_timeout  = "60"
+    service_account_id = "ajeg6pgmfcbnqvosbefc"
+    environment = {
+        YDB_DATABASE = "/ru-central1/b1gdun28gk5uj1a2cirj/etnis546o87uog4k54km"
+        YDB_ENDPOINT = "grpcs://ydb.serverless.yandexcloud.net:2135"
+    }
+    content {
+        zip_filename = "functions/grades.zip"
+    }
+}
+
+
 resource "yandex_function" "handle-github-hook-tf" {
     name               = "handle-github-hook-tf"
     description        = "Save github hook data to YDB"

@@ -165,10 +165,10 @@ def _handler(event, context, detailed=False):
                 continue
 
             student_login = repo_name[len(homework)+1:]
-            print("i", i, "repo_name", repo_name, "homework", homework, "student_login", student_login)
+            # print("i", i, "repo_name", repo_name, "homework", homework, "student_login", student_login)
 
             if repo_name.startswith("hw-rnn-attention-") and repo_name not in rnn_attention_repos_whitelist:
-                print(f"skip {repo_name}: not in whitelist for hw rnn attention")
+                # print(f"skip {repo_name}: not in whitelist for hw rnn attention")
                 continue
 
             deadline: datetime.datetime = known_homeworks[homework]['deadline']
@@ -213,6 +213,22 @@ def _handler(event, context, detailed=False):
     # Calculate total points using the best submissions
     result_total_df = result_df.groupby('sender')['result_points'].sum().reset_index()
 
+    try: 
+        all_senders = set(result_total_df['sender'])
+        
+        placeholders = ', '.join(['?'] * len(all_senders))
+        senders_fios = pool.execute_with_retries(f'SELECT github_nick, fio FROM github_nick_to_fio WHERE github_nick IN ({placeholders})', all_senders)
+
+        senders_fios_dict = dict()
+        for row in senders_fios:
+            senders_fios_dict[row.github_nick] = row.fio
+
+        result_total_df['ФИО'] = result_total_df['sender'].map(senders_fios_dict)
+    except Exception as e:
+        print(f"cant set fio error: {e}")
+        print(f"all_senders: {all_senders}")
+        raise e
+
     hw_max_points = 1600
     result_total_df['hse_grade'] = result_total_df['result_points'] / hw_max_points * 10
     result_total_df['hse_grade'] = result_total_df['hse_grade'].apply(lambda x: f"{min(x, 10):.2f}")
@@ -237,3 +253,18 @@ def handler_summary(event, context):
 
 def handler_detailed(event, context):
     return _handler(event, context, detailed=True)
+
+
+def save_nick_to_fio(event, context):
+
+    github_nick = event['queryStringParameters']['github_nick']
+    fio = event['queryStringParameters']['fio']
+
+    # save to ydb table github_nick_to_fio
+    # with replace if exists
+    pool.execute_with_retries('REPLACE INTO github_nick_to_fio (github_nick, fio, created_at) VALUES (?, ?, ?)', [ github_nick, fio, datetime.datetime.now() ])
+
+    return {
+        'statusCode': 200,
+        'body': 'OK',
+    }
