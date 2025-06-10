@@ -214,7 +214,7 @@ def _handler(event, context, detailed=False):
     result_total_df = result_df.groupby('sender')['result_points'].sum().reset_index()
 
     try:
-        all_senders = set(result_total_df['sender'])
+        all_senders = list(set(result_total_df['sender']))
 
         placeholders = ', '.join([f'$github_nick{i}' for i in range(len(all_senders))])
         declare_placeholders = ', '.join([f'DECLARE $github_nick{i} as UTF8;' for i in range(len(all_senders))])
@@ -228,7 +228,6 @@ def _handler(event, context, detailed=False):
     except Exception as e:
         print(f"cant set fio error: {e}")
         print(f"all_senders: {all_senders}")
-        raise e
 
     hw_max_points = 1600
     result_total_df['hse_grade'] = result_total_df['result_points'] / hw_max_points * 10
