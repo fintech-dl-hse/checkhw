@@ -289,6 +289,13 @@ def _handler(event, context, detailed=False):
                 </div>
             </div>
         </div>
+        <style>
+            input::placeholder {
+                font-weight: bold;
+                opacity: 0.3;
+                color: red;
+            }
+        </style>
         """
         
         base_html = df.to_html()
@@ -301,7 +308,7 @@ def _handler(event, context, detailed=False):
                 prev_row = rows[i-2]
                 github_nick = prev_row.split('<td>')[1].split('</td>')[0].strip()
                 if github_nick:  # Only add input field if github_nick exists
-                    input_field = f'<td><input type="text" id="fio_{github_nick}" style="width: 200px;"> <button onclick="updateFio(\'{github_nick}\')">Save</button></td>'
+                    input_field = f'<td><input placeholder="FILL FIO HERE!" type="text" id="fio_{github_nick}" style="width: 200px;"> <button onclick="updateFio(\'{github_nick}\')">Save</button></td>'
                     rows[i] = input_field
         
         modified_html = '\n'.join(rows)
