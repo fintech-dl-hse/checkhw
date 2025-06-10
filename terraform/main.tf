@@ -31,7 +31,7 @@ provider "yandex" {
 resource "yandex_function" "start-compute-tf" {
     name               = "start-compute-tf"
     description        = "Test function to start compute instance"
-    user_hash          = "v0.0.24"
+    user_hash          = "v0.0.25"
     runtime            = "golang119"
     entrypoint         = "start_compute.StartComputeInstances"
     memory             = "128"
@@ -45,7 +45,7 @@ resource "yandex_function" "start-compute-tf" {
 resource "yandex_function" "start-compute-gpu-tf" {
     name               = "start-compute-gpu-tf"
     description        = "Test function to start compute instance"
-    user_hash          = "v0.0.24"
+    user_hash          = "v0.0.25"
     runtime            = "golang119"
     entrypoint         = "start_compute.StartComputeInstancesGPU"
     memory             = "128"
@@ -59,7 +59,7 @@ resource "yandex_function" "start-compute-gpu-tf" {
 resource "yandex_function" "start-compute-gpu-agent-tf" {
     name               = "start-compute-gpu-agent-tf"
     description        = "Test function to start compute instance for agents"
-    user_hash          = "v0.0.24"
+    user_hash          = "v0.0.25"
     runtime            = "golang119"
     entrypoint         = "start_compute.StartComputeInstancesGPUAgent"
     memory             = "128"
@@ -74,7 +74,7 @@ resource "yandex_function" "start-compute-gpu-agent-tf" {
 resource "yandex_function" "stop-compute-tf" {
     name               = "stop-compute-tf"
     description        = "Test function to stop compute instance"
-    user_hash          = "v0.0.24"
+    user_hash          = "v0.0.25"
     runtime            = "golang119"
     entrypoint         = "stop_compute.StopComputeInstance"
     memory             = "128"
@@ -88,7 +88,7 @@ resource "yandex_function" "stop-compute-tf" {
 resource "yandex_function" "homeworks-info-tf" {
     name               = "homeworks-info-tf"
     description        = "Get HTML summary grades table"
-    user_hash          = "v0.0.24"
+    user_hash          = "v0.0.25"
     runtime            = "python312"
     entrypoint         = "index.handler_summary"
     memory             = "128"
@@ -106,7 +106,7 @@ resource "yandex_function" "homeworks-info-tf" {
 resource "yandex_function" "homeworks-info-detailed-tf" {
     name               = "homeworks-info-detailed-tf"
     description        = "Get HTML detailed grades table"
-    user_hash          = "v0.0.24"
+    user_hash          = "v0.0.25"
     runtime            = "python312"
     entrypoint         = "index.handler_detailed"
     memory             = "128"
@@ -124,7 +124,7 @@ resource "yandex_function" "homeworks-info-detailed-tf" {
 resource "yandex_function" "homeworks-info-save-fio-tf" {
     name               = "homeworks-info-save-fio-tf"
     description        = "Save FIO to ydb"
-    user_hash          = "v0.0.24"
+    user_hash          = "v0.0.25"
     runtime            = "python312"
     entrypoint         = "index.save_nick_to_fio"
     memory             = "128"
