@@ -244,20 +244,19 @@ def _handler(event, context, detailed=False):
 
     # Custom HTML rendering with input fields for NaN FIO values
     def custom_html_render(df):
-        base_html = df.to_html()
-        
         # Insert JavaScript function for making HTTP requests
         js_code = """
         <script>
-        function updateFio(github_nick) {
-            const inputField = document.getElementById('fio_' + github_nick);
-            const fioValue = inputField.value;
+        function updateFio(github_nick, inputId='') {
+            const fioValue = inputId ? 
+                document.getElementById(inputId).value : 
+                document.getElementById('fio_' + github_nick).value;
+            
             const url = `https://functions.yandexcloud.net/d4e6tbb4ljr32is5gi0g?github_nick=${github_nick}&fio=${encodeURIComponent(fioValue)}`;
             
             fetch(url)
                 .then(response => {
                     if (response.ok) {
-                        // Reload the page to show updated data
                         window.location.reload();
                     } else {
                         alert('Failed to update FIO');
@@ -269,6 +268,30 @@ def _handler(event, context, detailed=False):
         }
         </script>
         """
+        
+        # Add override form at the top
+        override_form = """
+        <div style="margin: 20px 0; padding: 15px; border: 1px solid #ccc; border-radius: 5px; background-color: #f9f9f9;">
+            <h3 style="margin-top: 0;">Override FIO for any GitHub Nick</h3>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <div>
+                    <label for="override_github_nick">GitHub Nick:</label><br>
+                    <input type="text" id="override_github_nick" style="width: 200px; padding: 5px;">
+                </div>
+                <div>
+                    <label for="override_fio">FIO:</label><br>
+                    <input type="text" id="override_fio" style="width: 200px; padding: 5px;">
+                </div>
+                <div style="align-self: flex-end;">
+                    <button onclick="updateFio(document.getElementById('override_github_nick').value, 'override_fio')" style="padding: 5px 15px; margin-bottom: 1px;">
+                        Save Override
+                    </button>
+                </div>
+            </div>
+        </div>
+        """
+        
+        base_html = df.to_html()
         
         # Process the HTML to add input fields where FIO is NaN
         rows = base_html.split('\n')
@@ -282,7 +305,7 @@ def _handler(event, context, detailed=False):
                     rows[i] = input_field
         
         modified_html = '\n'.join(rows)
-        return js_code + modified_html
+        return js_code + override_form + modified_html
 
     return {
         'statusCode': 200,
