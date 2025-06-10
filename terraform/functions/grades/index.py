@@ -218,13 +218,17 @@ def _handler(event, context, detailed=False):
 
         placeholders = ', '.join([f'$github_nick{i}' for i in range(len(all_senders))])
         declare_placeholders = '\n'.join([f'DECLARE $github_nick{i} as UTF8;' for i in range(len(all_senders))])
-        senders_fios = pool.execute_with_retries(f'{declare_placeholders} SELECT github_nick, fio FROM github_nick_to_fio WHERE github_nick IN ({placeholders})', { f'$github_nick{i}': all_senders[i] for i in range(len(all_senders)) })
+        query = f'{declare_placeholders} SELECT github_nick, fio FROM github_nick_to_fio WHERE github_nick IN ({placeholders})'
+        print("query", query)
+        senders_fios = pool.execute_with_retries(query, {f'$github_nick{i}': all_senders[i] for i in range(len(all_senders))})
 
         senders_fios_dict = dict()
         for row in senders_fios[0].rows:
             senders_fios_dict[row.github_nick] = row.fio
 
-        result_total_df['ФИО'] = result_total_df['sender'].map(senders_fios_dict)
+        print("senders_fios_dict", senders_fios_dict)
+
+        result_total_df['fio'] = result_total_df['sender'].map(senders_fios_dict)
     except Exception as e:
         print(f"cant set fio error: {e}")
         print(f"all_senders: {all_senders}")
