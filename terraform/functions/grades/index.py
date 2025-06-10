@@ -242,12 +242,54 @@ def _handler(event, context, detailed=False):
     if detailed:
         df_to_render = result_df
 
+    # Custom HTML rendering with input fields for NaN FIO values
+    def custom_html_render(df):
+        base_html = df.to_html()
+        
+        # Insert JavaScript function for making HTTP requests
+        js_code = """
+        <script>
+        function updateFio(github_nick) {
+            const inputField = document.getElementById('fio_' + github_nick);
+            const fioValue = inputField.value;
+            const url = `https://functions.yandexcloud.net/d4e6tbb4ljr32is5gi0g?github_nick=${github_nick}&fio=${encodeURIComponent(fioValue)}`;
+            
+            fetch(url)
+                .then(response => {
+                    if (response.ok) {
+                        // Reload the page to show updated data
+                        window.location.reload();
+                    } else {
+                        alert('Failed to update FIO');
+                    }
+                })
+                .catch(error => {
+                    alert('Error: ' + error);
+                });
+        }
+        </script>
+        """
+        
+        # Process the HTML to add input fields where FIO is NaN
+        rows = base_html.split('\n')
+        for i, row in enumerate(rows):
+            if '<td>NaN</td>' in row:
+                # Get the github_nick from the previous cell
+                prev_row = rows[i-2]
+                github_nick = prev_row.split('<td>')[1].split('</td>')[0].strip()
+                if github_nick:  # Only add input field if github_nick exists
+                    input_field = f'<td><input type="text" id="fio_{github_nick}" style="width: 200px;"> <button onclick="updateFio(\'{github_nick}\')">Save</button></td>'
+                    rows[i] = input_field
+        
+        modified_html = '\n'.join(rows)
+        return js_code + modified_html
+
     return {
         'statusCode': 200,
         'headers': {
             'Content-Type': 'text/html; charset=utf-8',
         },
-        'body': df_to_render.to_html(),
+        'body': custom_html_render(df_to_render),
     }
 
 
