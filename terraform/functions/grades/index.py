@@ -214,10 +214,10 @@ def _handler(event, context, detailed=False):
     result_total_df = result_df.groupby('sender')['result_points'].sum().reset_index()
 
     try:
-        all_senders = list(set(result_total_df['sender']))
+        all_senders = [ x for x in set(result_total_df['sender']) if x != '' ]
 
         placeholders = ', '.join([f'$github_nick{i}' for i in range(len(all_senders))])
-        declare_placeholders = ', '.join([f'DECLARE $github_nick{i} as UTF8;' for i in range(len(all_senders))])
+        declare_placeholders = '\n'.join([f'DECLARE $github_nick{i} as UTF8;' for i in range(len(all_senders))])
         senders_fios = pool.execute_with_retries(f'{declare_placeholders} SELECT github_nick, fio FROM github_nick_to_fio WHERE github_nick IN ({placeholders})', { f'$github_nick{i}': all_senders[i] for i in range(len(all_senders)) })
 
         senders_fios_dict = dict()
