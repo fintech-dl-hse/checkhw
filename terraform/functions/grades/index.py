@@ -217,7 +217,8 @@ def _handler(event, context, detailed=False):
         all_senders = set(result_total_df['sender'])
 
         placeholders = ', '.join([f'$github_nick{i}' for i in range(len(all_senders))])
-        senders_fios = pool.execute_with_retries(f'SELECT github_nick, fio FROM github_nick_to_fio WHERE github_nick IN ({placeholders})', { f'$github_nick{i}': all_senders[i] for i in range(len(all_senders)) })
+        declare_placeholders = ', '.join([f'DECLARE $github_nick{i} as UTF8;' for i in range(len(all_senders))])
+        senders_fios = pool.execute_with_retries(f'{declare_placeholders} SELECT github_nick, fio FROM github_nick_to_fio WHERE github_nick IN ({placeholders})', { f'$github_nick{i}': all_senders[i] for i in range(len(all_senders)) })
 
         senders_fios_dict = dict()
         for row in senders_fios[0].rows:
@@ -262,10 +263,20 @@ def save_nick_to_fio(event, context):
 
     # save to ydb table github_nick_to_fio
     # with replace if exists
-    pool.execute_with_retries('REPLACE INTO github_nick_to_fio (github_nick, fio, created_at) VALUES ($github_nick, $fio, $created_at)', {
+    pool.execute_with_retries('''
+        DECLARE $github_nick as UTF8;
+        DECLARE $fio as UTF8;
+
+        REPLACE INTO github_nick_to_fio (github_nick, fio, created)
+        VALUES
+            (
+                $github_nick,
+                $fio,
+                CurrentUtcDate()
+            );
+    ''', {
         '$github_nick': github_nick,
         '$fio': fio,
-        '$created_at': datetime.datetime.now(),
     })
 
     return {
