@@ -248,12 +248,12 @@ def _handler(event, context, detailed=False):
         js_code = """
         <script>
         function updateFio(github_nick, inputId='') {
-            const fioValue = inputId ? 
-                document.getElementById(inputId).value : 
+            const fioValue = inputId ?
+                document.getElementById(inputId).value :
                 document.getElementById('fio_' + github_nick).value;
-            
+
             const url = `https://functions.yandexcloud.net/d4e6tbb4ljr32is5gi0g?github_nick=${github_nick}&fio=${encodeURIComponent(fioValue)}`;
-            
+
             fetch(url)
                 .then(response => {
                     if (response.ok) {
@@ -268,7 +268,7 @@ def _handler(event, context, detailed=False):
         }
         </script>
         """
-        
+
         # Add override form at the top
         override_form = """
         <div style="margin: 20px 0; padding: 15px; border: 1px solid #ccc; border-radius: 5px; background-color: #f9f9f9;">
@@ -295,11 +295,57 @@ def _handler(event, context, detailed=False):
                 opacity: 0.3;
                 color: red;
             }
+
+            table.dataframe {
+                border-collapse: collapse;
+                font-family: Arial, sans-serif;
+                font-size: 14px;
+            }
+
+            table.dataframe thead {
+                background-color: #f2f2f2;
+            }
+
+            table.dataframe th, 
+            table.dataframe td {
+                border: 1px solid #ccc;
+                padding: 8px 12px;
+                text-align: left;
+            }
+
+            table.dataframe tr:nth-child(even) {
+                background-color: #fafafa;
+            }
+
+            table.dataframe tr:hover {
+                background-color: #f1f1f1;
+            }
+
+            input[type="text"] {
+                padding: 5px;
+                font-size: 14px;
+                width: 90%;
+                box-sizing: border-box;
+            }
+
+            button {
+                padding: 5px 10px;
+                font-size: 14px;
+                cursor: pointer;
+                background-color: #007bff;
+                border: none;
+                color: white;
+                border-radius: 4px;
+            }
+
+            button:hover {
+                background-color: #0056b3;
+            }
         </style>
         """
-        
+
         base_html = df.to_html()
-        
+
         # Process the HTML to add input fields where FIO is NaN
         rows = base_html.split('\n')
         for i, row in enumerate(rows):
@@ -310,7 +356,7 @@ def _handler(event, context, detailed=False):
                 if github_nick:  # Only add input field if github_nick exists
                     input_field = f'<td><input placeholder="FILL FIO HERE!" type="text" id="fio_{github_nick}" style="width: 200px;"> <button onclick="updateFio(\'{github_nick}\')">Save</button></td>'
                     rows[i] = input_field
-        
+
         modified_html = '\n'.join(rows)
         return js_code + override_form + modified_html
 
