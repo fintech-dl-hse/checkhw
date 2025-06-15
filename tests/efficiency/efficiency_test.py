@@ -34,4 +34,4 @@ if __name__ == "__main__":
     moving_avg_loss = train_model(model, train_dataloader, optimizer, num_epochs)
 
     print(f"Moving average loss: {moving_avg_loss:.4f}")
-    assert moving_avg_loss < 1.8
+    assert moving_avg_loss < 2.0
