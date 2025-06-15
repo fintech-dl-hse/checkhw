@@ -95,6 +95,9 @@ def _handler(event, context, detailed=False):
         "hw-letters": {
             "deadline": datetime.datetime.strptime("2025-06-23T06:05:00", "%Y-%m-%dT%H:%M:%S"),
         },
+        "hw-efficiency": {
+            "deadline": datetime.datetime.strptime("2025-06-23T06:05:00", "%Y-%m-%dT%H:%M:%S"),
+        },
         # календарная дата дедлайна должна быть с запасом на 1 день больше
     })
 
