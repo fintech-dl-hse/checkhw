@@ -1,0 +1,31 @@
+{
+  "tests": [
+    {
+      "name": "disable wandb",
+      "run": "/data/bin/miniconda3/envs/jupyter-actions/bin/wandb disabled || true",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 1,
+      "points": 0
+    },
+    {
+      "name": "pytest",
+      "run": "PYTHONPATH=. /data/bin/miniconda3/envs/jupyter-actions/bin/python tests/efficiency/efficiency_test.py",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 4,
+      "points": 100
+    },
+    {
+      "name": "feedback",
+      "run": "echo -e '\\n\\n💬💬💬 Оставьте обратную связь по ДЗ https://forms.gle/oVPzavqwXSJYPwXq7 💬💬💬\\n\\n'",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 1,
+      "points": 0
+    }
+  ]
+}
