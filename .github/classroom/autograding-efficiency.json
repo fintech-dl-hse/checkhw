@@ -10,7 +10,7 @@
       "points": 0
     },
     {
-      "name": "pytest",
+      "name": "Run Training Speedrun",
       "run": "PYTHONPATH=. /data/bin/miniconda3/envs/jupyter-actions/bin/python tests/efficiency/efficiency_test.py",
       "input": "",
       "output": "",
