@@ -250,7 +250,7 @@
           shell: /data/bin/miniconda3/envs/jupyter-actions/bin/pip3 install torch torchvision --index-url https://download.pytorch.org/whl/cu118
         - name: conda env jupyter-actions - install other dependencies
           become: True
-          shell: /data/bin/miniconda3/envs/jupyter-actions/bin/pip3 install jupyter nbformat nbconvert numpy requests pytest scikit-learn pandas opencv-python tqdm tensorboard matplotlib scipy datasets pytorch-lightning transformers evaluate sacrebleu accelerate wandb smolagents vllm langchain-text-splitters langchain langchain-community sentence-transformers faiss-cpu smolagents
+          shell: /data/bin/miniconda3/envs/jupyter-actions/bin/pip3 install jupyter nbformat nbconvert numpy requests pytest scikit-learn pandas opencv-python tqdm tensorboard matplotlib scipy datasets pytorch-lightning transformers evaluate sacrebleu accelerate wandb smolagents vllm langchain-text-splitters langchain langchain-community sentence-transformers faiss-cpu smolagents peft
         - name: conda - execution permission for all
           become: True
           file:
