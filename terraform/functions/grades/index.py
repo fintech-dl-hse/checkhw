@@ -8,6 +8,8 @@ import os
 import ydb
 import ydb.iam
 
+import numpy as np
+
 # Create driver in global space.
 driver = ydb.Driver(
   endpoint=os.getenv('YDB_ENDPOINT'),
@@ -217,7 +219,7 @@ def _handler(event, context, detailed=False):
     result_total_df = result_df.groupby('sender')['result_points'].sum().reset_index()
 
     try:
-        all_senders = [ x for x in set(result_total_df['sender']) if x != '' ]
+        all_senders = [x for x in set(result_total_df['sender']) if x != '']
 
         placeholders = ', '.join([f'$github_nick{i}' for i in range(len(all_senders))])
         declare_placeholders = '\n'.join([f'DECLARE $github_nick{i} as UTF8;' for i in range(len(all_senders))])
@@ -246,7 +248,7 @@ def _handler(event, context, detailed=False):
         df_to_render = result_df
 
     # Custom HTML rendering with input fields for NaN FIO values
-    def custom_html_render(df):
+    def custom_html_render(df, detailed=False):
         # Insert JavaScript function for making HTTP requests
         js_code = """
         <script>
@@ -350,25 +352,48 @@ def _handler(event, context, detailed=False):
         base_html = df.to_html()
 
         # Process the HTML to add input fields where FIO is NaN
-        rows = base_html.split('\n')
-        for i, row in enumerate(rows):
-            if '<td>NaN</td>' in row:
-                # Get the github_nick from the previous cell
-                prev_row = rows[i-2]
-                github_nick = prev_row.split('<td>')[1].split('</td>')[0].strip()
-                if github_nick:  # Only add input field if github_nick exists
-                    input_field = f'<td><input placeholder="FILL FIO HERE!" type="text" id="fio_{github_nick}" style="width: 200px;"> <button onclick="updateFio(\'{github_nick}\')">Save</button></td>'
-                    rows[i] = input_field
+        if not detailed:
+            rows = base_html.split('\n')
+            for i, row in enumerate(rows):
+                if '<td>NaN</td>' in row:
+                    # Get the github_nick from the previous cell
+                    prev_row = rows[i-2]
+                    github_nick = prev_row.split('<td>')[1].split('</td>')[0].strip()
+                    if github_nick:  # Only add input field if github_nick exists
+                        input_field = f'<td><input placeholder="FILL FIO HERE!" type="text" id="fio_{github_nick}" style="width: 200px;"> <button onclick="updateFio(\'{github_nick}\')">Save</button></td>'
+                        rows[i] = input_field
 
-        modified_html = '\n'.join(rows)
-        return js_code + override_form + modified_html
+            base_html = '\n'.join(rows)
+
+            # Add statistics for filled fios
+            filled_fios = df[df['fio'].notna()].shape[0]
+            total_students = df.shape[0]
+            base_html += f'<p></p><p>Filled FIOs: {filled_fios}/{total_students}</p><p></p>'
+
+            # Per homework statistics:
+            # 1. Count of non zero solutions
+            # 2. Count of full solutions
+            try:
+                df['full_solution'] = df['result_points'] == df['max_points']
+
+                df_stats = df.groupby('homework').agg({
+                    'result_points': [np.nonzero],
+                    'full_solution': ['sum']
+                }).reset_index()
+                df_stats.columns = ['homework', 'count', 'sum', 'median']
+                base_html += df_stats.to_html()
+            except Exception as e:
+                print(f"cant calculate stats error: {e}")
+
+
+        return js_code + override_form + base_html
 
     return {
         'statusCode': 200,
         'headers': {
             'Content-Type': 'text/html; charset=utf-8',
         },
-        'body': custom_html_render(df_to_render),
+        'body': custom_html_render(df_to_render, detailed=detailed),
     }
 
 
