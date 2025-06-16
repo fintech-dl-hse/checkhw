@@ -395,7 +395,7 @@ def _handler(event, context, detailed=False):
                     'full_solution': ['sum']
                 }).reset_index()
                 df_stats.columns = ['homework', 'non_zero_solutions', 'full_solutions']
-                base_html += df_stats.to_html()
+                base_html += "\n<h2>Stats</h2>\n" + df_stats.to_html()
             except Exception as e:
                 print(f"cant calculate stats error: {e}")
 
