@@ -69,8 +69,8 @@ def paper_link_to_file_name(paper_link):
 
 def upload_to_gigachat_cloud(model, file_name, paper_bytes):
 
-    with tempfile.NamedTemporaryFile(delete=False) as temp_file:
-        temp_file_name = temp_file.name + '.pdf'
+    with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as temp_file:
+        temp_file_name = temp_file.name
         written = temp_file.write(paper_bytes)
         print("written", written)
         print('total size', len(paper_bytes))
