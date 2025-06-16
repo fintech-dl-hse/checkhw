@@ -363,7 +363,7 @@ def _handler(event, context, detailed=False):
                         input_field = f'<td><input placeholder="FILL FIO HERE!" type="text" id="fio_{github_nick}" style="width: 200px;"> <button onclick="updateFio(\'{github_nick}\')">Save</button></td>'
                         rows[i] = input_field
 
-            base_html = '\n'.join(rows)
+            base_html = override_form + '\n'.join(rows)
 
             # Add statistics for filled fios
             filled_fios = df[df['fio'].notna()].shape[0]
@@ -386,7 +386,7 @@ def _handler(event, context, detailed=False):
                 print(f"cant calculate stats error: {e}")
 
 
-        return js_code + override_form + base_html
+        return js_code + base_html
 
     return {
         'statusCode': 200,
