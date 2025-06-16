@@ -377,19 +377,18 @@ def _handler(event, context, detailed=False):
             filled_fios = df[df['fio'].notna()].shape[0]
             total_students = df.shape[0]
             base_html += f'<p></p><p>Filled FIOs: {filled_fios}/{total_students}</p><p></p>'
-
+        else:
             # Per homework statistics:
             # 1. Count of non zero solutions
             # 2. Count of full solutions
             try:
-                df['max_points'] = df['homework'].map(hw_to_max_points)
                 df['full_solution'] = df['result_points'] == df['max_points']
 
                 df_stats = df.groupby('homework').agg({
                     'result_points': [np.nonzero],
                     'full_solution': ['sum']
                 }).reset_index()
-                df_stats.columns = ['homework', 'count', 'sum', 'median']
+                df_stats.columns = ['homework', 'non_zero_solutions', 'full_solutions']
                 base_html += df_stats.to_html()
             except Exception as e:
                 print(f"cant calculate stats error: {e}")
