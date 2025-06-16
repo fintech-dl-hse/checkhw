@@ -4,8 +4,25 @@ import sys
 import json
 import time
 import requests
-
+import tempfile
 from gigachat import GigaChat
+
+import subprocess
+
+
+def compress_pdf_with_gs(input_path, output_path):
+    command = [
+        'gs',
+        '-sDEVICE=pdfwrite',
+        '-dCompatibilityLevel=1.4',
+        '-dPDFSETTINGS=/ebook',  # use /screen, /ebook, /printer, /prepress
+        '-dNOPAUSE',
+        '-dQUIET',
+        '-dBATCH',
+        f'-sOutputFile={output_path}',
+        input_path
+    ]
+    subprocess.run(command, check=True)
 
 
 SYSTEM_PROMPT_EN = """
@@ -52,9 +69,20 @@ def paper_link_to_file_name(paper_link):
 
 def upload_to_gigachat_cloud(model, file_name, paper_bytes):
 
+    with tempfile.NamedTemporaryFile() as temp_file:
+        temp_file_name = temp_file.name + '.pdf'
+        temp_file.write(paper_bytes)
+        temp_file.flush()
+
+        compressed_file_name = temp_file_name.replace('.pdf', '_compressed.pdf')
+        compress_pdf_with_gs(file_name, compressed_file_name)
+
+        # Compressed file
+        paper_bytes = open(compressed_file_name, 'rb').read()
+
     if len(paper_bytes) > 30000000:
         print("too large file size:", len(paper_bytes), "limit is 30MB")
-        return None, "too large file size"
+        return None, "too large file size even after compression. Cant upload to gigachat cloud"
 
     gc_file = model.upload_file((file_name, paper_bytes))
     return gc_file.id_, None
