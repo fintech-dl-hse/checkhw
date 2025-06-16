@@ -140,6 +140,8 @@ def _handler(event, context, detailed=False):
     query_result_set = pool.execute_with_retries('SELECT sender, repo_name, completed_at_str, check_run_summary FROM github_events_log_v2 WHERE check_run_summary != "" LIMIT 10000')
     print("len query_result_set", len(query_result_set))
 
+    hw_to_max_points = {}
+
     for query_result in query_result_set:
         for i, row in enumerate(query_result.rows):
             sender = row.sender
@@ -191,15 +193,21 @@ def _handler(event, context, detailed=False):
                 # print(f"use forced penalty days for {repo_name}: {penalty_days}")
 
             penalty_percent = penalty_days * 10
+
+            max_points = int(points.split('/')[1])
+            result_points = int(points.split('/')[0]) * (100 - penalty_percent) / 100
+
             accumulated_data.append({
                 "sender": student_login,
-                "max_points": int(points.split('/')[1]),
-                "result_points": int(points.split('/')[0]) * (100 - penalty_percent) / 100,
+                "max_points": max_points,
+                "result_points": result_points,
                 "homework": homework,
                 "penalty_days": penalty_days,
                 "penalty_percent": penalty_percent,
                 "completed_at": completed_at,
             })
+
+            hw_to_max_points[homework] = max_points
 
     # Hands forced grades
     accumulated_data += _force_hw_grades()
@@ -375,6 +383,7 @@ def _handler(event, context, detailed=False):
             # 2. Count of full solutions
             try:
                 df['full_solution'] = df['result_points'] == df['max_points']
+                df['max_points'] = df['homework'].map(hw_to_max_points)
 
                 df_stats = df.groupby('homework').agg({
                     'result_points': [np.nonzero],
