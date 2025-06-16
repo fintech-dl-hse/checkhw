@@ -302,6 +302,9 @@ def _handler(event, context, detailed=False):
                 </div>
             </div>
         </div>
+        """
+
+        style_css = """
         <style>
             input::placeholder {
                 font-weight: bold;
@@ -319,7 +322,7 @@ def _handler(event, context, detailed=False):
                 background-color: #f2f2f2;
             }
 
-            table.dataframe th, 
+            table.dataframe th,
             table.dataframe td {
                 border: 1px solid #ccc;
                 padding: 8px 12px;
@@ -357,7 +360,7 @@ def _handler(event, context, detailed=False):
         </style>
         """
 
-        base_html = df.to_html()
+        base_html = style_css + df.to_html()
 
         # Process the HTML to add input fields where FIO is NaN
         if not detailed:
@@ -384,8 +387,11 @@ def _handler(event, context, detailed=False):
             try:
                 df['full_solution'] = df['result_points'] == df['max_points']
 
+                def count_non_zero_solutions(column):
+                    return (column > 0).sum()
+
                 df_stats = df.groupby('homework').agg({
-                    'result_points': [np.nonzero],
+                    'result_points': [count_non_zero_solutions],
                     'full_solution': ['sum']
                 }).reset_index()
                 df_stats.columns = ['homework', 'non_zero_solutions', 'full_solutions']
