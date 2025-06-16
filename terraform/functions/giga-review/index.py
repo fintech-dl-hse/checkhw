@@ -69,7 +69,7 @@ def paper_link_to_file_name(paper_link):
 
 def upload_to_gigachat_cloud(model, file_name, paper_bytes):
 
-    with tempfile.NamedTemporaryFile() as temp_file:
+    with tempfile.NamedTemporaryFile(delete=False) as temp_file:
         temp_file_name = temp_file.name + '.pdf'
         temp_file.write(paper_bytes)
         temp_file.flush()
@@ -78,7 +78,10 @@ def upload_to_gigachat_cloud(model, file_name, paper_bytes):
         compress_pdf_with_gs(temp_file_name, compressed_file_name)
 
         # Compressed file
-        paper_bytes = open(compressed_file_name, 'rb').read()
+        with open(compressed_file_name, 'rb') as f:
+            paper_bytes = f.read()
+
+        temp_file.close()
 
     if len(paper_bytes) > 30000000:
         print("too large file size:", len(paper_bytes), "limit is 30MB")
