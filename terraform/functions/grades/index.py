@@ -382,8 +382,8 @@ def _handler(event, context, detailed=False):
             # 1. Count of non zero solutions
             # 2. Count of full solutions
             try:
-                df['full_solution'] = df['result_points'] == df['max_points']
                 df['max_points'] = df['homework'].map(hw_to_max_points)
+                df['full_solution'] = df['result_points'] == df['max_points']
 
                 df_stats = df.groupby('homework').agg({
                     'result_points': [np.nonzero],
