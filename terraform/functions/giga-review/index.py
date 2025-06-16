@@ -71,8 +71,12 @@ def upload_to_gigachat_cloud(model, file_name, paper_bytes):
 
     with tempfile.NamedTemporaryFile(delete=False) as temp_file:
         temp_file_name = temp_file.name + '.pdf'
-        temp_file.write(paper_bytes)
-        temp_file.flush()
+        written = temp_file.write(paper_bytes)
+        print("written", written)
+        print('total size', len(paper_bytes))
+        print('temp file name', temp_file_name)
+        print('temp file size', os.path.getsize(temp_file_name))
+        # temp_file.flush()
 
         compressed_file_name = temp_file_name.replace('.pdf', '_compressed.pdf')
         compress_pdf_with_gs(temp_file_name, compressed_file_name)
