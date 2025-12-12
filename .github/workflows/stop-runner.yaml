@@ -6,7 +6,6 @@ on:
   workflow_dispatch:
   workflow_call:
 
-
 jobs:
   stop-runner:
     runs-on: ubuntu-latest
