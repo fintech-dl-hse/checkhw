@@ -4,6 +4,7 @@ import pandas as pd
 import sys
 import json
 import os
+from collections import OrderedDict
 
 import ydb
 import ydb.iam
@@ -54,7 +55,7 @@ def _handler(event, context, detailed=False):
 
     accumulated_data = []
 
-    known_homeworks = dict({
+    known_homeworks = OrderedDict({
         "hw-activations": {
             "deadline": datetime.datetime.strptime("2025-02-11T03:05:00", "%Y-%m-%dT%H:%M:%S"),
         },
@@ -256,7 +257,7 @@ def _handler(event, context, detailed=False):
         df_to_render = result_df
 
     # Custom HTML rendering with input fields for NaN FIO values
-    def custom_html_render(df, detailed=False):
+    def custom_html_render(df, detailed=False, result_df=None, known_homeworks=None, hw_to_max_points=None):
         # Insert JavaScript function for making HTTP requests
         js_code = """
         <script>
@@ -380,6 +381,36 @@ def _handler(event, context, detailed=False):
             filled_fios = df[df['fio'].notna()].shape[0]
             total_students = df.shape[0]
             base_html += f'<p></p><p>Filled FIOs: {filled_fios}/{total_students}</p><p></p>'
+
+            # Add homework statistics table
+            if result_df is not None and known_homeworks is not None:
+                try:
+                    stats_data = []
+                    for hw_name in known_homeworks.keys():
+                        hw_data = result_df[result_df['homework'] == hw_name]
+                        if len(hw_data) > 0:
+                            non_zero_count = (hw_data['result_points'] > 0).sum()
+                            full_score_count = (hw_data['result_points'] == hw_data['max_points']).sum()
+                            avg_score = hw_data['result_points'].mean()
+                            max_points = hw_data['max_points'].iloc[0]
+                        else:
+                            non_zero_count = 0
+                            full_score_count = 0
+                            avg_score = 0.0
+                            max_points = hw_to_max_points.get(hw_name, 0) if hw_to_max_points else 0
+
+                        stats_data.append({
+                            'homework': hw_name,
+                            'students_with_points': non_zero_count,
+                            'students_with_full_score': full_score_count,
+                            'avg_score': f"{avg_score:.2f}" if avg_score > 0 else "0.00",
+                            'max_points': max_points,
+                        })
+
+                    stats_df = pd.DataFrame(stats_data)
+                    base_html += "\n<h2>Homework Statistics</h2>\n" + stats_df.to_html(index=False)
+                except Exception as e:
+                    print(f"cant calculate homework stats error: {e}")
         else:
             # Per homework statistics:
             # 1. Count of non zero solutions
@@ -407,7 +438,7 @@ def _handler(event, context, detailed=False):
         'headers': {
             'Content-Type': 'text/html; charset=utf-8',
         },
-        'body': custom_html_render(df_to_render, detailed=detailed),
+        'body': custom_html_render(df_to_render, detailed=detailed, result_df=result_df, known_homeworks=known_homeworks, hw_to_max_points=hw_to_max_points),
     }
 
 
