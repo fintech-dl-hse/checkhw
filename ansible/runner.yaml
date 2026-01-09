@@ -62,7 +62,7 @@
         state: present
 
 - name: Install GitHub Actions Runner
-  hosts: github_runners
+  hosts: github_runners_cpu
   tags: [ 'github-runner' ]
   become: yes
   vars:
