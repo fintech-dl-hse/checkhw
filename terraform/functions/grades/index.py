@@ -28,24 +28,15 @@ pool = ydb.QuerySessionPool(driver)
 
 def _force_hw_grades():
     forced_grades = [
-        {
-            "sender": 'Vejeja',
-            "max_points": 100,
-            "result_points": 100,
-            "homework": 'hw-activations',
-            "penalty_days": 0,
-            "penalty_percent": 0,
-            "completed_at": datetime.datetime.now(),
-        },
-        {
-            "sender": 'Vejeja',
-            "max_points": 100,
-            "result_points": 100,
-            "homework": 'hw-weight-init',
-            "penalty_days": 0,
-            "penalty_percent": 0,
-            "completed_at": datetime.datetime.now(),
-        },
+        # {
+        #     "sender": 'Vejeja',
+        #     "max_points": 100,
+        #     "result_points": 100,
+        #     "homework": 'hw-activations',
+        #     "penalty_days": 0,
+        #     "penalty_percent": 0,
+        #     "completed_at": datetime.datetime.now(),
+        # },
     ]
 
     return forced_grades
@@ -56,50 +47,69 @@ def _handler(event, context, detailed=False):
     accumulated_data = []
 
     known_homeworks = OrderedDict({
+        # 3 модуль
+        # У простых домашек дедлайн - ~1 неделя
+        # У домашек посложнее дедлайн - ~2 недели
+        "hw-mlp": {
+            "deadline": datetime.datetime.strptime("2026-01-29T03:05:00", "%Y-%m-%dT%H:%M:%S"),
+        },
         "hw-activations": {
-            "deadline": datetime.datetime.strptime("2025-02-11T03:05:00", "%Y-%m-%dT%H:%M:%S"),
+            "deadline": datetime.datetime.strptime("2026-02-05T03:05:00", "%Y-%m-%dT%H:%M:%S"),
         },
         "hw-weight-init": {
-            "deadline": datetime.datetime.strptime("2025-02-11T03:05:00", "%Y-%m-%dT%H:%M:%S"),
+            "deadline": datetime.datetime.strptime("2026-02-05T03:05:00", "%Y-%m-%dT%H:%M:%S"),
         },
         "hw-optimization": {
-            "deadline": datetime.datetime.strptime("2025-03-13T03:05:00", "%Y-%m-%dT%H:%M:%S"),
+            "deadline": datetime.datetime.strptime("2026-02-12T03:05:00", "%Y-%m-%dT%H:%M:%S"),
         },
         "hw-dropout": {
-            "deadline": datetime.datetime.strptime("2025-03-13T03:05:00", "%Y-%m-%dT%H:%M:%S"),
+            "deadline": datetime.datetime.strptime("2026-02-12T03:05:00", "%Y-%m-%dT%H:%M:%S"),
         },
         "hw-batchnorm": {
-            "deadline": datetime.datetime.strptime("2025-03-13T03:05:00", "%Y-%m-%dT%H:%M:%S"),
+            # 2 недели
+            "deadline": datetime.datetime.strptime("2026-03-05T03:05:00", "%Y-%m-%dT%H:%M:%S"),
         },
         "hw-pytorch-basics": {
-            "deadline": datetime.datetime.strptime("2025-03-13T03:05:00", "%Y-%m-%dT%H:%M:%S"),
-        },
-        "hw-tokenization": {
-            "deadline": datetime.datetime.strptime("2025-04-17T03:05:00", "%Y-%m-%dT%H:%M:%S"),
-        },
-        "hw-rnn-attention": {
-            "deadline": datetime.datetime.strptime("2025-05-22T03:05:00", "%Y-%m-%dT%H:%M:%S"),
-        },
-        "hw-transformer-attention": {
-            "deadline": datetime.datetime.strptime("2025-05-22T03:05:00", "%Y-%m-%dT%H:%M:%S"),
-        },
-        "hw-llm-agent": {
-            "deadline": datetime.datetime.strptime("2025-06-23T06:05:00", "%Y-%m-%dT%H:%M:%S"),
+            # 2 недели
+            "deadline": datetime.datetime.strptime("2026-03-05T03:05:00", "%Y-%m-%dT%H:%M:%S"),
         },
         "hw-vae": {
-            "deadline": datetime.datetime.strptime("2025-06-23T06:05:00", "%Y-%m-%dT%H:%M:%S"),
+            # 2 недели
+            "deadline": datetime.datetime.strptime("2026-03-30T03:05:00", "%Y-%m-%dT%H:%M:%S"),
         },
         "hw-diffusion": {
-            "deadline": datetime.datetime.strptime("2025-06-23T06:05:00", "%Y-%m-%dT%H:%M:%S"),
+            # 2 недели
+            "deadline": datetime.datetime.strptime("2026-03-30T03:05:00", "%Y-%m-%dT%H:%M:%S"),
         },
-        "hw-multimodal-llm": {
-            "deadline": datetime.datetime.strptime("2025-06-23T06:05:00", "%Y-%m-%dT%H:%M:%S"),
+
+        # 4 модуль
+        "hw-tokenization": {
+            # 1 неделя
+            "deadline": datetime.datetime.strptime("2026-04-16T03:05:00", "%Y-%m-%dT%H:%M:%S"),
         },
-        "hw-letters": {
-            "deadline": datetime.datetime.strptime("2025-06-23T06:05:00", "%Y-%m-%dT%H:%M:%S"),
+        "hw-rnn-attention": {
+            # 3 недели
+            "deadline": datetime.datetime.strptime("2026-05-07T03:05:00", "%Y-%m-%dT%H:%M:%S"),
+        },
+        "hw-transformer-attention": {
+            # 3 недели
+            "deadline": datetime.datetime.strptime("2026-05-07T03:05:00", "%Y-%m-%dT%H:%M:%S"),
         },
         "hw-efficiency": {
-            "deadline": datetime.datetime.strptime("2025-06-23T06:05:00", "%Y-%m-%dT%H:%M:%S"),
+            # 2 недели
+            "deadline": datetime.datetime.strptime("2026-05-21T03:05:00", "%Y-%m-%dT%H:%M:%S"),
+        },
+        "hw-llm-agent": {
+            # до дня экзамена
+            "deadline": datetime.datetime.strptime("2026-06-17T06:05:00", "%Y-%m-%dT%H:%M:%S"),
+        },
+        "hw-multimodal-llm": {
+            # до дня экзамена
+            "deadline": datetime.datetime.strptime("2026-06-17T06:05:00", "%Y-%m-%dT%H:%M:%S"),
+        },
+        "hw-letters": {
+            # до дня экзамена
+            "deadline": datetime.datetime.strptime("2026-06-17T06:05:00", "%Y-%m-%dT%H:%M:%S"),
         },
         # календарная дата дедлайна должна быть с запасом на 1 день больше
     })
@@ -110,26 +120,26 @@ def _handler(event, context, detailed=False):
     }
 
     rnn_attention_repos_whitelist = set([
-        "hw-rnn-attention-DanSmirnoff",
-        "hw-rnn-attention-dimontmf7",
-        "hw-rnn-attention-Uritskii",
-        "hw-rnn-attention-Menako778",
-        "hw-rnn-attention-yellowssnake",
-        "hw-rnn-attention-Ripchic",
-        "hw-rnn-attention-borodulinad",
-        "hw-rnn-attention-GudkovNikolay",
-        "hw-rnn-attention-Dushese",
-        "hw-rnn-attention-heartcatched",
-        "hw-rnn-attention-anyrozh",
-        "hw-rnn-attention-kultattiana",
-        "hw-rnn-attention-nuotstan",
-        "hw-rnn-attention-sergey-khatuntsev",
-        "hw-rnn-attention-tatianasor",
-        "hw-rnn-attention-chtozaserikova",
-        "hw-rnn-attention-nvoronetskaya",
-        "hw-rnn-attention-seemsGoodNow",
-        "hw-rnn-attention-UralTime",
-        "hw-rnn-attention-Astemlr",
+        # "hw-rnn-attention-DanSmirnoff",
+        # "hw-rnn-attention-dimontmf7",
+        # "hw-rnn-attention-Uritskii",
+        # "hw-rnn-attention-Menako778",
+        # "hw-rnn-attention-yellowssnake",
+        # "hw-rnn-attention-Ripchic",
+        # "hw-rnn-attention-borodulinad",
+        # "hw-rnn-attention-GudkovNikolay",
+        # "hw-rnn-attention-Dushese",
+        # "hw-rnn-attention-heartcatched",
+        # "hw-rnn-attention-anyrozh",
+        # "hw-rnn-attention-kultattiana",
+        # "hw-rnn-attention-nuotstan",
+        # "hw-rnn-attention-sergey-khatuntsev",
+        # "hw-rnn-attention-tatianasor",
+        # "hw-rnn-attention-chtozaserikova",
+        # "hw-rnn-attention-nvoronetskaya",
+        # "hw-rnn-attention-seemsGoodNow",
+        # "hw-rnn-attention-UralTime",
+        # "hw-rnn-attention-Astemlr",
     ])
 
     known_homeworks_keys = sorted(list(known_homeworks.keys()), key=lambda x: len(x), reverse=True)
@@ -138,7 +148,7 @@ def _handler(event, context, detailed=False):
             if hw_key_i.startswith(hw_key_j) or hw_key_j.startswith(hw_key_i):
                 raise Exception(f"homework names must not starts with each other {hw_key_i}, {hw_key_j}")
 
-    query_result_set = pool.execute_with_retries('SELECT sender, repo_name, completed_at_str, check_run_summary FROM github_events_log_v2 WHERE check_run_summary != "" LIMIT 10000')
+    query_result_set = pool.execute_with_retries('SELECT sender, repo_name, completed_at_str, check_run_summary FROM github_events_log_v2 WHERE check_run_summary != "" AND and DateTime::GetYear(DateTime::Split(event_time)) == DateTime::GetYear(DateTime::Split(CurrentUtcDatetime())) LIMIT 10000')
     print("len query_result_set", len(query_result_set))
 
     hw_to_max_points = {}
