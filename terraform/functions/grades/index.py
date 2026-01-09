@@ -148,7 +148,7 @@ def _handler(event, context, detailed=False):
             if hw_key_i.startswith(hw_key_j) or hw_key_j.startswith(hw_key_i):
                 raise Exception(f"homework names must not starts with each other {hw_key_i}, {hw_key_j}")
 
-    query_result_set = pool.execute_with_retries('SELECT sender, repo_name, completed_at_str, check_run_summary FROM github_events_log_v2 WHERE check_run_summary != "" AND and DateTime::GetYear(DateTime::Split(event_time)) == DateTime::GetYear(DateTime::Split(CurrentUtcDatetime())) LIMIT 10000')
+    query_result_set = pool.execute_with_retries('SELECT sender, repo_name, completed_at_str, check_run_summary FROM github_events_log_v2 WHERE check_run_summary != "" AND DateTime::GetYear(DateTime::Split(event_time)) == DateTime::GetYear(DateTime::Split(CurrentUtcDatetime())) LIMIT 10000')
     print("len query_result_set", len(query_result_set))
 
     hw_to_max_points = {}
