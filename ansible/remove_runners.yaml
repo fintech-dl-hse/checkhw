@@ -1,0 +1,9 @@
+---
+- name: Uninstall GitHub Actions Runner GPU
+  hosts: [ 'github_runners_cpu', 'github_runners_gpu' ]
+  become: yes
+  tasks:
+    - name: Uninstall GitHub Actions Runner GPU
+      block:
+        - name: Uninstall GitHub Actions Runner GPU
+          shell: cd /data/var/actions-runner && ./svc.sh uninstall && rm -rf /data/var/actions-runner
