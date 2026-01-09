@@ -1,0 +1,31 @@
+{
+  "tests": [
+    {
+      "name": "pytest",
+      "run": "PYTHONPATH=. /data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs tests/mlp/test_torch_basics.py",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 5,
+      "points": 50
+    },
+    {
+      "name": "pytest",
+      "run": "PYTHONPATH=. /data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs tests/mlp/test_mlp.py",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 5,
+      "points": 50
+    },
+    {
+      "name": "feedback",
+      "run": "echo -e '\\n\\n💬💬💬 Оставьте обратную связь по ДЗ https://forms.gle/6FMiKQJ1Gtpie8CA6 💬💬💬\\n\\n'",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 1,
+      "points": 0
+    }
+  ]
+}
