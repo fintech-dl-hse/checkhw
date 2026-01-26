@@ -56,6 +56,9 @@ def _handler(event, context, detailed=False):
         "hw-activations": {
             "deadline": datetime.datetime.strptime("2026-02-05T03:05:00", "%Y-%m-%dT%H:%M:%S"),
         },
+        "hw-autograd-mlp": {
+            "deadline": datetime.datetime.strptime("2026-06-17T06:05:00", "%Y-%m-%dT%H:%M:%S"),
+        },
         "hw-weight-init": {
             "deadline": datetime.datetime.strptime("2026-02-05T03:05:00", "%Y-%m-%dT%H:%M:%S"),
         },
@@ -116,7 +119,7 @@ def _handler(event, context, detailed=False):
 
 
     forced_penalty_days = {
-
+        ""
     }
 
     rnn_attention_repos_whitelist = set([
