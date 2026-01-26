@@ -1,0 +1,22 @@
+{
+  "tests": [
+    {
+      "name": "pytest",
+      "run": "PYTHONPATH=. /data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs tests/autograd-mlp/test_autograd_mlp.py",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 5,
+      "points": 100
+    },
+    {
+      "name": "feedback",
+      "run": "echo -e '\\n\\n💬💬💬 Оставьте обратную связь по ДЗ https://forms.gle/QPmStUACp56tGkmK9 💬💬💬\\n\\n'",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 1,
+      "points": 0
+    }
+  ]
+}
