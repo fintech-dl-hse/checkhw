@@ -160,6 +160,7 @@ def _handler(event, context, detailed=False):
         for i, row in enumerate(query_result.rows):
             sender = row.sender
             repo_name = row.repo_name
+            repo_name = repo_name.removeprefix('fintech-dl-hse-')
             completed_at_str = row.completed_at_str
             check_run_summary = row.check_run_summary
             # print("i", i, "repo_name", repo_name, "sender", sender, "check_run_summary", check_run_summary)
