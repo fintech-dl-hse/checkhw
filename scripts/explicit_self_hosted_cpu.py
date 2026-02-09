@@ -15,7 +15,9 @@ import json
 import os
 import re
 import sys
+import threading
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from urllib.request import Request, urlopen
 from urllib.error import HTTPError, URLError
@@ -210,7 +212,59 @@ def parse_args() -> argparse.Namespace:
         metavar="PATH",
         help="Read repo list from CSV: use column student_repository_url (GitHub URLs converted to owner/repo).",
     )
+    p.add_argument(
+        "--num-workers",
+        type=int,
+        default=1,
+        metavar="N",
+        help="Number of parallel workers to process repos (default: 1).",
+    )
     return p.parse_args()
+
+
+def process_one_repo(
+    token: str, repo: str, args: argparse.Namespace
+) -> tuple[str, str, bool, str | None, list[str] | None]:
+    """
+    Process a single repo. Returns (repo, status, is_503, message, diff_lines).
+    status in ("ok", "skip", "err"); message is skip reason or error text; diff_lines for dry-run.
+    """
+    try:
+        result = get_file_content_and_sha(token, repo, WORKFLOW_PATH)
+        if result is None:
+            return (repo, "skip", False, f"no {WORKFLOW_PATH}", None)
+        content, sha = result
+        new_content = RUNNER_REPLACE.sub(REPLACEMENT, content)
+        if new_content == content:
+            return (repo, "skip", False, "no 'runs-on: self-hosted' to replace", None)
+        branch = get_default_branch(token, repo)
+        if args.skip_if_passed and workflow_passed(token, repo, branch):
+            return (repo, "skip", False, "pipelines passed", None)
+        if args.dry_run:
+            old_lines = content.splitlines()
+            new_lines = new_content.splitlines()
+            diff = difflib.unified_diff(
+                old_lines,
+                new_lines,
+                fromfile=f"{repo}/{WORKFLOW_PATH}",
+                tofile=f"{repo}/{WORKFLOW_PATH}",
+                lineterm="",
+            )
+            return (repo, "ok", False, None, list(diff))
+        put_file(
+            token,
+            repo,
+            WORKFLOW_PATH,
+            new_content,
+            sha,
+            "Use explicit self-hosted-cpu runner in classroom workflow",
+            branch,
+        )
+        return (repo, "ok", False, None, None)
+    except HTTPError as e:
+        return (repo, "err", (e.code == 503), f"HTTP {e.code} {e.reason}", None)
+    except URLError as e:
+        return (repo, "err", False, str(e), None)
 
 
 def main() -> int:
@@ -257,92 +311,70 @@ def main() -> int:
         print("Aborting")
         return 1
 
+    num_workers = max(1, int(getattr(args, "num_workers", 1)))
     ok = 0
     skip = 0
     err = 0
     totally_failed_repos: list[str] = []
+    lock = threading.Lock()
 
-    def update_pbar():
-        pbar.set_postfix(updated=ok, skipped=skip, failed=err)
-
-    pbar = tqdm(repos, desc="Processing repos")
-    for repo in pbar:
-        try:
-            result = get_file_content_and_sha(token, repo, WORKFLOW_PATH)
-            if result is None:
-                print(f"SKIP {repo}: no {WORKFLOW_PATH}")
-                skip += 1
-                update_pbar()
-                continue
-            content, sha = result
-            new_content = RUNNER_REPLACE.sub(REPLACEMENT, content)
-            if new_content == content:
-                print(f"SKIP {repo}: no 'runs-on: self-hosted' to replace")
-                skip += 1
-                update_pbar()
-                continue
-            branch = get_default_branch(token, repo)
-            if args.skip_if_passed and workflow_passed(token, repo, branch):
-                # print(f"SKIP {repo}: pipelines passed")
-                skip += 1
-                update_pbar()
-                continue
-            if args.dry_run:
-                old_lines = content.splitlines()
-                new_lines = new_content.splitlines()
-                diff = difflib.unified_diff(
-                    old_lines,
-                    new_lines,
-                    fromfile=f"{repo}/{WORKFLOW_PATH}",
-                    tofile=f"{repo}/{WORKFLOW_PATH}",
-                    lineterm="",
-                )
-                print(f"\n--- {repo} ---")
-                for line in diff:
-                    print(line)
+    def apply_result(
+        repo: str,
+        status: str,
+        is_503: bool,
+        message: str | None,
+        diff_lines: list[str] | None,
+    ) -> None:
+        nonlocal ok, skip, err
+        with lock:
+            if status == "ok":
                 ok += 1
-                update_pbar()
-                continue
-            put_file(
-                token,
-                repo,
-                WORKFLOW_PATH,
-                new_content,
-                sha,
-                "Use explicit self-hosted-cpu runner in classroom workflow",
-                branch,
+            elif status == "skip":
+                skip += 1
+            else:
+                err += 1
+                if is_503:
+                    totally_failed_repos.append(repo)
+            if message and status == "skip":
+                print(f"SKIP {repo}: {message}")
+            elif status == "ok" and not args.dry_run:
+                print(f"OK {repo}")
+            elif status == "err":
+                print(f"FAIL {repo}: {message}", file=sys.stderr)
+            if diff_lines:
+                print(f"\n--- {repo} ---")
+                for line in diff_lines:
+                    print(line)
+
+    if num_workers <= 1:
+        pbar = tqdm(repos, desc="Processing repos")
+
+        def update_pbar():
+            pbar.set_postfix(updated=ok, skipped=skip, failed=err)
+
+        for repo in pbar:
+            r_repo, status, is_503, message, diff_lines = process_one_repo(
+                token, repo, args
             )
-            print(f"OK {repo}")
-            ok += 1
+            apply_result(r_repo, status, is_503, message, diff_lines)
             update_pbar()
-        except HTTPError as e:
-            if e.code == 503:
-                totally_failed_repos.append(repo)
-            print(f"FAIL {repo}: HTTP {e.code} {e.reason}", file=sys.stderr)
-            if e.fp:
-                try:
-                    body = e.fp.read().decode()
-                    print(body[:500], file=sys.stderr)
-                    if e.code == 403 and "personal access token" in body.lower():
-                        print(
-                            "Hint: token needs 'repo' scope (or Contents R/W for fine-grained), "
-                            "and org SSO authorization if enabled.",
-                            file=sys.stderr,
-                        )
-                    if e.code == 404 and "update" in body.lower():
-                        print(
-                            "Hint: 404 on update often means no write access to the repo "
-                            "or token lacks push permission.",
-                            file=sys.stderr,
-                        )
-                except Exception:
-                    pass
-            err += 1
-            update_pbar()
-        except URLError as e:
-            print(f"FAIL {repo}: {e}", file=sys.stderr)
-            err += 1
-            update_pbar()
+    else:
+        pbar = tqdm(total=len(repos), desc="Processing repos")
+
+        def update_pbar():
+            with lock:
+                pbar.set_postfix(updated=ok, skipped=skip, failed=err)
+            pbar.update(1)
+
+        def do_one(repo: str):
+            return process_one_repo(token, repo, args)
+
+        with ThreadPoolExecutor(max_workers=num_workers) as executor:
+            futures = {executor.submit(do_one, repo): repo for repo in repos}
+            for future in as_completed(futures):
+                r_repo, status, is_503, message, diff_lines = future.result()
+                apply_result(r_repo, status, is_503, message, diff_lines)
+                update_pbar()
 
     if args.dry_run:
         print(f"\nDone (dry run): {ok} would be updated, {skip} skipped, {err} failed")
