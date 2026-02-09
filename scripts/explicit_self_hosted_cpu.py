@@ -100,6 +100,33 @@ def put_file(
     api_request(token, "PUT", url, payload)
 
 
+def workflow_passed(token: str, repo: str, branch: str) -> bool:
+    """True if the classroom workflow has a successful completed run on the given branch."""
+    try:
+        workflows_url = f"https://api.github.com/repos/{repo}/actions/workflows"
+        out = api_request(token, "GET", workflows_url)
+        workflows = out.get("workflows", [])
+        workflow_id = None
+        for w in workflows:
+            if w.get("path") == WORKFLOW_PATH:
+                workflow_id = w.get("id")
+                break
+        if workflow_id is None:
+            return False
+        runs_url = (
+            f"https://api.github.com/repos/{repo}/actions/workflows/{workflow_id}/runs"
+            f"?branch={branch}&per_page=1&status=completed"
+        )
+        runs_out = api_request(token, "GET", runs_url)
+        runs = runs_out.get("workflow_runs", [])
+        if not runs:
+            return False
+        return runs[0].get("conclusion") == "success"
+    except (HTTPError, URLError, KeyError):
+        print(f"FAIL {repo}: {e}", file=sys.stderr)
+        return False
+
+
 def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(
         description="Replace runs-on: self-hosted with runs-on: self-hosted-cpu in classroom.yml for homework repos.",
@@ -115,6 +142,11 @@ def parse_args() -> argparse.Namespace:
         default=None,
         metavar="OWNER/REPO",
         help="Full repo paths to process (e.g. fintech-dl-hse/hw-mlp owner/repo-name). If omitted, use all from .github/classroom.",
+    )
+    p.add_argument(
+        "--skip-if-passed",
+        action="store_true",
+        help="Do not modify workflow file if the classroom workflow has a successful run on the default branch.",
     )
     return p.parse_args()
 
@@ -167,6 +199,11 @@ def main() -> int:
                 print(f"SKIP {repo}: no 'runs-on: self-hosted' to replace")
                 skip += 1
                 continue
+            branch = get_default_branch(token, repo)
+            if args.skip_if_passed and workflow_passed(token, repo, branch):
+                print(f"SKIP {repo}: pipelines passed")
+                skip += 1
+                continue
             if args.dry_run:
                 old_lines = content.splitlines()
                 new_lines = new_content.splitlines()
@@ -182,7 +219,6 @@ def main() -> int:
                     print(line)
                 ok += 1
                 continue
-            branch = get_default_branch(token, repo)
             put_file(
                 token,
                 repo,
