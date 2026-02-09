@@ -1,0 +1,18 @@
+---
+description: Homeworks process overview — autograding, deadlines, notebooks, tests
+alwaysApply: true
+---
+
+# Homeworks Process Overview
+
+- **Autograding**: Homeworks are autograded via **GitHub Classrooms**. Each student gets a repo; runs are triggered on push and results feed into grades.
+
+- **Deadlines**: Defined in `checkhw/terraform/functions/grades/index.py` in the `known_homeworks` dict. Each homework has a `deadline` (datetime). Late submissions get penalty days and percent applied to points.
+
+- **Autograding config**: In **checkhw** repo, `.github/classroom/` holds one JSON per homework (e.g. `autograding-activations.json`, `autograding-mlp.json`). Each file has `tests` with `name`, `run` (command), `points`, `timeout`, etc. Max points and check commands come from these files.
+
+- **Notebooks and extraction**: Students usually solve homeworks in **Jupyter notebooks**. Code is extracted to a separate file with `checkhw/scripts/extract_class_from_notebook.py` (args: `--notebook`, `--class_definition`, `--out_filename`). The extracted file is then used by tests.
+
+- **Tests**: The **checkhw** repo has a `tests/` directory; each homework has a subfolder (e.g. `tests/activations/`, `tests/mlp/`, `tests/pytorch-basics/`). Autograding runs these tests (e.g. `pytest tests/activations/test_activations.py`).
+
+- **HW repo URL**: Template is `https://github.com/fintech-dl-hse/hw-<name>`. Repo name = prefix `fintech-dl-hse/hw-` + homework name (e.g. `hw-mlp` → `https://github.com/fintech-dl-hse/hw-mlp`).
