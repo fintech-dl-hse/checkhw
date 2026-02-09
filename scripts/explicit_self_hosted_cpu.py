@@ -261,23 +261,31 @@ def main() -> int:
     skip = 0
     err = 0
     totally_failed_repos: list[str] = []
-    for repo in tqdm(repos, desc="Processing repos"):
+
+    def update_pbar():
+        pbar.set_postfix(updated=ok, skipped=skip, failed=err)
+
+    pbar = tqdm(repos, desc="Processing repos")
+    for repo in pbar:
         try:
             result = get_file_content_and_sha(token, repo, WORKFLOW_PATH)
             if result is None:
                 print(f"SKIP {repo}: no {WORKFLOW_PATH}")
                 skip += 1
+                update_pbar()
                 continue
             content, sha = result
             new_content = RUNNER_REPLACE.sub(REPLACEMENT, content)
             if new_content == content:
                 print(f"SKIP {repo}: no 'runs-on: self-hosted' to replace")
                 skip += 1
+                update_pbar()
                 continue
             branch = get_default_branch(token, repo)
             if args.skip_if_passed and workflow_passed(token, repo, branch):
-                print(f"SKIP {repo}: pipelines passed")
+                # print(f"SKIP {repo}: pipelines passed")
                 skip += 1
+                update_pbar()
                 continue
             if args.dry_run:
                 old_lines = content.splitlines()
@@ -293,6 +301,7 @@ def main() -> int:
                 for line in diff:
                     print(line)
                 ok += 1
+                update_pbar()
                 continue
             put_file(
                 token,
@@ -305,6 +314,7 @@ def main() -> int:
             )
             print(f"OK {repo}")
             ok += 1
+            update_pbar()
         except HTTPError as e:
             if e.code == 503:
                 totally_failed_repos.append(repo)
@@ -328,9 +338,11 @@ def main() -> int:
                 except Exception:
                     pass
             err += 1
+            update_pbar()
         except URLError as e:
             print(f"FAIL {repo}: {e}", file=sys.stderr)
             err += 1
+            update_pbar()
 
     if args.dry_run:
         print(f"\nDone (dry run): {ok} would be updated, {skip} skipped, {err} failed")
