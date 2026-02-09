@@ -3,8 +3,10 @@
 Replace `runs-on: self-hosted` with `runs-on: self-hosted-cpu` in .github/workflows/classroom.yml
 for all homework template repos. Uses GITHUB_TOKEN from environment. Run from checkhw repo root
 or set CHECKHW_ROOT. Use --dry-run to print diffs for all repos that would change, without
-updating any repo.
+updating any repo. Use --repos to limit to specific repos by full path owner/repo
+(e.g. --repos fintech-dl-hse/hw-mlp fintech-dl-hse/fintech-dl-hse-2026-...-hw-weight-init).
 """
+import argparse
 import base64
 import difflib
 import json
@@ -98,22 +100,52 @@ def put_file(
     api_request(token, "PUT", url, payload)
 
 
+def parse_args() -> argparse.Namespace:
+    p = argparse.ArgumentParser(
+        description="Replace runs-on: self-hosted with runs-on: self-hosted-cpu in classroom.yml for homework repos.",
+    )
+    p.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Print diffs only, do not update any repo.",
+    )
+    p.add_argument(
+        "--repos",
+        nargs="*",
+        default=None,
+        metavar="OWNER/REPO",
+        help="Full repo paths to process (e.g. fintech-dl-hse/hw-mlp owner/repo-name). If omitted, use all from .github/classroom.",
+    )
+    return p.parse_args()
+
+
 def main() -> int:
-    dry_run = "--dry-run" in sys.argv
+    args = parse_args()
 
     token = os.environ.get("GITHUB_TOKEN")
     if not token:
         print("GITHUB_TOKEN is not set", file=sys.stderr)
         return 1
 
-    checkhw_root = get_checkhw_root()
-    names = list_homework_names(checkhw_root)
-    if not names:
-        print("No autograding-*.json found in .github/classroom", file=sys.stderr)
-        return 1
+    if args.repos is not None:
+        repos = [x.strip() for x in args.repos if x.strip()]
+        if not repos:
+            print("No repos to process (empty --repos)", file=sys.stderr)
+            return 1
+        for r in repos:
+            if "/" not in r:
+                print(f"Invalid repo path (expected owner/repo): {r!r}", file=sys.stderr)
+                return 1
+    else:
+        checkhw_root = get_checkhw_root()
+        names = list_homework_names(checkhw_root)
+        if not names:
+            print("No autograding-*.json found in .github/classroom", file=sys.stderr)
+            return 1
+        repos = [f"{REPO_OWNER}/{REPO_PREFIX}{name}" for name in names]
 
-    print("HW Names", "\n".join(names))
-    if dry_run:
+    print("Repos", "\n".join(repos))
+    if args.dry_run:
         print("Dry run: will print diffs only, no updates.\n")
     elif input("Continue? (y/n) ") != "y":
         print("Aborting")
@@ -122,8 +154,7 @@ def main() -> int:
     ok = 0
     skip = 0
     err = 0
-    for name in names:
-        repo = f"{REPO_OWNER}/{REPO_PREFIX}{name}"
+    for repo in repos:
         try:
             result = get_file_content_and_sha(token, repo, WORKFLOW_PATH)
             if result is None:
@@ -136,7 +167,7 @@ def main() -> int:
                 print(f"SKIP {repo}: no 'runs-on: self-hosted' to replace")
                 skip += 1
                 continue
-            if dry_run:
+            if args.dry_run:
                 old_lines = content.splitlines()
                 new_lines = new_content.splitlines()
                 diff = difflib.unified_diff(
@@ -188,7 +219,7 @@ def main() -> int:
             print(f"FAIL {repo}: {e}", file=sys.stderr)
             err += 1
 
-    if dry_run:
+    if args.dry_run:
         print(f"\nDone (dry run): {ok} would be updated, {skip} skipped, {err} failed")
     else:
         print(f"\nDone: {ok} updated, {skip} skipped, {err} failed")
