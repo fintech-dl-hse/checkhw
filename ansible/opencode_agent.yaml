@@ -1,0 +1,87 @@
+---
+- name: Add github-runner user
+  hosts: ['opencode']
+  become: yes
+  tasks:
+    - name: create github runner user
+      user:
+        name: github-runner
+
+- name: Make data path
+  hosts: ['opencode']
+  become: yes
+  tasks:
+    - name: mkdir data
+      ansible.builtin.file:
+        path: /data
+        state: directory
+        owner: root
+        group: root
+    - name: mkdir data/var
+      ansible.builtin.file:
+        path: /data/var
+        state: directory
+        owner: root
+        group: root
+
+
+- name: Install packages
+  hosts: [ 'opencode' ]
+  become: yes
+  tasks:
+    - name: Remove File /etc/apt/sources.list.d/saltstack.list
+      file:
+        path: /etc/apt/sources.list.d/saltstack.list
+        state: absent
+    - name: install unzip
+      apt:
+        name: unzip
+        state: present
+        update_cache: true
+    - name: install zip
+      apt:
+        name: zip
+        state: present
+        update_cache: true
+    - name: install tmux
+      apt:
+        name: tmux
+        state: present
+
+- name: Install GitHub Actions Runner
+  hosts: ['opencode']
+  become: yes
+  vars:
+    runner_user: "github-runner"
+    runner_dir: /data/var/actions-runner
+    runner_pkg_tempdir: /tmp/gh_actions_runner
+    runner_version: "latest"
+    runner_state: "started"
+    reinstall_runner: yes
+    hide_sensitive_logs: no
+    github_url: "https://github.com"
+    github_api_url: "https://api.github.com"
+    runner_org: yes
+    runner_labels: [ 'self-hosted-opencode' ]
+    runner_download_repository: "actions/runner"
+    runner_extra_config_args: ""
+    runner_name: "ansible-runner opencode"
+    runner_on_ghes: no
+    github_account: "fintech-dl-hse"
+    custom_env: |
+      DEEPSEEK_API_KEY={{lookup('env', 'DEEPSEEK_API_KEY')}}
+  roles:
+    - role: ansible-github_actions_runner
+
+# - name: Restart always for all runners units
+#   hosts: [ 'github_runners', 'github_runners_gpu' ]
+#   become: yes
+#   tasks:
+#     - name: Restart always for all runners units
+#       block:
+#         - name: Run the installer
+#           shell: grep -q '^\[Service\]' /etc/systemd/system/your-service.service && !grep -q '^Restart=' /etc/systemd/system/your-service.service && sed -i '/^\[Service\]/a Restart=always' /etc/systemd/system/your-service.service
+#         - name: Restart the service
+#           shell: systemctl daemon-reload && systemctl restart your-service
+
+

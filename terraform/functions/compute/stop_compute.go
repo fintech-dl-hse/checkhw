@@ -35,6 +35,10 @@ func StopComputeInstance(ctx context.Context) (*Response, error) {
 	count := 0
 	// Фильтрация списка Compute Instance, фильтр: выключена, в тегах содержится тег, заданный запросом
 	for _, i := range instances {
+		if i.Name == "opencode-agent" {
+			fmt.Println("Skip opencode-agent instance", i.Name)
+			continue
+		}
 		if i.Status == compute.Instance_RUNNING {
 			_, err := stopComputeInstance(ctx, sdk, i.GetId())
 			if err != nil {
