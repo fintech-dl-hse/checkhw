@@ -16,3 +16,5 @@ alwaysApply: true
 - **Tests**: The **checkhw** repo has a `tests/` directory; each homework has a subfolder (e.g. `tests/activations/`, `tests/mlp/`, `tests/pytorch-basics/`). Autograding runs these tests (e.g. `pytest tests/activations/test_activations.py`).
 
 - **HW repo URL**: Template is `https://github.com/fintech-dl-hse/hw-<name>`. Repo name = prefix `fintech-dl-hse/hw-` + homework name (e.g. `hw-mlp` → `https://github.com/fintech-dl-hse/hw-mlp`).
+
+- **Workflow runner tags**: In `.github/workflows/classroom.yml`, use explicit runner labels only: **`self-hosted-cpu`** or **`self-hosted-gpu`** (e.g. `runs-on: self-hosted-cpu`). The plain **`self-hosted`** tag is **prohibited**; always use one of the explicit tags above.
