@@ -3,19 +3,24 @@
 Replace `runs-on: self-hosted` with `runs-on: self-hosted-cpu` in .github/workflows/classroom.yml
 for all homework template repos. Uses GITHUB_TOKEN from environment. Run from checkhw repo root
 or set CHECKHW_ROOT. Use --dry-run to print diffs for all repos that would change, without
-updating any repo. Use --repos to limit to specific repos by full path owner/repo
-(e.g. --repos fintech-dl-hse/hw-mlp fintech-dl-hse/fintech-dl-hse-2026-...-hw-weight-init).
+updating any repo. Use --repos to pass owner/repo explicitly, or --repos-from-csv PATH to read
+student_repository_url from a CSV (GitHub URLs are converted to owner/repo).
 """
+from tqdm import tqdm
 import argparse
 import base64
+import csv
 import difflib
 import json
 import os
 import re
 import sys
+import time
 from pathlib import Path
 from urllib.request import Request, urlopen
 from urllib.error import HTTPError, URLError
+
+MAX_503_RETRIES = 10
 
 REPO_OWNER = "fintech-dl-hse"
 REPO_PREFIX = "hw-"
@@ -46,7 +51,9 @@ def list_homework_names(checkhw_root: Path) -> list[str]:
     return sorted(names)
 
 
-def api_request(token: str, method: str, url: str, data: dict | None = None) -> dict:
+def api_request(
+    token: str, method: str, url: str, data: dict | None = None
+) -> dict:
     headers = {
         "Accept": "application/vnd.github+json",
         "Authorization": f"Bearer {token}",
@@ -57,9 +64,21 @@ def api_request(token: str, method: str, url: str, data: dict | None = None) -> 
         headers["Content-Type"] = "application/json"
     else:
         body = None
-    req = Request(url, data=body, method=method, headers=headers)
-    with urlopen(req) as resp:
-        return json.loads(resp.read().decode())
+    for attempt in range(MAX_503_RETRIES):
+        try:
+            req = Request(url, data=body, method=method, headers=headers)
+            with urlopen(req) as resp:
+                return json.loads(resp.read().decode())
+        except HTTPError as e:
+            if e.code == 503 and attempt < MAX_503_RETRIES - 1:
+                if e.fp:
+                    try:
+                        e.fp.read()
+                    except Exception:
+                        pass
+                time.sleep(5 * (attempt + 1))
+                continue
+            raise
 
 
 def get_default_branch(token: str, repo: str) -> str:
@@ -127,6 +146,42 @@ def workflow_passed(token: str, repo: str, branch: str) -> bool:
         return False
 
 
+def github_url_to_repo(url: str) -> str | None:
+    """Convert a GitHub URL to owner/repo, or return None if not a GitHub repo URL."""
+    url = (url or "").strip()
+    if not url:
+        return None
+    for prefix in ("https://github.com/", "http://github.com/", "github.com/"):
+        if url.startswith(prefix):
+            path = url[len(prefix) :].rstrip("/")
+            if path.endswith(".git"):
+                path = path[: -len(".git")]
+            path = path.split("/")[:2]
+            if len(path) == 2 and path[0] and path[1]:
+                return f"{path[0]}/{path[1]}"
+            return None
+    return None
+
+
+def load_repos_from_csv(path: str) -> list[str]:
+    """Read CSV and return list of owner/repo from column student_repository_url."""
+    repos: list[str] = []
+    with open(path, newline="", encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        if "student_repository_url" not in (reader.fieldnames or []):
+            raise ValueError(
+                f"CSV must have column 'student_repository_url', got {reader.fieldnames!r}"
+            )
+        seen: set[str] = set()
+        for row in reader:
+            url = row.get("student_repository_url", "")
+            repo = github_url_to_repo(url)
+            if repo and repo not in seen:
+                seen.add(repo)
+                repos.append(repo)
+    return repos
+
+
 def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(
         description="Replace runs-on: self-hosted with runs-on: self-hosted-cpu in classroom.yml for homework repos.",
@@ -148,6 +203,13 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Do not modify workflow file if the classroom workflow has a successful run on the default branch.",
     )
+    p.add_argument(
+        "--repos-from-csv",
+        type=str,
+        default=None,
+        metavar="PATH",
+        help="Read repo list from CSV: use column student_repository_url (GitHub URLs converted to owner/repo).",
+    )
     return p.parse_args()
 
 
@@ -159,7 +221,19 @@ def main() -> int:
         print("GITHUB_TOKEN is not set", file=sys.stderr)
         return 1
 
-    if args.repos is not None:
+    if args.repos_from_csv is not None:
+        try:
+            repos = load_repos_from_csv(args.repos_from_csv)
+        except FileNotFoundError:
+            print(f"File not found: {args.repos_from_csv}", file=sys.stderr)
+            return 1
+        except ValueError as e:
+            print(e, file=sys.stderr)
+            return 1
+        if not repos:
+            print("No repos to process (no valid student_repository_url in CSV)", file=sys.stderr)
+            return 1
+    elif args.repos is not None:
         repos = [x.strip() for x in args.repos if x.strip()]
         if not repos:
             print("No repos to process (empty --repos)", file=sys.stderr)
@@ -186,7 +260,8 @@ def main() -> int:
     ok = 0
     skip = 0
     err = 0
-    for repo in repos:
+    totally_failed_repos: list[str] = []
+    for repo in tqdm(repos, desc="Processing repos"):
         try:
             result = get_file_content_and_sha(token, repo, WORKFLOW_PATH)
             if result is None:
@@ -231,6 +306,8 @@ def main() -> int:
             print(f"OK {repo}")
             ok += 1
         except HTTPError as e:
+            if e.code == 503:
+                totally_failed_repos.append(repo)
             print(f"FAIL {repo}: HTTP {e.code} {e.reason}", file=sys.stderr)
             if e.fp:
                 try:
@@ -259,6 +336,10 @@ def main() -> int:
         print(f"\nDone (dry run): {ok} would be updated, {skip} skipped, {err} failed")
     else:
         print(f"\nDone: {ok} updated, {skip} skipped, {err} failed")
+    if totally_failed_repos:
+        print("\nTotally failed repos (HTTP 503 after retries):", file=sys.stderr)
+        for r in totally_failed_repos:
+            print(f"  {r}", file=sys.stderr)
     return 0 if err == 0 else 1
 
 
