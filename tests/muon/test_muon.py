@@ -1,5 +1,4 @@
 """Tests for Muon optimizer."""
-import copy
 
 import pytest
 import torch
@@ -108,6 +107,6 @@ def test_muon_close_to_torch_muon():
     )
 
     # Allow some tolerance (different NS details / scaling)
-    assert torch.allclose(w_student, w_torch, atol=0.5, rtol=0.5), (
+    assert torch.allclose(w_student, w_torch, atol=0.1), (
         "student Muon result should be close to torch.optim.Muon"
     )
