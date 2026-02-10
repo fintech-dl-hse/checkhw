@@ -56,9 +56,6 @@ def _handler(event, context, detailed=False):
         "hw-activations": {
             "deadline": datetime.datetime.strptime("2026-02-05T03:05:00", "%Y-%m-%dT%H:%M:%S"),
         },
-        "hw-autograd-mlp": {
-            "deadline": datetime.datetime.strptime("2026-06-17T06:05:00", "%Y-%m-%dT%H:%M:%S"),
-        },
         "hw-weight-init": {
             "deadline": datetime.datetime.strptime("2026-02-05T03:05:00", "%Y-%m-%dT%H:%M:%S"),
         },
@@ -84,6 +81,15 @@ def _handler(event, context, detailed=False):
             # 2 недели
             "deadline": datetime.datetime.strptime("2026-03-30T03:05:00", "%Y-%m-%dT%H:%M:%S"),
         },
+
+        # Бонусные
+        "hw-autograd-mlp": {
+            "deadline": datetime.datetime.strptime("2026-06-17T06:05:00", "%Y-%m-%dT%H:%M:%S"),
+        },
+        "hw-muon": {
+            "deadline": datetime.datetime.strptime("2026-06-17T06:05:00", "%Y-%m-%dT%H:%M:%S"),
+        },
+
 
         # 4 модуль
         "hw-tokenization": {
