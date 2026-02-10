@@ -41,6 +41,12 @@ alwaysApply: true
 - **Student version (step 4)**: Replace full implementations with **docstrings** (algorithm outline and references) and **`raise NotImplementedError("...")`**. Do **not** change function/class names or signatures so extraction and tests keep working.
 - **In-notebook tests**: Add a cell that runs the same checks as the checkhw tests (e.g. copy the test logic or import from a test helper) so students can verify in the notebook before pushing. Use the same assertions and tolerances as in `checkhw/tests/<name>/`.
 
+**Theory cells and task cells (readability and self-containment)**
+
+- **Theory cells**: Use short, structured blocks: **Definition** (one clear sentence/formula), **Properties** (bullet list), then a line linking to the algorithm (e.g. "In iteration X we use this for …"). Avoid long paragraphs; use bullet points and `---` between sections if needed.
+- **Task cells**: Make the task **self-contained**. For non-obvious math (e.g. why polar factor = $(X X^T)^{-1/2} X$, what $\lambda$ denotes), add a brief "Why" or "What is …" subsection in the same cell so students understand from the task description alone. Use bold subsection titles and optional `---` separators. Define or motivate every symbol the algorithm relies on (e.g. $\lambda$ = eigenvalue of $X X^T$).
+- **Optional**: Light use of emojis in section headers (e.g. 📐 ✅ 🎯) can improve scanability; keep them sparse and consistent.
+
 **Repo and autograding setup**
 
 7. **Create the homework repo** from the template **`fintech-dl-hse/hw-template`**: **Use this template** → create `fintech-dl-hse/hw-<name>`, or clone and push. Rename `hw_template.ipynb` → `hw_<name>.ipynb`.

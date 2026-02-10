@@ -47,6 +47,11 @@ When authoring or editing the homework notebook, follow the rules in **homeworks
 - **Student version**: Replace solution code with docstring + `raise NotImplementedError("...")`; keep names and signatures unchanged.
 - **Tests**: Optionally add a cell that runs the same checks as `checkhw/tests/<slug>/` so students can run tests in the notebook.
 
+**Theory and task cells (self-contained, scannable):**
+
+- **Theory cells**: Keep them short and structured: Definition → Properties (bullets) → one sentence linking to the algorithm. Fill every theory placeholder (e.g. "Норма Фробениуса", "Полином Ньютона–Шульца") with real content so the notebook stands alone.
+- **Task cells**: Make the task understandable from that cell alone. For non-obvious formulas (e.g. why polar factor = $(X X^T)^{-1/2} X$), add a short "Why" / "What is …" block. Define every symbol the algorithm uses (e.g. $\lambda$ = eigenvalue of $X X^T$). Use bold subsection titles and `---` between blocks; optional light emojis in headers (📐 ✅ 🎯) for scanability. Reference: see **hw-muon** "Задание 1" cell for structure (goal → why formula → what is λ → algorithm → signature).
+
 ## Reference
 
 - Process and notebook structure: **`checkhw/.cursor/rules/homeworks-process-overview.mdc`**
