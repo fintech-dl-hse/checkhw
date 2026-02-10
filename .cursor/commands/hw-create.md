@@ -37,6 +37,16 @@ Optionally: if the user wants, create a **placeholder** `autograding-<slug>.json
 - Reply with the new repo URL: `https://github.com/fintech-dl-hse/hw-<slug>`.
 - Mention that they should clone it locally, rename/customize the notebook and workflow (extract steps, runner: `self-hosted-cpu` or `self-hosted-gpu`), add README and `.gitignore` entries for extracted `.py` files, then add tests and autograding config in checkhw as above.
 
+## 5. Notebook authoring checklist (when creating content)
+
+When authoring or editing the homework notebook, follow the rules in **homeworks-process-overview.mdc**:
+
+- **Math**: Use `$ ... $` and `$$ ... $$` only; `\( \)` and `\[ \]` do not render in Jupyter.
+- **Structure**: One task per cell; add an “injection” cell if a later cell must `import` something defined in an earlier cell (for both notebook execution and extracted `.py`).
+- **Theory**: Cite reference implementation/docs (e.g. PyTorch); describe full algorithm and then “in this assignment” simplified variant.
+- **Student version**: Replace solution code with docstring + `raise NotImplementedError("...")`; keep names and signatures unchanged.
+- **Tests**: Optionally add a cell that runs the same checks as `checkhw/tests/<slug>/` so students can run tests in the notebook.
+
 ## Reference
 
 - Process and notebook structure: **`checkhw/.cursor/rules/homeworks-process-overview.mdc`**

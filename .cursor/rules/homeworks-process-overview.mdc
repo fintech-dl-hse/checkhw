@@ -32,7 +32,14 @@ alwaysApply: true
 3. **Commit** the solved notebook and tests (e.g. in a branch or temp repo).
 4. **Prepare the student version**: add preliminary tasks for the main work; **remove working code**; replace with TODOs for students and **documentation** for methods (description and references).
 5. **Commit** the student version.
-6. **Notebook layout**: ensure notebook cells are **testable** — **one task per cell** (preliminary or main). Each such cell can then be extracted to a separate file, imported and tested with pytest.
+6. **Notebook layout**: ensure notebook cells are **testable** — **one task per cell** (preliminary or main). Each such cell can then be extracted to a separate file, imported and tested with pytest. If a later cell (e.g. an optimizer class) needs to `import` something from an earlier cell (e.g. a helper function), add an **injection cell** after the first definition that does `sys.modules["module_name"] = ...` so that the same notebook can run top-to-bottom and the extracted file can still contain `from module_name import ...` for CI.
+
+**Notebook authoring details**
+
+- **Math in markdown**: Use **`$ ... $`** for inline math and **`$$ ... $$`** for display math. Do **not** use `\( \)` or `\[ \]` — they do not render in Jupyter.
+- **Theory and references**: When describing algorithms, align with official/reference docs (e.g. PyTorch), cite them in the intro and in task cells. Clearly separate the full algorithm (with optional parts) from the simplified “in this assignment” variant. Keep docstrings in code cells consistent (short algorithm summary + link to reference).
+- **Student version (step 4)**: Replace full implementations with **docstrings** (algorithm outline and references) and **`raise NotImplementedError("...")`**. Do **not** change function/class names or signatures so extraction and tests keep working.
+- **In-notebook tests**: Add a cell that runs the same checks as the checkhw tests (e.g. copy the test logic or import from a test helper) so students can verify in the notebook before pushing. Use the same assertions and tolerances as in `checkhw/tests/<name>/`.
 
 **Repo and autograding setup**
 
