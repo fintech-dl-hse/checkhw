@@ -11,10 +11,38 @@ alwaysApply: true
 
 - **Autograding config**: In **checkhw** repo, `.github/classroom/` holds one JSON per homework (e.g. `autograding-activations.json`, `autograding-mlp.json`). Each file has `tests` with `name`, `run` (command), `points`, `timeout`, etc. Max points and check commands come from these files.
 
-- **Notebooks and extraction**: Students usually solve homeworks in **Jupyter notebooks**. Code is extracted to a separate file with `checkhw/scripts/extract_class_from_notebook.py` (args: `--notebook`, `--class_definition`, `--out_filename`). The extracted file is then used by tests.
+- **Notebooks and extraction**: Students solve homeworks in **Jupyter notebooks**. Code is extracted with `checkhw/scripts/extract_class_from_notebook.py` (args: `--notebook`, `--class_definition`, `--out_filename`) and used by tests. **Notebook structure**: each separate task (preliminary or main) must be in a **separate cell** so it can be extracted to a separate file, imported, and tested with pytest.
 
 - **Tests**: The **checkhw** repo has a `tests/` directory; each homework has a subfolder (e.g. `tests/activations/`, `tests/mlp/`, `tests/pytorch-basics/`). Autograding runs these tests (e.g. `pytest tests/activations/test_activations.py`).
 
 - **HW repo URL**: Template is `https://github.com/fintech-dl-hse/hw-<name>`. Repo name = prefix `fintech-dl-hse/hw-` + homework name (e.g. `hw-mlp` → `https://github.com/fintech-dl-hse/hw-mlp`).
 
+- **Homework template repo**: All new homeworks **start from** the private template **`fintech-dl-hse/hw-template`**. Do not create homework repos from scratch; use this template (GitHub “Use this template” or clone and push to a new repo).
+
 - **Workflow runner tags**: In `.github/workflows/classroom.yml`, use explicit runner labels only: **`self-hosted-cpu`** or **`self-hosted-gpu`** (e.g. `runs-on: self-hosted-cpu`). The plain **`self-hosted`** tag is **prohibited**; always use one of the explicit tags above.
+
+---
+
+## Creating a new homework
+
+**Content and notebook (authoring)**
+
+1. **Solve the homework** in a Jupyter notebook (full working solution).
+2. **Write tests** that run against the solved notebook (or extracted code); ensure tests **pass**.
+3. **Commit** the solved notebook and tests (e.g. in a branch or temp repo).
+4. **Prepare the student version**: add preliminary tasks for the main work; **remove working code**; replace with TODOs for students and **documentation** for methods (description and references).
+5. **Commit** the student version.
+6. **Notebook layout**: ensure notebook cells are **testable** — **one task per cell** (preliminary or main). Each such cell can then be extracted to a separate file, imported and tested with pytest.
+
+**Repo and autograding setup**
+
+7. **Create the homework repo** from the template **`fintech-dl-hse/hw-template`**: **Use this template** → create `fintech-dl-hse/hw-<name>`, or clone and push. Rename `hw_template.ipynb` → `hw_<name>.ipynb`.
+8. **Extract and save tests** as separate files into the **checkhw** repo: `checkhw/tests/<name>/` (pytest tests that import and test the extracted modules).
+9. **Initialize autograding** in checkhw: add `.github/classroom/autograding-<name>.json` with test commands and points; add the homework and `deadline` in `terraform/functions/grades/index.py` in `known_homeworks`.
+10. **Add the GitHub Action check-HW workflow** in the homework repo: in `.github/workflows/classroom.yml` use `fintech-dl-hse/action-checkout-hw@main` (with `autograding-file: autograding-<name>.json`), add **Extract** steps (one per class/definition: `scripts/extract_class_from_notebook.py`), then `education/autograding@v1`. Use `runs-on: self-hosted-cpu` or `self-hosted-gpu` (and `start-gpu-runner.yaml` in the first job if GPU is needed).
+
+**Classroom**
+
+11. **GitHub Classroom**: Create an assignment that uses the new `hw-<name>` repo as the template so each student gets a copy.
+
+See the template repo README for workflow file examples.

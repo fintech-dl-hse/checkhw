@@ -1,0 +1,22 @@
+{
+    "tests": [
+        {
+            "name": "Template placeholder test",
+            "run": "PYTHONPATH=. python -c \"from placeholder_module import PlaceholderModule; m = PlaceholderModule(); print('OK')\"",
+            "input": "",
+            "output": "",
+            "comparison": "included",
+            "timeout": 5,
+            "points": 100
+        },
+        {
+            "name": "feedback",
+            "run": "echo -e '\\n\\nTemplate repo: replace autograding-file and add real tests when creating a new homework.\\n\\n'",
+            "input": "",
+            "output": "",
+            "comparison": "included",
+            "timeout": 1,
+            "points": 0
+        }
+    ]
+}
