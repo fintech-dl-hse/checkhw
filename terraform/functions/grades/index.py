@@ -125,7 +125,9 @@ def _handler(event, context, detailed=False):
 
 
     forced_penalty_days = {
-        ""
+        "hw-mlp-rakhamidullin": 0,
+        "hw-activations-rakhamidullin": 0,
+        "hw-weight-init-rakhamidullin": 0,
     }
 
     rnn_attention_repos_whitelist = set([
