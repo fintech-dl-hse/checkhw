@@ -54,6 +54,7 @@ def _load_known_homeworks():
         known_homeworks[hw_id] = {
             "deadline": deadline + deadline_offset,
             "bonus": item.get("bonus", False),
+            "max_points": item.get("max_points", 0),
         }
     return known_homeworks
 
@@ -210,8 +211,12 @@ def _handler(event, context, detailed=False):
         print(f"cant set fio error: {e}")
         print(f"all_senders: {all_senders}")
 
-    hw_max_points = 2200
-    result_total_df['hse_grade'] = min(result_total_df['result_points'] / hw_max_points, 1.0) * 8.0
+    hw_max_points = sum(
+        meta["max_points"] for meta in known_homeworks.values()
+        if not meta.get("bonus", False)
+    )
+    print("hw_max_points", hw_max_points)
+    result_total_df['hse_grade'] = min(result_total_df['result_points'] / max(hw_max_points, 1), 1.0) * 8.0
     result_total_df['hse_grade'] = result_total_df['hse_grade'].apply(lambda x: f"{min(x, 10):.2f}")
     result_total_df['hse_grade_rounded'] = result_total_df['hse_grade'].apply(lambda x: int(float(x) + 0.5))
 
