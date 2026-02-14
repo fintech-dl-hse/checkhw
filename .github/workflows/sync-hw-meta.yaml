@@ -1,0 +1,44 @@
+name: Sync hw-meta.json and grades function version
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/classroom/**'
+      - 'scripts/sync-hw-meta-points.py'
+      - 'terraform/functions/grades/index.py'
+
+jobs:
+  sync-hw-meta:
+    name: Update hw-meta and grades function version
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Sync hw-meta.json from autograding files
+        run: python3 ./scripts/sync-hw-meta-points.py
+
+      - name: Bump homeworks-info-* version in terraform
+        run: python3 ./scripts/update-homeworks-info-version.py
+
+      - name: Configure Git
+        run: |
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+
+      - name: Commit changes
+        run: |
+          git add terraform/functions/grades/hw-meta.json terraform/main.tf
+          git diff --staged --quiet || git commit -m "chore: sync hw-meta.json and bump grades function version"
+
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}
