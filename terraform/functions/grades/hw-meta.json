@@ -1,0 +1,74 @@
+{
+  "hw-mlp": {
+    "deadline": "2026-01-29T03:05:00",
+    "bonus": false
+  },
+  "hw-activations": {
+    "deadline": "2026-02-05T03:05:00",
+    "bonus": false
+  },
+  "hw-weight-init": {
+    "deadline": "2026-02-05T03:05:00",
+    "bonus": false
+  },
+  "hw-optimization": {
+    "deadline": "2026-02-12T03:05:00",
+    "bonus": false
+  },
+  "hw-dropout": {
+    "deadline": "2026-02-12T03:05:00",
+    "bonus": false
+  },
+  "hw-batchnorm": {
+    "deadline": "2026-03-05T03:05:00",
+    "bonus": false
+  },
+  "hw-pytorch-basics": {
+    "deadline": "2026-03-05T03:05:00",
+    "bonus": false
+  },
+  "hw-vae": {
+    "deadline": "2026-03-30T03:05:00",
+    "bonus": false
+  },
+  "hw-diffusion": {
+    "deadline": "2026-03-30T03:05:00",
+    "bonus": false
+  },
+  "hw-autograd-mlp": {
+    "deadline": "2026-06-17T06:05:00",
+    "bonus": true
+  },
+  "hw-muon": {
+    "deadline": "2026-06-17T06:05:00",
+    "bonus": true
+  },
+  "hw-tokenization": {
+    "deadline": "2026-04-16T03:05:00",
+    "bonus": false
+  },
+  "hw-rnn-attention": {
+    "deadline": "2026-05-07T03:05:00",
+    "bonus": false
+  },
+  "hw-transformer-attention": {
+    "deadline": "2026-05-07T03:05:00",
+    "bonus": false
+  },
+  "hw-efficiency": {
+    "deadline": "2026-05-21T03:05:00",
+    "bonus": false
+  },
+  "hw-llm-agent": {
+    "deadline": "2026-06-17T06:05:00",
+    "bonus": false
+  },
+  "hw-multimodal-llm": {
+    "deadline": "2026-06-17T06:05:00",
+    "bonus": true
+  },
+  "hw-letters": {
+    "deadline": "2026-06-17T06:05:00",
+    "bonus": true
+  }
+}
