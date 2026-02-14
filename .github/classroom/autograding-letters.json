@@ -25,7 +25,7 @@
       "output": "",
       "comparison": "included",
       "timeout": 5,
-      "points": 100
+      "points": 101
     },
     {
       "name": "feedback",
