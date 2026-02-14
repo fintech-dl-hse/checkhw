@@ -42,86 +42,24 @@ def _force_hw_grades():
     return forced_grades
 
 
+def _load_known_homeworks():
+    meta_path = os.path.join(os.path.dirname(__file__), "hw-meta.json")
+    with open(meta_path, encoding="utf-8") as f:
+        raw = json.load(f)
+    known_homeworks = {}
+    for hw_id, meta in raw.items():
+        known_homeworks[hw_id] = {
+            "deadline": datetime.datetime.strptime(meta["deadline"], "%Y-%m-%dT%H:%M:%S"),
+            "bonus": meta.get("bonus", False),
+        }
+    return known_homeworks
+
+
 def _handler(event, context, detailed=False):
 
     accumulated_data = []
 
-    known_homeworks = OrderedDict({
-        # 3 модуль
-        # У простых домашек дедлайн - ~1 неделя
-        # У домашек посложнее дедлайн - ~2 недели
-        "hw-mlp": {
-            "deadline": datetime.datetime.strptime("2026-01-29T03:05:00", "%Y-%m-%dT%H:%M:%S"),
-        },
-        "hw-activations": {
-            "deadline": datetime.datetime.strptime("2026-02-05T03:05:00", "%Y-%m-%dT%H:%M:%S"),
-        },
-        "hw-weight-init": {
-            "deadline": datetime.datetime.strptime("2026-02-05T03:05:00", "%Y-%m-%dT%H:%M:%S"),
-        },
-        "hw-optimization": {
-            "deadline": datetime.datetime.strptime("2026-02-12T03:05:00", "%Y-%m-%dT%H:%M:%S"),
-        },
-        "hw-dropout": {
-            "deadline": datetime.datetime.strptime("2026-02-12T03:05:00", "%Y-%m-%dT%H:%M:%S"),
-        },
-        "hw-batchnorm": {
-            # 2 недели
-            "deadline": datetime.datetime.strptime("2026-03-05T03:05:00", "%Y-%m-%dT%H:%M:%S"),
-        },
-        "hw-pytorch-basics": {
-            # 2 недели
-            "deadline": datetime.datetime.strptime("2026-03-05T03:05:00", "%Y-%m-%dT%H:%M:%S"),
-        },
-        "hw-vae": {
-            # 2 недели
-            "deadline": datetime.datetime.strptime("2026-03-30T03:05:00", "%Y-%m-%dT%H:%M:%S"),
-        },
-        "hw-diffusion": {
-            # 2 недели
-            "deadline": datetime.datetime.strptime("2026-03-30T03:05:00", "%Y-%m-%dT%H:%M:%S"),
-        },
-
-        # Бонусные
-        "hw-autograd-mlp": {
-            "deadline": datetime.datetime.strptime("2026-06-17T06:05:00", "%Y-%m-%dT%H:%M:%S"),
-        },
-        "hw-muon": {
-            "deadline": datetime.datetime.strptime("2026-06-17T06:05:00", "%Y-%m-%dT%H:%M:%S"),
-        },
-
-
-        # 4 модуль
-        "hw-tokenization": {
-            # 1 неделя
-            "deadline": datetime.datetime.strptime("2026-04-16T03:05:00", "%Y-%m-%dT%H:%M:%S"),
-        },
-        "hw-rnn-attention": {
-            # 3 недели
-            "deadline": datetime.datetime.strptime("2026-05-07T03:05:00", "%Y-%m-%dT%H:%M:%S"),
-        },
-        "hw-transformer-attention": {
-            # 3 недели
-            "deadline": datetime.datetime.strptime("2026-05-07T03:05:00", "%Y-%m-%dT%H:%M:%S"),
-        },
-        "hw-efficiency": {
-            # 2 недели
-            "deadline": datetime.datetime.strptime("2026-05-21T03:05:00", "%Y-%m-%dT%H:%M:%S"),
-        },
-        "hw-llm-agent": {
-            # до дня экзамена
-            "deadline": datetime.datetime.strptime("2026-06-17T06:05:00", "%Y-%m-%dT%H:%M:%S"),
-        },
-        "hw-multimodal-llm": {
-            # до дня экзамена
-            "deadline": datetime.datetime.strptime("2026-06-17T06:05:00", "%Y-%m-%dT%H:%M:%S"),
-        },
-        "hw-letters": {
-            # до дня экзамена
-            "deadline": datetime.datetime.strptime("2026-06-17T06:05:00", "%Y-%m-%dT%H:%M:%S"),
-        },
-        # календарная дата дедлайна должна быть с запасом на 1 день больше
-    })
+    known_homeworks = _load_known_homeworks()
 
 
     forced_penalty_days = {
