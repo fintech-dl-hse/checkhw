@@ -45,7 +45,8 @@
     "deadline": "2026-03-04T23:59:59",
     "bonus": false,
     "max_points": 100,
-    "feedback_form_url": "https://forms.gle/ZpQh7TCyme5Hq1PTA"
+    "feedback_form_url": "https://forms.gle/ZpQh7TCyme5Hq1PTA",
+    "classroom_invite_link": "https://classroom.github.com/a/mIBVliHe"
   },
   {
     "id": "hw-pytorch-basics",
