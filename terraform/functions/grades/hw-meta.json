@@ -15,6 +15,7 @@
   },
   {
     "id": "hw-weight-init",
+    "repo_name_template": "fintech-dl-hse-hw-weight-init-{github_nickname}",
     "deadline": "2026-02-04T23:59:59",
     "bonus": false,
     "max_points": 100,
