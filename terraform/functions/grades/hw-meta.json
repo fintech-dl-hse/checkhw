@@ -29,7 +29,8 @@
     "deadline": "2026-02-11T23:59:59",
     "bonus": false,
     "max_points": 200,
-    "feedback_form_url": "https://forms.gle/uoGrqgaZ3R6214c36"
+    "feedback_form_url": "https://forms.gle/uoGrqgaZ3R6214c36",
+    "classroom_invite_link": "https://classroom.github.com/a/jeX_hXTA"
   },
   {
     "id": "hw-dropout",
