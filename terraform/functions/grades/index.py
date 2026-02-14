@@ -211,7 +211,7 @@ def _handler(event, context, detailed=False):
         print(f"all_senders: {all_senders}")
 
     hw_max_points = 2200
-    result_total_df['hse_grade'] = result_total_df['result_points'] / hw_max_points * 10
+    result_total_df['hse_grade'] = min(result_total_df['result_points'] / hw_max_points, 1.0) * 8.0
     result_total_df['hse_grade'] = result_total_df['hse_grade'].apply(lambda x: f"{min(x, 10):.2f}")
     result_total_df['hse_grade_rounded'] = result_total_df['hse_grade'].apply(lambda x: int(float(x) + 0.5))
 
