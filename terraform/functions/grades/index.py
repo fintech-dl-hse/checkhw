@@ -65,35 +65,11 @@ def _handler(event, context, detailed=False):
 
     known_homeworks = _load_known_homeworks()
 
-
     forced_penalty_days = {
         "hw-mlp-rakhamidullin": 0,
         "hw-activations-rakhamidullin": 0,
         "hw-weight-init-rakhamidullin": 0,
     }
-
-    rnn_attention_repos_whitelist = set([
-        # "hw-rnn-attention-DanSmirnoff",
-        # "hw-rnn-attention-dimontmf7",
-        # "hw-rnn-attention-Uritskii",
-        # "hw-rnn-attention-Menako778",
-        # "hw-rnn-attention-yellowssnake",
-        # "hw-rnn-attention-Ripchic",
-        # "hw-rnn-attention-borodulinad",
-        # "hw-rnn-attention-GudkovNikolay",
-        # "hw-rnn-attention-Dushese",
-        # "hw-rnn-attention-heartcatched",
-        # "hw-rnn-attention-anyrozh",
-        # "hw-rnn-attention-kultattiana",
-        # "hw-rnn-attention-nuotstan",
-        # "hw-rnn-attention-sergey-khatuntsev",
-        # "hw-rnn-attention-tatianasor",
-        # "hw-rnn-attention-chtozaserikova",
-        # "hw-rnn-attention-nvoronetskaya",
-        # "hw-rnn-attention-seemsGoodNow",
-        # "hw-rnn-attention-UralTime",
-        # "hw-rnn-attention-Astemlr",
-    ])
 
     known_homeworks_keys = sorted(list(known_homeworks.keys()), key=lambda x: len(x), reverse=True)
     for i, hw_key_i in enumerate(known_homeworks_keys):
@@ -216,8 +192,9 @@ def _handler(event, context, detailed=False):
         if not meta.get("bonus", False)
     )
     print("hw_max_points", hw_max_points)
-    result_total_df['hse_grade'] = min(result_total_df['result_points'] / max(hw_max_points, 1), 1.0) * 8.0
-    result_total_df['hse_grade'] = result_total_df['hse_grade'].apply(lambda x: f"{min(x, 10):.2f}")
+    ratio = result_total_df['result_points'] / max(hw_max_points, 1)
+    result_total_df['hse_grade'] = ratio.clip(upper=1.0) * 8.0
+    result_total_df['hse_grade'] = result_total_df['hse_grade'].apply(lambda x: f"{x:.2f}")
     result_total_df['hse_grade_rounded'] = result_total_df['hse_grade'].apply(lambda x: int(float(x) + 0.5))
 
     df_to_render = result_total_df
