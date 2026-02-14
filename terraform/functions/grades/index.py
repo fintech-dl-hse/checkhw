@@ -45,14 +45,15 @@ def _force_hw_grades():
 def _load_known_homeworks():
     meta_path = os.path.join(os.path.dirname(__file__), "hw-meta.json")
     with open(meta_path, encoding="utf-8") as f:
-        raw = json.load(f)
+        raw_list = json.load(f)
     known_homeworks = {}
     deadline_offset = datetime.timedelta(hours=3, minutes=5, seconds=1)
-    for hw_id, meta in raw.items():
-        deadline = datetime.datetime.strptime(meta["deadline"], "%Y-%m-%dT%H:%M:%S")
+    for item in raw_list:
+        hw_id = item["id"]
+        deadline = datetime.datetime.strptime(item["deadline"], "%Y-%m-%dT%H:%M:%S")
         known_homeworks[hw_id] = {
             "deadline": deadline + deadline_offset,
-            "bonus": meta.get("bonus", False),
+            "bonus": item.get("bonus", False),
         }
     return known_homeworks
 

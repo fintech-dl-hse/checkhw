@@ -1,110 +1,128 @@
-{
-  "hw-mlp": {
+[
+  {
+    "id": "hw-mlp",
     "deadline": "2026-01-28T23:59:59",
     "bonus": false,
     "max_points": 100,
     "feedback_form_url": "https://forms.gle/6FMiKQJ1Gtpie8CA6"
   },
-  "hw-activations": {
+  {
+    "id": "hw-activations",
     "deadline": "2026-02-04T23:59:59",
     "bonus": false,
     "max_points": 100,
     "feedback_form_url": "https://forms.gle/iLjqp8SH75u78RsZ6"
   },
-  "hw-weight-init": {
+  {
+    "id": "hw-weight-init",
     "deadline": "2026-02-04T23:59:59",
     "bonus": false,
     "max_points": 100,
     "feedback_form_url": "https://forms.gle/iLjqp8SH75u78RsZ6"
   },
-  "hw-optimization": {
+  {
+    "id": "hw-optimization",
     "deadline": "2026-02-11T23:59:59",
     "bonus": false,
     "max_points": 200,
     "feedback_form_url": "https://forms.gle/uoGrqgaZ3R6214c36"
   },
-  "hw-dropout": {
+  {
+    "id": "hw-dropout",
     "deadline": "2026-02-11T23:59:59",
     "bonus": false,
     "max_points": 100,
     "feedback_form_url": "https://forms.gle/uoGrqgaZ3R6214c36"
   },
-  "hw-batchnorm": {
+  {
+    "id": "hw-batchnorm",
     "deadline": "2026-03-04T23:59:59",
     "bonus": false,
     "max_points": 100,
     "feedback_form_url": "https://forms.gle/ZpQh7TCyme5Hq1PTA"
   },
-  "hw-pytorch-basics": {
+  {
+    "id": "hw-pytorch-basics",
     "deadline": "2026-03-04T23:59:59",
     "bonus": false,
     "max_points": 200,
     "feedback_form_url": "https://forms.gle/ZpQh7TCyme5Hq1PTA"
   },
-  "hw-vae": {
+  {
+    "id": "hw-vae",
     "deadline": "2026-03-29T23:59:59",
     "bonus": false,
     "max_points": 200,
     "feedback_form_url": "https://forms.gle/WhL7H15d26LAkggy7"
   },
-  "hw-diffusion": {
+  {
+    "id": "hw-diffusion",
     "deadline": "2026-03-29T23:59:59",
     "bonus": false,
     "max_points": 200,
     "feedback_form_url": "https://forms.gle/WhL7H15d26LAkggy7"
   },
-  "hw-autograd-mlp": {
+  {
+    "id": "hw-autograd-mlp",
     "deadline": "2026-06-17T02:59:59",
     "bonus": true,
     "max_points": 100,
     "feedback_form_url": "https://forms.gle/QPmStUACp56tGkmK9"
   },
-  "hw-muon": {
+  {
+    "id": "hw-muon",
     "deadline": "2026-06-17T02:59:59",
     "bonus": true,
     "max_points": 200,
     "feedback_form_url": "https://forms.gle/wNgv6cQA6TpfeyGp7"
   },
-  "hw-tokenization": {
+  {
+    "id": "hw-tokenization",
     "deadline": "2026-04-15T23:59:59",
     "bonus": false,
     "max_points": 200,
     "feedback_form_url": "https://forms.gle/RgBdUuegx7BFbc5X6"
   },
-  "hw-rnn-attention": {
+  {
+    "id": "hw-rnn-attention",
     "deadline": "2026-05-06T23:59:59",
     "bonus": false,
     "max_points": 200,
     "feedback_form_url": "https://forms.gle/9Vmt31tQ6ohPtvzw5"
   },
-  "hw-transformer-attention": {
+  {
+    "id": "hw-transformer-attention",
     "deadline": "2026-05-06T23:59:59",
     "bonus": false,
     "max_points": 200,
     "feedback_form_url": "https://forms.gle/9Vmt31tQ6ohPtvzw5"
   },
-  "hw-efficiency": {
+  {
+    "id": "hw-efficiency",
     "deadline": "2026-05-20T23:59:59",
     "bonus": false,
     "max_points": 100,
     "feedback_form_url": "https://forms.gle/oVPzavqwXSJYPwXq7"
   },
-  "hw-llm-agent": {
+  {
+    "id": "hw-llm-agent",
     "deadline": "2026-06-16T23:59:59",
     "bonus": false,
     "max_points": 200,
     "feedback_form_url": "https://forms.gle/ySbswCdyRzGYTBwL6"
   },
-  "hw-multimodal-llm": {
+  {
+    "id": "hw-multimodal-llm",
     "deadline": "2026-06-17T02:59:59",
     "bonus": true,
     "max_points": 400,
     "feedback_form_url": "https://forms.gle/a4wipLVXiy1VT45X8"
   },
-  "hw-letters": {
+  {
+    "id": "hw-letters",
     "deadline": "2026-06-17T02:59:59",
     "bonus": true,
     "max_points": 400,
     "feedback_form_url": "https://forms.gle/vjpmW821EiM6xULm6"
   }
-}
+]

@@ -75,22 +75,21 @@ def sync_hw_meta_points() -> None:
     points_by_hw, feedback_url_by_hw = collect_autograding_data(classroom_dir)
 
     with open(meta_path, encoding="utf-8") as f:
-        meta = json.load(f)
+        meta_list = json.load(f)
 
+    # hw-meta.json is an ordered array of objects with "id" field
+    meta_by_id = {item["id"]: item for item in meta_list}
     for hw_id, max_points in points_by_hw.items():
-        if hw_id == "hw-template":
+        if hw_id == "hw-template" or hw_id not in meta_by_id:
             continue
-        if hw_id not in meta:
-            meta[hw_id] = {}
-        meta[hw_id]["max_points"] = max_points
+        meta_by_id[hw_id]["max_points"] = max_points
         if hw_id in feedback_url_by_hw:
-            meta[hw_id]["feedback_form_url"] = feedback_url_by_hw[hw_id]
-        elif "feedback_form_url" in meta[hw_id]:
-            # Remove if no longer present in autograding
-            del meta[hw_id]["feedback_form_url"]
+            meta_by_id[hw_id]["feedback_form_url"] = feedback_url_by_hw[hw_id]
+        elif "feedback_form_url" in meta_by_id[hw_id]:
+            del meta_by_id[hw_id]["feedback_form_url"]
 
     with open(meta_path, "w", encoding="utf-8") as f:
-        json.dump(meta, f, ensure_ascii=False, indent=2)
+        json.dump(meta_list, f, ensure_ascii=False, indent=2)
         f.write("\n")
 
     print("Synced max_points and feedback_form_url from autograding files into hw-meta.json:")
