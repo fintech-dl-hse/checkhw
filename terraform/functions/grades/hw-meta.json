@@ -12,7 +12,8 @@
     "deadline": "2026-02-04T23:59:59",
     "bonus": false,
     "max_points": 100,
-    "feedback_form_url": "https://forms.gle/iLjqp8SH75u78RsZ6"
+    "feedback_form_url": "https://forms.gle/iLjqp8SH75u78RsZ6",
+    "classroom_invite_link": "https://classroom.github.com/a/yx6ppUC3"
   },
   {
     "id": "hw-weight-init",
