@@ -58,14 +58,14 @@
   },
   {
     "id": "hw-vae",
-    "deadline": "2026-03-22T23:59:59",
+    "deadline": "2026-04-05T23:59:59",
     "bonus": false,
     "max_points": 200,
     "feedback_form_url": "https://forms.gle/WhL7H15d26LAkggy7"
   },
   {
     "id": "hw-diffusion",
-    "deadline": "2026-03-29T23:59:59",
+    "deadline": "2026-04-13T23:59:59",
     "bonus": false,
     "max_points": 200,
     "feedback_form_url": "https://forms.gle/WhL7H15d26LAkggy7"
@@ -88,28 +88,28 @@
   },
   {
     "id": "hw-tokenization",
-    "deadline": "2026-04-15T23:59:59",
+    "deadline": "2026-04-22T23:59:59",
     "bonus": false,
     "max_points": 200,
     "feedback_form_url": "https://forms.gle/RgBdUuegx7BFbc5X6"
   },
   {
     "id": "hw-rnn-attention",
-    "deadline": "2026-05-06T23:59:59",
+    "deadline": "2026-05-13T23:59:59",
     "bonus": false,
     "max_points": 200,
     "feedback_form_url": "https://forms.gle/9Vmt31tQ6ohPtvzw5"
   },
   {
     "id": "hw-transformer-attention",
-    "deadline": "2026-05-06T23:59:59",
+    "deadline": "2026-05-13T23:59:59",
     "bonus": false,
     "max_points": 200,
     "feedback_form_url": "https://forms.gle/9Vmt31tQ6ohPtvzw5"
   },
   {
     "id": "hw-efficiency",
-    "deadline": "2026-05-20T23:59:59",
+    "deadline": "2026-05-27T23:59:59",
     "bonus": false,
     "max_points": 100,
     "feedback_form_url": "https://forms.gle/oVPzavqwXSJYPwXq7"
