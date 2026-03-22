@@ -69,7 +69,8 @@
     "deadline": "2026-04-13T23:59:59",
     "bonus": false,
     "max_points": 200,
-    "feedback_form_url": "https://forms.gle/WhL7H15d26LAkggy7"
+    "feedback_form_url": "https://forms.gle/WhL7H15d26LAkggy7",
+    "classroom_invite_link": "https://classroom.github.com/a/GD5gtmOt"
   },
   {
     "id": "hw-autograd-mlp",
