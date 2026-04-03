@@ -7,7 +7,7 @@ on:
     paths:
       - '.github/classroom/**'
       - 'scripts/sync-hw-meta-points.py'
-      - 'terraform/functions/grades/index.py'
+      - 'terraform/functions/grades/**'
 
 jobs:
   sync-hw-meta:
