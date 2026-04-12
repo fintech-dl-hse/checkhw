@@ -93,7 +93,8 @@
     "deadline": "2026-04-22T23:59:59",
     "bonus": false,
     "max_points": 200,
-    "feedback_form_url": "https://forms.gle/RgBdUuegx7BFbc5X6"
+    "feedback_form_url": "https://forms.gle/RgBdUuegx7BFbc5X6",
+    "classroom_invite_link": "https://classroom.github.com/a/iRPzXxSh"
   },
   {
     "id": "hw-rnn-attention",
