@@ -117,10 +117,6 @@ def _handler(event, context, detailed=False):
             student_login = re.sub(r'-\d+$', '', student_login)
             # print("i", i, "repo_name", repo_name, "homework", homework, "student_login", student_login)
 
-            if repo_name.startswith("hw-rnn-attention-") and repo_name not in rnn_attention_repos_whitelist:
-                # print(f"skip {repo_name}: not in whitelist for hw rnn attention")
-                continue
-
             deadline: datetime.datetime = known_homeworks[homework]['deadline']
 
             penalty_days = 0
