@@ -109,7 +109,8 @@
     "deadline": "2026-05-13T23:59:59",
     "bonus": false,
     "max_points": 200,
-    "feedback_form_url": "https://forms.gle/9Vmt31tQ6ohPtvzw5"
+    "feedback_form_url": "https://forms.gle/9Vmt31tQ6ohPtvzw5",
+    "classroom_invite_link": "https://classroom.github.com/a/6rqVYTZa"
   },
   {
     "id": "hw-efficiency",
