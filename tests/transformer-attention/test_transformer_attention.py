@@ -96,7 +96,7 @@ def test_transformer_attention_overfitting():
         model=transformer_attention_model_loaded,
         args=training_args,
         eval_dataset=books_preprocessed["train"].select(torch.tensor(range(128))),  # валидировать будем тоже на обучающих данных (дисклаймер: это можно делать только для тестирования)
-        tokenizer=loaded_tokenizer,
+        processing_class=loaded_tokenizer,
         data_collator=data_collator,
         compute_metrics=compute_metrics,
     )
