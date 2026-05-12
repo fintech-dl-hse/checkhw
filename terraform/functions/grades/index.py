@@ -1,5 +1,6 @@
 import argparse
 import datetime
+import re
 import pandas as pd
 import sys
 import json
@@ -113,11 +114,8 @@ def _handler(event, context, detailed=False):
                 continue
 
             student_login = repo_name[len(homework)+1:]
+            student_login = re.sub(r'-\d+$', '', student_login)
             # print("i", i, "repo_name", repo_name, "homework", homework, "student_login", student_login)
-
-            if repo_name.startswith("hw-rnn-attention-") and repo_name not in rnn_attention_repos_whitelist:
-                # print(f"skip {repo_name}: not in whitelist for hw rnn attention")
-                continue
 
             deadline: datetime.datetime = known_homeworks[homework]['deadline']
 
