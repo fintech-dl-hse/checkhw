@@ -43,6 +43,18 @@ def _force_hw_grades():
     return forced_grades
 
 
+def _force_hw_bonuses():
+    # Bonus points added on top of the student's best actual submission for the homework.
+    # The resulting total for the homework may exceed max_points.
+    return [
+        {
+            "sender": "sblenlkj",
+            "homework": "hw-rnn-attention",
+            "bonus_points": 500,
+        },
+    ]
+
+
 def _load_known_homeworks():
     meta_path = os.path.join(os.path.dirname(__file__), "hw-meta.json")
     with open(meta_path, encoding="utf-8") as f:
@@ -160,7 +172,28 @@ def _handler(event, context, detailed=False):
             .idxmax()
 
     # Select the rows using the obtained indices - these are the best submissions
-    result_df = df.loc[idx]
+    result_df = df.loc[idx].copy()
+
+    # Apply bonus points on top of best submission (may exceed homework max_points)
+    for bonus in _force_hw_bonuses():
+        sender = bonus["sender"]
+        homework = bonus["homework"]
+        bonus_points = bonus["bonus_points"]
+        mask = (result_df['sender'] == sender) & (result_df['homework'] == homework)
+        if mask.any():
+            result_df.loc[mask, 'result_points'] = result_df.loc[mask, 'result_points'] + bonus_points
+        else:
+            hw_max_points_for_bonus = known_homeworks.get(homework, {}).get("max_points", 0)
+            new_row = pd.DataFrame([{
+                "sender": sender,
+                "max_points": hw_max_points_for_bonus,
+                "result_points": bonus_points,
+                "homework": homework,
+                "penalty_days": 0,
+                "penalty_percent": 0,
+                "completed_at": datetime.datetime.utcnow(),
+            }])
+            result_df = pd.concat([result_df, new_row], ignore_index=True)
 
     # Calculate total points using the best submissions
     result_total_df = result_df.groupby('sender')['result_points'].sum().reset_index()
