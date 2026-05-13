@@ -50,7 +50,7 @@ def _force_hw_bonuses():
         {
             "sender": "sblenlkj",
             "homework": "hw-rnn-attention",
-            "bonus_points": 500,
+            "bonus_points": 50,
         },
     ]
 
