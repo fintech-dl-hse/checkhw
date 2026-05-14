@@ -1,0 +1,40 @@
+# Keeps self-hosted runners from crossing GitHub's 30-day idle deregistration
+# threshold by exercising each runner label weekly.
+name: Runner Heartbeat
+
+on:
+  schedule:
+    - cron: "0 3 * * 0"
+  workflow_dispatch:
+
+jobs:
+  start-cpu:
+    if: github.repository_owner == 'fintech-dl-hse'
+    uses: ./.github/workflows/start-runner.yaml
+  start-gpu:
+    if: github.repository_owner == 'fintech-dl-hse'
+    uses: ./.github/workflows/start-gpu-runner.yaml
+  start-gpu-agent:
+    if: github.repository_owner == 'fintech-dl-hse'
+    uses: ./.github/workflows/start-gpu-agent-runner.yaml
+
+  heartbeat-cpu:
+    needs: start-cpu
+    runs-on: self-hosted-cpu
+    timeout-minutes: 30
+    steps:
+      - run: echo "cpu runner alive on $(hostname) at $(date -Is)"
+
+  heartbeat-gpu:
+    needs: start-gpu
+    runs-on: self-hosted-gpu
+    timeout-minutes: 30
+    steps:
+      - run: echo "gpu runner alive on $(hostname) at $(date -Is)"
+
+  heartbeat-gpu-agent:
+    needs: start-gpu-agent
+    runs-on: self-hosted-gpu-agent
+    timeout-minutes: 30
+    steps:
+      - run: echo "gpu-agent runner alive on $(hostname) at $(date -Is)"
