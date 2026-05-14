@@ -247,7 +247,7 @@
           shell: /data/bin/miniconda3/bin/conda create -p /data/bin/miniconda3/envs/jupyter-actions python=3.11
         - name: conda env jupyter-actions - install pytorch
           become: True
-          shell: /data/bin/miniconda3/envs/jupyter-actions/bin/pip3 install torch torchvision --index-url https://download.pytorch.org/whl/cu118
+          shell: /data/bin/miniconda3/envs/jupyter-actions/bin/pip3 install torch==2.10.0 torchvision --index-url https://download.pytorch.org/whl/cu126
         - name: conda env jupyter-actions - install other dependencies
           become: True
           shell: /data/bin/miniconda3/envs/jupyter-actions/bin/pip3 install jupyter nbformat nbconvert numpy requests pytest scikit-learn pandas opencv-python tqdm tensorboard matplotlib scipy datasets pytorch-lightning transformers==5.0.0 evaluate sacrebleu accelerate wandb smolagents vllm langchain-text-splitters langchain langchain-community sentence-transformers faiss-cpu smolagents peft
