@@ -117,7 +117,8 @@
     "deadline": "2026-05-27T23:59:59",
     "bonus": false,
     "max_points": 100,
-    "feedback_form_url": "https://forms.gle/oVPzavqwXSJYPwXq7"
+    "feedback_form_url": "https://forms.gle/oVPzavqwXSJYPwXq7",
+    "classroom_invite_link": "https://classroom.github.com/a/bukNuTJL"
   },
   {
     "id": "hw-llm-agent",
