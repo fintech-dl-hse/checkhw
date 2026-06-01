@@ -1,0 +1,76 @@
+{
+  "tests": [
+    {
+      "name": "Part 1: LLM client + tool calling (tests/agent/test_llm_client.py)",
+      "run": "PYTHONPATH=. /data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs tests/agent/test_llm_client.py",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 60,
+      "points": 100
+    },
+    {
+      "name": "Diagnostics: file tools (tests/agent/test_tools.py)",
+      "run": "PYTHONPATH=. /data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs tests/agent/test_tools.py",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 60,
+      "points": 0
+    },
+    {
+      "name": "Diagnostics: agent loop (tests/agent/test_agent.py)",
+      "run": "PYTHONPATH=. /data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs tests/agent/test_agent.py",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 60,
+      "points": 0
+    },
+    {
+      "name": "Diagnostics: mini-SWE-bench harness (tests/agent/test_eval_harness.py)",
+      "run": "PYTHONPATH=. /data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs tests/agent/test_eval_harness.py",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 120,
+      "points": 0
+    },
+    {
+      "name": "Part 2: run mini-SWE-bench evaluation (writes agent-swebench-score.txt)",
+      "run": "PYTHONPATH=. /data/bin/miniconda3/envs/jupyter-actions/bin/python tests/agent/run_evaluation.py --out agent-swebench-score.txt",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 900,
+      "points": 0
+    },
+    {
+      "name": "Part 2: mini-SWE-bench score >= 50",
+      "run": "ls agent-swebench-score.txt && perl -lnE ' exit(int($_) >= 50 ? 0 : 1) ' agent-swebench-score.txt",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 5,
+      "points": 50
+    },
+    {
+      "name": "Part 2: mini-SWE-bench score >= 70",
+      "run": "ls agent-swebench-score.txt && perl -lnE ' exit(int($_) >= 70 ? 0 : 1) ' agent-swebench-score.txt",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 5,
+      "points": 50
+    },
+    {
+      "name": "feedback",
+      "run": "echo -e '\\n\\n💬💬💬 Оставьте обратную связь по ДЗ https://forms.gle/PLACEHOLDER-hw-agent 💬💬💬\\n\\n'",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 1,
+      "points": 0
+    }
+  ]
+}

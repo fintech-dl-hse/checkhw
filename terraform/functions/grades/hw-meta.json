@@ -141,5 +141,12 @@
     "max_points": 400,
     "feedback_form_url": "https://forms.gle/vjpmW821EiM6xULm6",
     "classroom_invite_link": "https://classroom.github.com/a/8g68_ZWO"
+  },
+  {
+    "id": "hw-agent",
+    "deadline": "2026-06-23T23:59:59",
+    "bonus": false,
+    "max_points": 200,
+    "feedback_form_url": "https://forms.gle/PLACEHOLDER-hw-agent"
   }
 ]
