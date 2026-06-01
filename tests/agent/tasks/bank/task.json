@@ -1,0 +1,8 @@
+{
+  "id": "bank",
+  "files": [
+    "bank/__init__.py",
+    "bank/account.py",
+    "bank/ledger.py"
+  ]
+}

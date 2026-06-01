@@ -1,13 +1,14 @@
 """Диагностика мини-SWE-bench харнесса (без API_KEY, не скорится).
 
-Проверяет, что пайплайн «копируем -> чиним -> прогоняем скрытые тесты -> скор»
-корректен, и что студенческие FileLools.write_file реально правят файлы:
-  - no-op агент   -> score 0   (скрытые тесты ловят баги),
-  - perfect агент -> score 100 (скоринг и тесты корректны при починке).
+Проверяет САМ пайплайн (копируем -> чиним -> грейдим в чистой папке по эталонным
+тестам), не завязываясь на эталонные решения задач:
+  - на синтетической задаче: no-op агент -> не решено, «правильный» агент -> решено;
+  - на реальных задачах: no-op агент даёт скор 0 (значит все задачи реально сломаны
+    и грейдинг их ловит).
 
-Реальный агент на модели прогоняется отдельно в run_evaluation.py (нужен ключ).
+Реальный прогон агента на модели — в run_evaluation.py (нужен ключ).
 """
-import os
+import json
 import sys
 from pathlib import Path
 
@@ -15,20 +16,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))        # run_evaluation
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))    # корень репо (student)
 
 import run_evaluation as rev  # noqa: E402
-from tools import FileTools  # noqa: E402
-
-CORRECT = {
-    "calc.py": "def subtract(a, b):\n    return a - b\n",
-    "numbers_util.py": "def is_even(n):\n    return n % 2 == 0\n",
-    "strutil.py": "def reverse_string(s):\n    return s[::-1]\n",
-    "mathx.py": "def factorial(n):\n    if n == 0:\n        return 1\n    return n * factorial(n - 1)\n",
-    "fizz.py": ("def fizzbuzz(n):\n"
-                "    if n % 15 == 0:\n        return 'FizzBuzz'\n"
-                "    if n % 3 == 0:\n        return 'Fizz'\n"
-                "    if n % 5 == 0:\n        return 'Buzz'\n"
-                "    return str(n)\n"),
-    "vowels.py": "def count_vowels(s):\n    return sum(1 for c in s.lower() if c in 'aeiou')\n",
-}
 
 
 class _Noop:
@@ -39,21 +26,39 @@ class _Noop:
         return "noop"
 
 
-class _Perfect:
+class _PerfectSynthetic:
+    """Чинит синтетическую задачу: пишет верную версию m.py (через open, без student-кода)."""
+
     def __init__(self, workdir):
-        self.fs = FileTools(workdir)
-        self.workdir = workdir
+        self.workdir = Path(workdir)
 
     def run(self, task):
-        for fname, content in CORRECT.items():
-            if os.path.exists(os.path.join(self.workdir, fname)):
-                self.fs.write_file(fname, content)
+        (self.workdir / "m.py").write_text("def f():\n    return 42\n", encoding="utf-8")
         return "fixed"
 
 
-def test_noop_agent_scores_zero():
+def _make_synthetic_task(tmp_path) -> Path:
+    d = tmp_path / "syn"
+    (d / "workspace").mkdir(parents=True)
+    (d / "tests").mkdir(parents=True)
+    (d / "workspace" / "m.py").write_text("def f():\n    return 0\n", encoding="utf-8")
+    (d / "tests" / "test_m.py").write_text(
+        "from m import f\n\ndef test_f():\n    assert f() == 42\n", encoding="utf-8"
+    )
+    (d / "task.json").write_text(json.dumps({"id": "syn", "files": ["m.py"]}),
+                                 encoding="utf-8")
+    return d
+
+
+def test_pipeline_noop_fails(tmp_path):
+    task = _make_synthetic_task(tmp_path)
+    assert rev.run_one_task(task, lambda wd: _Noop(wd)) is False
+
+
+def test_pipeline_perfect_solves(tmp_path):
+    task = _make_synthetic_task(tmp_path)
+    assert rev.run_one_task(task, lambda wd: _PerfectSynthetic(wd)) is True
+
+
+def test_real_tasks_are_broken_noop_scores_zero():
     assert rev.evaluate_all(agent_factory=lambda wd: _Noop(wd)) == 0
-
-
-def test_perfect_agent_scores_hundred():
-    assert rev.evaluate_all(agent_factory=lambda wd: _Perfect(wd)) == 100

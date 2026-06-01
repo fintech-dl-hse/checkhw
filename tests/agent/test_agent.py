@@ -42,4 +42,26 @@ def test_agent_stops_on_plain_text(tmp_path):
 
 def test_agent_tools_registered():
     agent = CodeAgent(ScriptedLLM([""]), ".")
-    assert set(agent.tools) == {"read_file", "write_file", "edit_file", "list_files"}
+    assert set(agent.tools) == {
+        "read_file", "write_file", "edit_file", "list_files", "run_tests",
+    }
+
+
+def test_agent_iterates_with_run_tests(tmp_path):
+    # сломанный модуль + тест к нему; агент должен прогнать тесты, увидеть фейл,
+    # починить и снова прогнать (итеративный loop через run_tests)
+    (tmp_path / "m.py").write_text("def answer():\n    return 0\n")
+    (tmp_path / "test_m.py").write_text(
+        "from m import answer\n\ndef test_answer():\n    assert answer() == 42\n"
+    )
+    script = [
+        '<tool_call>{"name": "run_tests", "arguments": {}}</tool_call>',  # видит FAILED
+        '<tool_call>{"name": "edit_file", "arguments": {"path": "m.py", '
+        '"old": "return 0", "new": "return 42"}}</tool_call>',
+        '<tool_call>{"name": "run_tests", "arguments": {}}</tool_call>',  # видит PASSED
+        "Готово, тесты зелёные.",
+    ]
+    agent = CodeAgent(ScriptedLLM(script), str(tmp_path), max_steps=10)
+    final = agent.run("Почини проект, чтобы все тесты проходили.")
+    assert "зел" in final.lower() or "готов" in final.lower()
+    assert (tmp_path / "m.py").read_text() == "def answer():\n    return 42\n"

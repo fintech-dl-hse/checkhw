@@ -1,0 +1,8 @@
+{
+  "id": "mathlib",
+  "files": [
+    "mathlib/__init__.py",
+    "mathlib/ops.py",
+    "mathlib/calc.py"
+  ]
+}

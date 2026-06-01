@@ -1,0 +1,8 @@
+{
+  "id": "shapes",
+  "files": [
+    "shapes/__init__.py",
+    "shapes/geometry.py",
+    "shapes/figures.py"
+  ]
+}

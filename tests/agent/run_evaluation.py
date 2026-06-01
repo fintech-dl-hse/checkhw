@@ -1,20 +1,28 @@
-"""Мини-SWE-bench: прогон кодового агента студента по курируемым баг-фикс задачам.
+"""Мини-SWE-bench v2: прогон кодового агента студента по баг-фикс задачам.
+
+Отличия от v1:
+- Агенту НЕ даётся описание ошибки. Промт generic («почини, чтобы тесты прошли»),
+  а тесты кладутся в песочницу — агент сам запускает их (тул run_tests),
+  читает трейсбек и итеративно чинит исходники.
+- Задачи бывают многофайловыми (нужно прочитать несколько файлов).
+- Грейдинг устойчив к жульничеству: оценка идёт в ОТДЕЛЬНОЙ чистой папке, куда
+  кладутся только декларированные исходники агента (task.json["files"]) и
+  ЭТАЛОННЫЕ тесты. Если агент правил тесты или подкинул conftest.py — это
+  игнорируется.
 
 Для каждой задачи:
-  1. копируем workspace/ (сломанный код) во временную песочницу;
-  2. создаём CodeAgent студента и даём ему текст issue (агент чинит код);
-  3. докладываем в песочницу скрытые tests/ и прогоняем pytest;
-  4. задача решена, если скрытые тесты прошли.
+  1. workspace/ (сломанный код) -> песочница;
+  2. tests/ -> та же песочница (чтобы агент мог их прогонять);
+  3. агент работает: run_tests -> read_file -> edit_file -> ... до зелёных тестов;
+  4. грейдинг: в чистую папку копируем правки агента (только "files") + эталонные
+     tests/ и прогоняем pytest. Задача решена, если pytest вернул 0.
 
 Скор = round(100 * solved / total). Пишется в файл (--out).
 
-LLM берётся из окружения (по умолчанию — Cloud.ru Foundation Models):
-  LLM_BASE_URL  (default https://foundation-models.api.cloud.ru/v1)
-  LLM_MODEL     (default Qwen/Qwen3-Coder-Next)
-  API_KEY       (обязателен для реального прогона)
-
-Студент НЕ запускает этот скрипт для сдачи — он крутится в автограде checkhw.
-Локально можно запустить при наличии API_KEY, чтобы прикинуть свой скор.
+LLM из окружения (по умолчанию — Cloud.ru Foundation Models):
+  LLM_BASE_URL (default https://foundation-models.api.cloud.ru/v1)
+  LLM_MODEL    (default Qwen/Qwen3-Coder-Next)
+  API_KEY      (обязателен для реального прогона)
 """
 from __future__ import annotations
 
@@ -36,6 +44,13 @@ DEFAULT_BASE_URL = "https://foundation-models.api.cloud.ru/v1"
 DEFAULT_MODEL = "Qwen/Qwen3-Coder-Next"
 TASKS_DIR = Path(__file__).resolve().parent / "tasks"
 
+# Generic-инструкция: одна на все задачи, без описания конкретного бага.
+GENERIC_TASK = (
+    "В рабочей директории — проект со сломанным кодом и тесты, которые сейчас "
+    "падают. Найди причину сам (запусти тесты, почитай трейсбек и код) и почини "
+    "исходники так, чтобы все тесты проходили. Тесты не редактируй."
+)
+
 
 def make_client_from_env() -> LLMClient:
     """Собрать LLMClient студента из переменных окружения."""
@@ -51,44 +66,63 @@ def make_client_from_env() -> LLMClient:
     )
 
 
-def run_one_task(
-    task_dir: Path,
-    agent_factory: Callable[[str], object],
-    task_timeout: int = 120,
-) -> bool:
-    """Прогнать одну задачу. Возвращает True, если скрытые тесты прошли."""
-    task = json.loads((task_dir / "task.json").read_text(encoding="utf-8"))
-    with tempfile.TemporaryDirectory(prefix=f"swe_{task['id']}_") as tmp:
-        workdir = Path(tmp)
-        # 1. сломанный код -> песочница
-        shutil.copytree(task_dir / "workspace", workdir, dirs_exist_ok=True)
+def _grade(task_dir: Path, agent_workdir: Path, files: list[str],
+           task_timeout: int = 120) -> bool:
+    """Оценить правки агента эталонными тестами в ЧИСТОЙ папке.
 
-        # 2. агент чинит (исключения агента не должны рушить весь прогон)
-        try:
-            agent = agent_factory(str(workdir))
-            agent.run(task["issue"])
-        except Exception as exc:  # noqa: BLE001
-            print(f"[{task['id']}] агент упал: {exc}")
+    Берём только декларированные исходники (агентовы версии) + pristine tests/,
+    чтобы агент не мог сжульничать через conftest.py/правку тестов.
+    """
+    with tempfile.TemporaryDirectory(prefix="grade_") as clean:
+        clean_dir = Path(clean)
+        # только объявленные исходники — в их версии после работы агента
+        for rel in files:
+            src = agent_workdir / rel
+            if not src.is_file():
+                continue
+            dst = clean_dir / rel
+            dst.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(src, dst)
+        # эталонные тесты (агентовы версии игнорируются)
+        shutil.copytree(task_dir / "tests", clean_dir, dirs_exist_ok=True)
 
-        # 3. докладываем скрытые тесты
-        shutil.copytree(task_dir / "tests", workdir, dirs_exist_ok=True)
-
-        # 4. прогон скрытых тестов
+        env = {k: v for k, v in os.environ.items() if k != "PYTHONPATH"}
+        env["PYTHONNOUSERSITE"] = "1"
         try:
             proc = subprocess.run(
-                [sys.executable, "-m", "pytest", "-q"],
-                cwd=str(workdir),
+                [sys.executable, "-m", "pytest", "-q", "-p", "no:cacheprovider"],
+                cwd=str(clean_dir),
                 capture_output=True,
                 text=True,
                 timeout=task_timeout,
+                env=env,
             )
         except subprocess.TimeoutExpired:
-            print(f"[{task['id']}] таймаут тестов")
             return False
-        solved = proc.returncode == 0
-        print(f"[{task['id']}] {'SOLVED' if solved else 'FAILED'}")
-        if not solved:
+        if proc.returncode != 0:
             print(proc.stdout[-600:])
+        return proc.returncode == 0
+
+
+def run_one_task(task_dir: Path, agent_factory: Callable[[str], object]) -> bool:
+    """Прогнать одну задачу. Возвращает True, если эталонные тесты прошли."""
+    task = json.loads((task_dir / "task.json").read_text(encoding="utf-8"))
+    with tempfile.TemporaryDirectory(prefix=f"swe_{task['id']}_") as tmp:
+        workdir = Path(tmp)
+        # 1. сломанный исходник + 2. тесты -> песочница (агент может их прогонять)
+        shutil.copytree(task_dir / "workspace", workdir, dirs_exist_ok=True)
+        shutil.copytree(task_dir / "tests", workdir, dirs_exist_ok=True)
+
+        # 3. агент чинит (исключения агента не должны рушить весь прогон)
+        try:
+            agent = agent_factory(str(workdir))
+            agent.run(GENERIC_TASK)
+        except Exception as exc:  # noqa: BLE001
+            print(f"[{task['id']}] агент упал: {exc}")
+
+        # 4. грейдинг в чистой папке по эталонным тестам
+        solved = _grade(task_dir, workdir, task["files"])
+        print(f"[{task['id']}] {'SOLVED' if solved else 'FAILED'}")
         return solved
 
 
@@ -106,7 +140,7 @@ def evaluate_all(
     shared_client = None
     if agent_factory is None:
         shared_client = make_client_from_env()
-        agent_factory = lambda wd: CodeAgent(shared_client, wd, max_steps=20)  # noqa: E731
+        agent_factory = lambda wd: CodeAgent(shared_client, wd)  # noqa: E731
 
     task_dirs = sorted(p for p in tasks_dir.iterdir() if (p / "task.json").exists())
     solved = sum(run_one_task(p, agent_factory) for p in task_dirs)
@@ -114,7 +148,6 @@ def evaluate_all(
     score = round(100 * solved / total) if total else 0
     print(f"\nИтог: solved {solved}/{total} -> score {score}")
 
-    # Сколько «стоил» агент (если клиент умеет считать usage).
     usage = getattr(shared_client, "total_usage", None)
     if usage and usage.get("total_tokens"):
         n_req = getattr(shared_client, "n_requests", 0)

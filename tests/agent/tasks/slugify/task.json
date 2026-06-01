@@ -1,0 +1,6 @@
+{
+  "id": "slugify",
+  "files": [
+    "slug.py"
+  ]
+}

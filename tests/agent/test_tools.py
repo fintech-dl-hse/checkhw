@@ -73,3 +73,16 @@ def test_sandbox_escape_blocked_read(fs):
 def test_sandbox_escape_blocked_write(fs):
     msg = fs.write_file("../escape.txt", "pwn")
     assert "Ошибка" in msg
+
+
+def test_run_tests_reports_pass(fs):
+    fs.write_file("test_ok.py", "def test_ok():\n    assert 1 + 1 == 2\n")
+    out = fs.run_tests()
+    assert out.startswith("PASSED")
+
+
+def test_run_tests_reports_fail_with_output(fs):
+    fs.write_file("test_bad.py", "def test_bad():\n    assert 1 + 1 == 3\n")
+    out = fs.run_tests()
+    assert out.startswith("FAILED")
+    assert "test_bad" in out  # хвост вывода pytest присутствует
