@@ -64,8 +64,8 @@
       "points": 50
     },
     {
-      "name": "Part 2: mini-SWE-bench score >= 70",
-      "run": "ls agent-swebench-score.txt && perl -lnE ' exit(int($_) >= 70 ? 0 : 1) ' agent-swebench-score.txt",
+      "name": "Part 2: mini-SWE-bench score >= 100",
+      "run": "ls agent-swebench-score.txt && perl -lnE ' exit(int($_) >= 100 ? 0 : 1) ' agent-swebench-score.txt",
       "input": "",
       "output": "",
       "comparison": "included",
