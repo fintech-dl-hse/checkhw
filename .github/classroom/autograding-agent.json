@@ -1,6 +1,15 @@
 {
   "tests": [
     {
+      "name": "Wait for local VLLM to start (Qwen3-4B-Instruct-2507, up to ~5 min)",
+      "run": "while ! curl -s http://127.0.0.1:8000/v1/models | grep -q 'Qwen/Qwen3-4B-Instruct-2507'; do sleep 1; done",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 10,
+      "points": 0
+    },
+    {
       "name": "Part 1: LLM client + tool calling (tests/agent/test_llm_client.py)",
       "run": "PYTHONPATH=. /data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs tests/agent/test_llm_client.py",
       "input": "",
@@ -38,7 +47,7 @@
     },
     {
       "name": "Part 2: run mini-SWE-bench evaluation (writes agent-swebench-score.txt)",
-      "run": "PYTHONPATH=. /data/bin/miniconda3/envs/jupyter-actions/bin/python tests/agent/run_evaluation.py --out agent-swebench-score.txt",
+      "run": "LLM_BASE_URL=http://127.0.0.1:8000/v1 LLM_MODEL=Qwen/Qwen3-4B-Instruct-2507 API_KEY=nokey PYTHONPATH=. /data/bin/miniconda3/envs/jupyter-actions/bin/python tests/agent/run_evaluation.py --out agent-swebench-score.txt",
       "input": "",
       "output": "",
       "comparison": "included",
