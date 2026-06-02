@@ -31,8 +31,8 @@ provider "yandex" {
 resource "yandex_function" "start-compute-tf" {
     name               = "start-compute-tf"
     description        = "Test function to start compute instance"
-    user_hash          = "v0.0.26"
-    runtime            = "golang119"
+    user_hash          = "v0.0.27"
+    runtime            = "golang121"
     entrypoint         = "start_compute.StartComputeInstances"
     memory             = "128"
     execution_timeout  = "60"
@@ -45,8 +45,8 @@ resource "yandex_function" "start-compute-tf" {
 resource "yandex_function" "start-compute-gpu-tf" {
     name               = "start-compute-gpu-tf"
     description        = "Test function to start compute instance"
-    user_hash          = "v0.0.26"
-    runtime            = "golang119"
+    user_hash          = "v0.0.27"
+    runtime            = "golang121"
     entrypoint         = "start_compute.StartComputeInstancesGPU"
     memory             = "128"
     execution_timeout  = "60"
@@ -59,8 +59,8 @@ resource "yandex_function" "start-compute-gpu-tf" {
 resource "yandex_function" "start-compute-gpu-agent-tf" {
     name               = "start-compute-gpu-agent-tf"
     description        = "Test function to start compute instance for agents"
-    user_hash          = "v0.0.26"
-    runtime            = "golang119"
+    user_hash          = "v0.0.27"
+    runtime            = "golang121"
     entrypoint         = "start_compute.StartComputeInstancesGPUAgent"
     memory             = "128"
     execution_timeout  = "60"
@@ -74,8 +74,8 @@ resource "yandex_function" "start-compute-gpu-agent-tf" {
 resource "yandex_function" "stop-compute-tf" {
     name               = "stop-compute-tf"
     description        = "Test function to stop compute instance"
-    user_hash          = "v0.0.26"
-    runtime            = "golang119"
+    user_hash          = "v0.0.27"
+    runtime            = "golang121"
     entrypoint         = "stop_compute.StopComputeInstance"
     memory             = "128"
     execution_timeout  = "60"
