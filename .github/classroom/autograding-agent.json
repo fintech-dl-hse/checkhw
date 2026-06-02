@@ -74,7 +74,7 @@
     },
     {
       "name": "feedback",
-      "run": "echo -e '\\n\\n💬💬💬 Оставьте обратную связь по ДЗ https://forms.gle/PLACEHOLDER-hw-agent 💬💬💬\\n\\n'",
+      "run": "echo -e '\\n\\n💬💬💬 Оставьте обратную связь по ДЗ https://forms.gle/QPjrSjpeyckPMZ9i7 💬💬💬\\n\\n'",
       "input": "",
       "output": "",
       "comparison": "included",
