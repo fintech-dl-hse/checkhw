@@ -1,0 +1,31 @@
+{
+  "tests": [
+    {
+      "name": "Task 1: CLIP loss + scaled cosine similarities (tests/clip/test_clip_loss.py)",
+      "run": "PYTHONPATH=. /data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs tests/clip/test_clip_loss.py",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 60,
+      "points": 50
+    },
+    {
+      "name": "Task 2: mini-CLIP trains only with logit_scale (tests/clip/test_clip_training.py)",
+      "run": "PYTHONPATH=. /data/bin/miniconda3/envs/jupyter-actions/bin/pytest -vs tests/clip/test_clip_training.py",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 60,
+      "points": 50
+    },
+    {
+      "name": "feedback",
+      "run": "echo -e '\\n\\n💬💬💬 Оставьте обратную связь по ДЗ https://forms.gle/AtsuerxaVHyPvumq6 💬💬💬\\n\\n'",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 1,
+      "points": 0
+    }
+  ]
+}

@@ -149,5 +149,13 @@
     "max_points": 200,
     "feedback_form_url": "https://forms.gle/QPjrSjpeyckPMZ9i7",
     "classroom_invite_link": "https://classroom.github.com/a/pv5clB_L"
+  },
+  {
+    "id": "hw-clip",
+    "deadline": "2026-06-17T23:59:59",
+    "bonus": false,
+    "max_points": 100,
+    "feedback_form_url": "https://forms.gle/AtsuerxaVHyPvumq6",
+    "classroom_invite_link": "https://classroom.github.com/a/4b344sX9"
   }
 ]
