@@ -280,6 +280,20 @@ def _handler(event, context, detailed=False):
                 });
         }
 
+        function editFio(github_nick) {
+            const text = document.getElementById('fio_text_' + github_nick);
+            const editButton = document.getElementById('fio_edit_' + github_nick);
+            if (text) text.style.display = 'none';
+            if (editButton) editButton.style.display = 'none';
+            document.getElementById('fio_' + github_nick).style.display = '';
+        }
+
+        function onFioChange(github_nick) {
+            const input = document.getElementById('fio_' + github_nick);
+            const button = document.getElementById('fio_save_' + github_nick);
+            button.style.display = (input.value !== input.dataset.original) ? '' : 'none';
+        }
+
         function onDepartmentChange(github_nick) {
             const select = document.getElementById('dept_' + github_nick);
             const button = document.getElementById('dept_save_' + github_nick);
@@ -386,17 +400,45 @@ def _handler(event, context, detailed=False):
 
         base_html = style_css + df.to_html()
 
-        # Process the HTML to add input fields where FIO is NaN
+        # Process the HTML to make every FIO cell editable in place (and offer a
+        # fill-in input where FIO is still missing). Columns render one <td> per
+        # line, so we track the <td> index within each row: index 0 is the
+        # github_nick (sender) column and index 2 is the fio column.
         if not detailed:
             rows = base_html.split('\n')
+            td_index = -1
+            github_nick = None
             for i, row in enumerate(rows):
-                if '<td>NaN</td>' in row:
-                    # Get the github_nick from the previous cell
-                    prev_row = rows[i-2]
-                    github_nick = prev_row.split('<td>')[1].split('</td>')[0].strip()
-                    if github_nick:  # Only add input field if github_nick exists
-                        input_field = f'<td><input placeholder="FILL FIO HERE!" type="text" id="fio_{github_nick}" style="width: 200px;"> <button onclick="updateFio(\'{github_nick}\')">Save</button></td>'
-                        rows[i] = input_field
+                stripped = row.strip()
+                if stripped.startswith('<tr>'):
+                    td_index = -1
+                    github_nick = None
+                    continue
+                if not stripped.startswith('<td>'):
+                    continue
+                td_index += 1
+                cell_value = row.split('<td>', 1)[1].rsplit('</td>', 1)[0]
+                if td_index == 0:  # github_nick (sender) column
+                    github_nick = cell_value.strip()
+                elif td_index == 2 and github_nick:  # fio column
+                    if cell_value.strip() == 'NaN':
+                        rows[i] = (
+                            f'<td><input placeholder="FILL FIO HERE!" type="text" '
+                            f'id="fio_{github_nick}" data-original="" '
+                            f'oninput="onFioChange(\'{github_nick}\')" style="width: 200px;"> '
+                            f'<button id="fio_save_{github_nick}" onclick="updateFio(\'{github_nick}\')" '
+                            f'style="display:none;">Save</button></td>'
+                        )
+                    else:
+                        rows[i] = (
+                            f'<td><span id="fio_text_{github_nick}">{cell_value}</span> '
+                            f'<button id="fio_edit_{github_nick}" onclick="editFio(\'{github_nick}\')">Edit</button> '
+                            f'<input type="text" id="fio_{github_nick}" value="{cell_value}" '
+                            f'data-original="{cell_value}" oninput="onFioChange(\'{github_nick}\')" '
+                            f'style="width: 200px; display:none;"> '
+                            f'<button id="fio_save_{github_nick}" onclick="updateFio(\'{github_nick}\')" '
+                            f'style="display:none;">Save</button></td>'
+                        )
 
             base_html = override_form + '\n'.join(rows)
 
