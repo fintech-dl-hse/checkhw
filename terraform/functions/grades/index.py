@@ -198,33 +198,48 @@ def _handler(event, context, detailed=False):
     # Calculate total points using the best submissions
     result_total_df = result_df.groupby('sender')['result_points'].sum().reset_index()
 
-    try:
-        all_senders = [x for x in set(result_total_df['sender']) if x != '']
+    # Always initialize fio/department so rendering never KeyErrors even when
+    # the YDB enrichment below fails (e.g. the department column is missing).
+    result_total_df['fio'] = None
+    # Department cell carries the nick + current value as a sentinel so the
+    # HTML render can replace it with a <select> regardless of column order.
+    result_total_df['department'] = result_total_df['sender'].apply(
+        lambda nick: f"DEPTCELL::{nick}::-"
+    )
 
-        placeholders = ', '.join([f'$github_nick{i}' for i in range(len(all_senders))])
-        declare_placeholders = '\n'.join([f'DECLARE $github_nick{i} as UTF8;' for i in range(len(all_senders))])
-        query = f'{declare_placeholders} SELECT github_nick, fio, department FROM github_nick_to_fio WHERE github_nick IN ({placeholders})'
-        # print("query", query)
-        senders_fios = pool.execute_with_retries(query, {f'$github_nick{i}': all_senders[i] for i in range(len(all_senders))})
+    all_senders = [x for x in set(result_total_df['sender']) if x != '']
+    placeholders = ', '.join([f'$github_nick{i}' for i in range(len(all_senders))])
+    declare_placeholders = '\n'.join([f'DECLARE $github_nick{i} as UTF8;' for i in range(len(all_senders))])
+    senders_query_params = {f'$github_nick{i}': all_senders[i] for i in range(len(all_senders))}
+
+    try:
+        query = f'{declare_placeholders} SELECT github_nick, fio FROM github_nick_to_fio WHERE github_nick IN ({placeholders})'
+        senders_fios = pool.execute_with_retries(query, senders_query_params)
 
         senders_fios_dict = dict()
-        senders_dept_dict = dict()
         for row in senders_fios[0].rows:
-            github_nick = row.github_nick.decode('utf-8')
-            senders_fios_dict[github_nick] = row.fio.decode('utf-8') if row.fio is not None else None
-            senders_dept_dict[github_nick] = row.department.decode('utf-8') if row.department is not None else None
+            senders_fios_dict[row.github_nick.decode('utf-8')] = row.fio.decode('utf-8') if row.fio is not None else None
 
         print("senders_fios_dict", senders_fios_dict)
-
         result_total_df['fio'] = result_total_df['sender'].map(senders_fios_dict)
-        # Department cell carries the nick + current value as a sentinel so the
-        # HTML render can replace it with a <select> regardless of column order.
+    except Exception as e:
+        print(f"cant set fio error: {e}")
+        print(f"all_senders: {all_senders}")
+
+    # Fetched separately so a missing/broken department column can't break fio.
+    try:
+        query = f'{declare_placeholders} SELECT github_nick, department FROM github_nick_to_fio WHERE github_nick IN ({placeholders})'
+        senders_dept = pool.execute_with_retries(query, senders_query_params)
+
+        senders_dept_dict = dict()
+        for row in senders_dept[0].rows:
+            senders_dept_dict[row.github_nick.decode('utf-8')] = row.department.decode('utf-8') if row.department is not None else None
+
         result_total_df['department'] = result_total_df['sender'].apply(
             lambda nick: f"DEPTCELL::{nick}::{senders_dept_dict.get(nick) or '-'}"
         )
     except Exception as e:
-        print(f"cant set fio error: {e}")
-        print(f"all_senders: {all_senders}")
+        print(f"cant set department error: {e}")
 
     hw_max_points = sum(
         meta["max_points"] for meta in known_homeworks.values()
