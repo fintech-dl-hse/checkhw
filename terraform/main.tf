@@ -88,7 +88,7 @@ resource "yandex_function" "stop-compute-tf" {
 resource "yandex_function" "homeworks-info-tf" {
     name               = "homeworks-info-tf"
     description        = "Get HTML summary grades table"
-    user_hash          = "v0.0.69"
+    user_hash          = "v0.0.70"
     runtime            = "python314"
     entrypoint         = "index.handler_summary"
     memory             = "128"
@@ -106,7 +106,7 @@ resource "yandex_function" "homeworks-info-tf" {
 resource "yandex_function" "homeworks-info-detailed-tf" {
     name               = "homeworks-info-detailed-tf"
     description        = "Get HTML detailed grades table"
-    user_hash          = "v0.0.69"
+    user_hash          = "v0.0.70"
     runtime            = "python314"
     entrypoint         = "index.handler_detailed"
     memory             = "128"
@@ -124,9 +124,9 @@ resource "yandex_function" "homeworks-info-detailed-tf" {
 resource "yandex_function" "homeworks-info-save-fio-tf" {
     name               = "homeworks-info-save-fio-tf"
     description        = "Save FIO to ydb"
-    user_hash          = "v0.0.69"
+    user_hash          = "v0.0.70"
     runtime            = "python314"
-    entrypoint         = "index.save_nick_to_fio"
+    entrypoint         = "index.save_user_info"
     memory             = "128"
     execution_timeout  = "60"
     service_account_id = "ajeg6pgmfcbnqvosbefc"

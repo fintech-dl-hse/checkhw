@@ -203,17 +203,25 @@ def _handler(event, context, detailed=False):
 
         placeholders = ', '.join([f'$github_nick{i}' for i in range(len(all_senders))])
         declare_placeholders = '\n'.join([f'DECLARE $github_nick{i} as UTF8;' for i in range(len(all_senders))])
-        query = f'{declare_placeholders} SELECT github_nick, fio FROM github_nick_to_fio WHERE github_nick IN ({placeholders})'
+        query = f'{declare_placeholders} SELECT github_nick, fio, department FROM github_nick_to_fio WHERE github_nick IN ({placeholders})'
         # print("query", query)
         senders_fios = pool.execute_with_retries(query, {f'$github_nick{i}': all_senders[i] for i in range(len(all_senders))})
 
         senders_fios_dict = dict()
+        senders_dept_dict = dict()
         for row in senders_fios[0].rows:
-            senders_fios_dict[row.github_nick.decode('utf-8')] = row.fio.decode('utf-8')
+            github_nick = row.github_nick.decode('utf-8')
+            senders_fios_dict[github_nick] = row.fio.decode('utf-8') if row.fio is not None else None
+            senders_dept_dict[github_nick] = row.department.decode('utf-8') if row.department is not None else None
 
         print("senders_fios_dict", senders_fios_dict)
 
         result_total_df['fio'] = result_total_df['sender'].map(senders_fios_dict)
+        # Department cell carries the nick + current value as a sentinel so the
+        # HTML render can replace it with a <select> regardless of column order.
+        result_total_df['department'] = result_total_df['sender'].apply(
+            lambda nick: f"DEPTCELL::{nick}::{senders_dept_dict.get(nick) or '-'}"
+        )
     except Exception as e:
         print(f"cant set fio error: {e}")
         print(f"all_senders: {all_senders}")
@@ -250,6 +258,24 @@ def _handler(event, context, detailed=False):
                         window.location.reload();
                     } else {
                         alert('Failed to update FIO');
+                    }
+                })
+                .catch(error => {
+                    alert('Error: ' + error);
+                });
+        }
+
+        function updateDepartment(github_nick) {
+            const department = document.getElementById('dept_' + github_nick).value;
+
+            const url = `https://functions.yandexcloud.net/d4e6tbb4ljr32is5gi0g?github_nick=${github_nick}&department=${encodeURIComponent(department)}`;
+
+            fetch(url)
+                .then(response => {
+                    if (response.ok) {
+                        window.location.reload();
+                    } else {
+                        alert('Failed to update department');
                     }
                 })
                 .catch(error => {
@@ -353,6 +379,21 @@ def _handler(event, context, detailed=False):
 
             base_html = override_form + '\n'.join(rows)
 
+            # Replace department sentinel cells with a <select> + Save button.
+            def _render_department_cell(match):
+                github_nick = match.group(1)
+                current = match.group(2) or '-'
+                options_html = ''
+                for option in ['-', 'ФТиАД', 'ЭАД']:
+                    selected = ' selected' if option == current else ''
+                    options_html += f'<option value="{option}"{selected}>{option}</option>'
+                return (
+                    f'<td><select id="dept_{github_nick}">{options_html}</select> '
+                    f'<button onclick="updateDepartment(\'{github_nick}\')">Save</button></td>'
+                )
+
+            base_html = re.sub(r'<td>DEPTCELL::(.+?)::(.*?)</td>', _render_department_cell, base_html)
+
             # Add statistics for filled fios
             filled_fios = df[df['fio'].notna()].shape[0]
             total_students = df.shape[0]
@@ -426,28 +467,59 @@ def handler_detailed(event, context):
     return _handler(event, context, detailed=True)
 
 
-def save_nick_to_fio(event, context):
+VALID_DEPARTMENTS = {"ФТиАД", "ЭАД", "-"}
 
-    github_nick = event['queryStringParameters']['github_nick']
-    fio = event['queryStringParameters']['fio']
 
-    # save to ydb table github_nick_to_fio
-    # with replace if exists
-    pool.execute_with_retries('''
-        DECLARE $github_nick as UTF8;
-        DECLARE $fio as UTF8;
+def save_user_info(event, context):
 
-        REPLACE INTO github_nick_to_fio (github_nick, fio, created)
-        VALUES
-            (
-                $github_nick,
-                $fio,
-                CurrentUtcDate()
-            );
-    ''', {
-        '$github_nick': github_nick,
-        '$fio': fio,
-    })
+    params = event['queryStringParameters'] or {}
+
+    github_nick = params.get('github_nick')
+    fio = params.get('fio')
+    department = params.get('department')
+
+    if not github_nick:
+        return {'statusCode': 400, 'body': 'github_nick is required'}
+
+    if fio is None and department is None:
+        return {'statusCode': 400, 'body': 'nothing to update: provide fio and/or department'}
+
+    if department is not None and department not in VALID_DEPARTMENTS:
+        return {'statusCode': 400, 'body': f'invalid department: {department}'}
+
+    # Build a dynamic UPSERT so only the supplied columns are written -
+    # UPSERT (unlike REPLACE) leaves the sibling column untouched, letting
+    # fio and department be saved independently from their own buttons.
+    declares = ['DECLARE $github_nick as UTF8;']
+    columns = ['github_nick']
+    values = ['$github_nick']
+    query_params = {'$github_nick': github_nick}
+
+    if fio is not None:
+        declares.append('DECLARE $fio as UTF8;')
+        columns.append('fio')
+        values.append('$fio')
+        query_params['$fio'] = fio
+
+    if department is not None:
+        columns.append('department')
+        if department == '-':
+            # '-' is the "unset" sentinel - never persisted as a literal.
+            values.append('NULL')
+        else:
+            declares.append('DECLARE $department as UTF8;')
+            values.append('$department')
+            query_params['$department'] = department
+
+    columns.append('created')
+    values.append('CurrentUtcDate()')
+
+    query = '\n'.join(declares) + f'''
+        UPSERT INTO github_nick_to_fio ({', '.join(columns)})
+        VALUES ({', '.join(values)});
+    '''
+
+    pool.execute_with_retries(query, query_params)
 
     return {
         'statusCode': 200,
