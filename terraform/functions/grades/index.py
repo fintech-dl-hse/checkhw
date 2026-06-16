@@ -432,7 +432,9 @@ def _handler(event, context, detailed=False):
                     else:
                         rows[i] = (
                             f'<td><span id="fio_text_{github_nick}">{cell_value}</span> '
-                            f'<button id="fio_edit_{github_nick}" onclick="editFio(\'{github_nick}\')">Edit</button> '
+                            f'<button id="fio_edit_{github_nick}" onclick="editFio(\'{github_nick}\')" '
+                            f'title="Edit FIO" style="background:none;border:none;padding:0 4px;'
+                            f'cursor:pointer;filter:grayscale(1);opacity:0.45;font-size:14px;">✏️</button> '
                             f'<input type="text" id="fio_{github_nick}" value="{cell_value}" '
                             f'data-original="{cell_value}" oninput="onFioChange(\'{github_nick}\')" '
                             f'style="width: 200px; display:none;"> '
