@@ -280,6 +280,12 @@ def _handler(event, context, detailed=False):
                 });
         }
 
+        function onDepartmentChange(github_nick) {
+            const select = document.getElementById('dept_' + github_nick);
+            const button = document.getElementById('dept_save_' + github_nick);
+            button.style.display = (select.value !== select.dataset.original) ? '' : 'none';
+        }
+
         function updateDepartment(github_nick) {
             const department = document.getElementById('dept_' + github_nick).value;
 
@@ -403,8 +409,10 @@ def _handler(event, context, detailed=False):
                     selected = ' selected' if option == current else ''
                     options_html += f'<option value="{option}"{selected}>{option}</option>'
                 return (
-                    f'<td><select id="dept_{github_nick}">{options_html}</select> '
-                    f'<button onclick="updateDepartment(\'{github_nick}\')">Save</button></td>'
+                    f'<td><select id="dept_{github_nick}" data-original="{current}" '
+                    f'onchange="onDepartmentChange(\'{github_nick}\')">{options_html}</select> '
+                    f'<button id="dept_save_{github_nick}" onclick="updateDepartment(\'{github_nick}\')" '
+                    f'style="display:none;">Save</button></td>'
                 )
 
             base_html = re.sub(r'<td>DEPTCELL::(.+?)::(.*?)</td>', _render_department_cell, base_html)
