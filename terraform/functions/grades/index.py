@@ -308,7 +308,8 @@ def _handler(event, context, detailed=False):
     result_total_df['exam_hse_grade'] = result_total_df['sender'].apply(
         lambda s: f"{exam_grade_by_sender.get(s, 0.0):.2f}"
     )
-    final_numeric = (hw_grade_numeric + result_total_df['sender'].map(exam_grade_by_sender).fillna(0.0)).clip(upper=10.0)
+    # Final grade sums the exam grade with the ROUNDED homework grade.
+    final_numeric = (result_total_df['hw_hse_grade_rounded'] + result_total_df['sender'].map(exam_grade_by_sender).fillna(0.0)).clip(upper=10.0)
     result_total_df['final_hse_grade'] = final_numeric.apply(lambda x: f"{x:.2f}")
 
     df_to_render = result_total_df
