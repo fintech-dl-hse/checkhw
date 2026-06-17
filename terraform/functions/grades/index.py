@@ -525,7 +525,7 @@ def _handler(event, context, detailed=False):
                 github_nick = match.group(1)
                 current = match.group(2) or '-'
                 options_html = ''
-                for option in ['-', 'ФТиАД', 'ЭАД', 'ФЭН']:
+                for option in ['-', 'ФТиАД', 'ЭАД', 'ФЭН', 'ИПИИ']:
                     selected = ' selected' if option == current else ''
                     options_html += f'<option value="{option}"{selected}>{option}</option>'
                 return (
@@ -625,7 +625,7 @@ def handler_detailed(event, context):
     return _handler(event, context, detailed=True)
 
 
-VALID_DEPARTMENTS = {"ФТиАД", "ЭАД", "ФЭН", "-"}
+VALID_DEPARTMENTS = {"ФТиАД", "ЭАД", "ФЭН", "ИПИИ", "-"}
 
 
 def save_user_info(event, context):
