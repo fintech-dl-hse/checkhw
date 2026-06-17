@@ -19,13 +19,13 @@ EXAM_MAX = 2
 def normalize_fio(value):
     """Canonical FIO form, shared verbatim with the bot's ingestion side.
 
-    Steps (order matters): drop '<'/'>' -> lowercase -> e-yo fold -> collapse
-    whitespace. Word order is preserved, so matching is order-sensitive.
+    Steps (order matters): drop '<'/'>'/'"' -> lowercase -> e-yo fold ->
+    collapse whitespace. Word order is preserved, so matching is order-sensitive.
     """
     if not value:
         return ""
     s = str(value)
-    s = s.replace("<", "").replace(">", "")
+    s = s.replace("<", "").replace(">", "").replace('"', "")
     s = s.lower().replace("ё", "е")  # ё -> е
     s = " ".join(s.split())
     return s
@@ -278,7 +278,12 @@ def _handler(event, context, detailed=False):
         for row in exam_rows[0].rows:
             if row.fio is None:
                 continue
-            fio_key = row.fio.decode('utf-8')
+            raw_fio = row.fio.decode('utf-8') if isinstance(row.fio, bytes) else row.fio
+            # Normalize the stored value too, so matching is robust even if a row
+            # was written un-normalized.
+            fio_key = normalize_fio(raw_fio)
+            if not fio_key:
+                continue
             exam_sum_by_fio[fio_key] = float(row.exam_sum) if row.exam_sum is not None else 0.0
     except Exception as e:
         print(f"cant load exam_grades error: {e}")
