@@ -31,6 +31,17 @@ def normalize_fio(value):
     return s
 
 
+def _col_str(value):
+    """Normalize a YDB text column to str.
+
+    YDB returns Utf8 columns as str but String columns as bytes, so a plain
+    .decode() crashes on the str case. Returns None for NULL.
+    """
+    if value is None:
+        return None
+    return value.decode('utf-8') if isinstance(value, bytes) else str(value)
+
+
 # Create driver in global space.
 driver = ydb.Driver(
   endpoint=os.getenv('YDB_ENDPOINT'),
@@ -237,7 +248,7 @@ def _handler(event, context, detailed=False):
 
         senders_fios_dict = dict()
         for row in senders_fios[0].rows:
-            senders_fios_dict[row.github_nick.decode('utf-8')] = row.fio.decode('utf-8') if row.fio is not None else None
+            senders_fios_dict[_col_str(row.github_nick)] = _col_str(row.fio)
 
         print("senders_fios_dict", senders_fios_dict)
         result_total_df['fio'] = result_total_df['sender'].map(senders_fios_dict)
@@ -252,7 +263,7 @@ def _handler(event, context, detailed=False):
 
         senders_dept_dict = dict()
         for row in senders_dept[0].rows:
-            senders_dept_dict[row.github_nick.decode('utf-8')] = row.department.decode('utf-8') if row.department is not None else None
+            senders_dept_dict[_col_str(row.github_nick)] = _col_str(row.department)
 
         result_total_df['department'] = result_total_df['sender'].apply(
             lambda nick: f"DEPTCELL::{nick}::{senders_dept_dict.get(nick) or '-'}"
@@ -278,10 +289,9 @@ def _handler(event, context, detailed=False):
         for row in exam_rows[0].rows:
             if row.fio is None:
                 continue
-            raw_fio = row.fio.decode('utf-8') if isinstance(row.fio, bytes) else row.fio
             # Normalize the stored value too, so matching is robust even if a row
             # was written un-normalized.
-            fio_key = normalize_fio(raw_fio)
+            fio_key = normalize_fio(_col_str(row.fio))
             if not fio_key:
                 continue
             exam_sum_by_fio[fio_key] = float(row.exam_sum) if row.exam_sum is not None else 0.0
@@ -639,11 +649,6 @@ def save_user_info(event, context):
     # ("All not null columns should be initialized"). Read the existing row,
     # merge the changed field, and write all columns so the untouched sibling
     # (fio or department) is preserved instead of clobbered.
-    def _col_str(v):
-        if v is None:
-            return ''
-        return v.decode('utf-8') if isinstance(v, bytes) else str(v)
-
     existing_fio = ''
     existing_department = ''
     read_ok = True
@@ -654,8 +659,8 @@ def save_user_info(event, context):
         ''', {'$github_nick': github_nick})
         rows = existing[0].rows
         if rows:
-            existing_fio = _col_str(rows[0].fio)
-            existing_department = _col_str(rows[0].department)
+            existing_fio = _col_str(rows[0].fio) or ''
+            existing_department = _col_str(rows[0].department) or ''
     except Exception as e:
         read_ok = False
         print(f"save_user_info read existing failed: {e}")
