@@ -12,6 +12,25 @@ import ydb.iam
 
 import numpy as np
 
+# Max raw exam points; 'Сумма баллов за экзамены' is scaled by this to the 0-2 exam grade.
+EXAM_MAX = 2
+
+
+def normalize_fio(value):
+    """Canonical FIO form, shared verbatim with the bot's ingestion side.
+
+    Steps (order matters): drop '<'/'>' -> lowercase -> e-yo fold -> collapse
+    whitespace. Word order is preserved, so matching is order-sensitive.
+    """
+    if not value:
+        return ""
+    s = str(value)
+    s = s.replace("<", "").replace(">", "")
+    s = s.lower().replace("ё", "е")  # ё -> е
+    s = " ".join(s.split())
+    return s
+
+
 # Create driver in global space.
 driver = ydb.Driver(
   endpoint=os.getenv('YDB_ENDPOINT'),
@@ -247,9 +266,50 @@ def _handler(event, context, detailed=False):
     )
     print("hw_max_points", hw_max_points)
     ratio = result_total_df['result_points'] / max(hw_max_points, 1)
-    result_total_df['hse_grade'] = ratio.clip(upper=1.0) * 8.0
-    result_total_df['hse_grade'] = result_total_df['hse_grade'].apply(lambda x: f"{x:.2f}")
-    result_total_df['hse_grade_rounded'] = result_total_df['hse_grade'].apply(lambda x: int(float(x) + 0.5))
+    hw_grade_numeric = ratio.clip(upper=1.0) * 8.0
+    result_total_df['hw_hse_grade'] = hw_grade_numeric.apply(lambda x: f"{x:.2f}")
+    result_total_df['hw_hse_grade_rounded'] = result_total_df['hw_hse_grade'].apply(lambda x: int(float(x) + 0.5))
+
+    # Exam grades: exact normalized-FIO match, each exam row used by at most one
+    # student. Collisions (same normalized FIO) and orphan exam rows are reported.
+    exam_sum_by_fio = {}
+    try:
+        exam_rows = pool.execute_with_retries('SELECT fio, exam_sum FROM exam_grades')
+        for row in exam_rows[0].rows:
+            if row.fio is None:
+                continue
+            fio_key = row.fio.decode('utf-8')
+            exam_sum_by_fio[fio_key] = float(row.exam_sum) if row.exam_sum is not None else 0.0
+    except Exception as e:
+        print(f"cant load exam_grades error: {e}")
+
+    fio_by_sender = dict(zip(result_total_df['sender'], result_total_df['fio']))
+    used_exam_fios = set()
+    fio_collisions = []
+    exam_sum_by_sender = {}
+    for sender in sorted(fio_by_sender.keys()):
+        fio = fio_by_sender[sender]
+        key = normalize_fio(fio)
+        if not key or key not in exam_sum_by_fio:
+            continue
+        if key in used_exam_fios:
+            fio_collisions.append((sender, key))
+            continue
+        used_exam_fios.add(key)
+        exam_sum_by_sender[sender] = exam_sum_by_fio[key]
+    orphan_exam_fios = sorted(f for f in exam_sum_by_fio if f not in used_exam_fios)
+    print("exam fio_collisions", fio_collisions)
+    print("exam orphan_exam_fios", orphan_exam_fios)
+
+    exam_grade_by_sender = {
+        s: min(exam_sum_by_sender.get(s, 0.0) / EXAM_MAX, 1.0) * 2.0
+        for s in result_total_df['sender']
+    }
+    result_total_df['exam_hse_grade'] = result_total_df['sender'].apply(
+        lambda s: f"{exam_grade_by_sender.get(s, 0.0):.2f}"
+    )
+    final_numeric = (hw_grade_numeric + result_total_df['sender'].map(exam_grade_by_sender).fillna(0.0)).clip(upper=10.0)
+    result_total_df['final_hse_grade'] = final_numeric.apply(lambda x: f"{x:.2f}")
 
     df_to_render = result_total_df
     if detailed:
@@ -517,12 +577,27 @@ def _handler(event, context, detailed=False):
 
         return js_code + base_html
 
+    body = custom_html_render(df_to_render, detailed=detailed, result_df=result_df, known_homeworks=known_homeworks, hw_to_max_points=hw_to_max_points)
+
+    if not detailed and (fio_collisions or orphan_exam_fios):
+        body += "\n<h2>Exam matching warnings</h2>\n"
+        if fio_collisions:
+            body += "<p>FIO collisions (exam result already used by another student, skipped):</p>\n<ul>\n"
+            for sender, key in fio_collisions:
+                body += f"<li>{sender} &rarr; {key}</li>\n"
+            body += "</ul>\n"
+        if orphan_exam_fios:
+            body += "<p>Orphan exam rows (matched no student):</p>\n<ul>\n"
+            for fio_key in orphan_exam_fios:
+                body += f"<li>{fio_key}</li>\n"
+            body += "</ul>\n"
+
     return {
         'statusCode': 200,
         'headers': {
             'Content-Type': 'text/html; charset=utf-8',
         },
-        'body': custom_html_render(df_to_render, detailed=detailed, result_df=result_df, known_homeworks=known_homeworks, hw_to_max_points=hw_to_max_points),
+        'body': body,
     }
 
 
@@ -591,4 +666,63 @@ def save_user_info(event, context):
     return {
         'statusCode': 200,
         'body': 'OK',
+    }
+
+
+def save_exam_grades(event, context):
+    """Truncate + replace the exam_grades table from a token-authenticated POST.
+
+    The bot (no direct YDB access) normalizes FIOs and POSTs
+    {"rows": [{"fio": <normalized>, "exam_sum": <float>}, ...]} with the shared
+    secret token as the `token` query param.
+    """
+    import base64
+
+    expected_token = os.getenv('EXAM_GRADES_SECRET_TOKEN')
+    params = event.get('queryStringParameters') or {}
+    token = params.get('token')
+
+    if not expected_token or token != expected_token:
+        return {'statusCode': 401, 'body': 'unauthorized'}
+
+    body = event.get('body') or ''
+    if event.get('isBase64Encoded') and body:
+        body = base64.b64decode(body).decode('utf-8')
+
+    try:
+        payload = json.loads(body) if body else {}
+    except Exception:
+        return {'statusCode': 400, 'body': 'invalid json body'}
+
+    rows = payload.get('rows')
+    if not isinstance(rows, list):
+        return {'statusCode': 400, 'body': 'rows must be a list'}
+
+    clean_rows = []
+    for r in rows:
+        if not isinstance(r, dict):
+            continue
+        fio = normalize_fio(r.get('fio'))
+        if not fio:
+            continue
+        try:
+            exam_sum = float(r.get('exam_sum'))
+        except (TypeError, ValueError):
+            continue
+        clean_rows.append((fio, exam_sum))
+
+    # Truncate then replace: every upload fully supersedes the previous one.
+    pool.execute_with_retries('DELETE FROM exam_grades;')
+    for fio, exam_sum in clean_rows:
+        pool.execute_with_retries('''
+            DECLARE $fio as UTF8;
+            DECLARE $exam_sum as Double;
+
+            UPSERT INTO exam_grades (fio, exam_sum)
+            VALUES ($fio, $exam_sum);
+        ''', {'$fio': fio, '$exam_sum': exam_sum})
+
+    return {
+        'statusCode': 200,
+        'body': json.dumps({'written': len(clean_rows)}),
     }

@@ -140,6 +140,33 @@ resource "yandex_function" "homeworks-info-save-fio-tf" {
 }
 
 
+resource "yandex_function" "homeworks-info-save-exam-grades-tf" {
+    name               = "homeworks-info-save-exam-grades-tf"
+    description        = "Truncate + replace exam_grades in ydb (token-authed; called by the bot)"
+    user_hash          = "v0.0.75"
+    runtime            = "python314"
+    entrypoint         = "index.save_exam_grades"
+    memory             = "128"
+    execution_timeout  = "60"
+    service_account_id = "ajeg6pgmfcbnqvosbefc"
+    environment = {
+        YDB_DATABASE = "/ru-central1/b1gdun28gk5uj1a2cirj/etnis546o87uog4k54km"
+        YDB_ENDPOINT = "grpcs://ydb.serverless.yandexcloud.net:2135"
+    }
+    secrets {
+        # Lockbox secret holding the exam-grades token. The bot must send the
+        # same value as the `token` query param.
+        id                   = "e6qtahn8s9vh5rhfkrfn"
+        version_id           = "e6qi6uft2qj6muqhe3jj"
+        key                  = "EXAM_GRADES_SECRET_TOKEN"
+        environment_variable = "EXAM_GRADES_SECRET_TOKEN"
+    }
+    content {
+        zip_filename = "functions/grades.zip"
+    }
+}
+
+
 resource "yandex_function" "handle-github-hook-tf" {
     name               = "handle-github-hook-tf"
     description        = "Save github hook data to YDB"
