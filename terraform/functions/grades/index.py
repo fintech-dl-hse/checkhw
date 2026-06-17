@@ -635,41 +635,57 @@ def save_user_info(event, context):
     if department is not None and department not in VALID_DEPARTMENTS:
         return {'statusCode': 400, 'body': f'invalid department: {department}'}
 
-    # Build a dynamic UPSERT so only the supplied columns are written -
-    # UPSERT (unlike REPLACE) leaves the sibling column untouched, letting
-    # fio and department be saved independently from their own buttons.
-    declares = ['DECLARE $github_nick as UTF8;']
-    columns = ['github_nick']
-    values = ['$github_nick']
-    query_params = {'$github_nick': github_nick}
+    # fio is a NOT NULL column, so a partial UPSERT that omits it is rejected
+    # ("All not null columns should be initialized"). Read the existing row,
+    # merge the changed field, and write all columns so the untouched sibling
+    # (fio or department) is preserved instead of clobbered.
+    def _col_str(v):
+        if v is None:
+            return ''
+        return v.decode('utf-8') if isinstance(v, bytes) else str(v)
 
-    if fio is not None:
-        declares.append('DECLARE $fio as UTF8;')
-        columns.append('fio')
-        values.append('$fio')
-        query_params['$fio'] = fio
+    existing_fio = ''
+    existing_department = ''
+    read_ok = True
+    try:
+        existing = pool.execute_with_retries('''
+            DECLARE $github_nick as UTF8;
+            SELECT fio, department FROM github_nick_to_fio WHERE github_nick = $github_nick;
+        ''', {'$github_nick': github_nick})
+        rows = existing[0].rows
+        if rows:
+            existing_fio = _col_str(rows[0].fio)
+            existing_department = _col_str(rows[0].department)
+    except Exception as e:
+        read_ok = False
+        print(f"save_user_info read existing failed: {e}")
 
-    if department is not None:
-        declares.append('DECLARE $department as UTF8;')
-        columns.append('department')
-        values.append('$department')
-        # '-' is the "unset" sentinel: stored as empty string (rendered as '-'),
-        # which avoids the type-inference problems of a bare SQL NULL literal.
-        query_params['$department'] = '' if department == '-' else department
+    # A partial update relies on the existing value of the other column; if the
+    # read failed, abort rather than risk overwriting it with an empty string.
+    if (fio is None or department is None) and not read_ok:
+        return {'statusCode': 500, 'body': 'could not read existing row; aborting to avoid clobbering'}
 
-    columns.append('created')
-    values.append('CurrentUtcDate()')
-
-    query = '\n'.join(declares) + f'''
-        UPSERT INTO github_nick_to_fio ({', '.join(columns)})
-        VALUES ({', '.join(values)});
-    '''
+    final_fio = fio if fio is not None else existing_fio
+    final_department = department if department is not None else existing_department
+    # '-' is the "unset" sentinel, stored as empty string (rendered as '-').
+    if final_department == '-':
+        final_department = ''
 
     try:
-        pool.execute_with_retries(query, query_params)
+        pool.execute_with_retries('''
+            DECLARE $github_nick as UTF8;
+            DECLARE $fio as UTF8;
+            DECLARE $department as UTF8;
+
+            UPSERT INTO github_nick_to_fio (github_nick, fio, department, created)
+            VALUES ($github_nick, $fio, $department, CurrentUtcDate());
+        ''', {
+            '$github_nick': github_nick,
+            '$fio': final_fio,
+            '$department': final_department,
+        })
     except Exception as e:
-        # Surface the real YDB error (e.g. a missing 'department' column) instead
-        # of a generic 500 with no message.
+        # Surface the real YDB error instead of a generic 500 with no message.
         print(f"save_user_info failed: {e}")
         return {'statusCode': 500, 'body': f'save failed: {e}'}
 
