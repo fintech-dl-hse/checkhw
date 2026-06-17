@@ -650,14 +650,12 @@ def save_user_info(event, context):
         query_params['$fio'] = fio
 
     if department is not None:
+        declares.append('DECLARE $department as UTF8;')
         columns.append('department')
-        if department == '-':
-            # '-' is the "unset" sentinel - never persisted as a literal.
-            values.append('NULL')
-        else:
-            declares.append('DECLARE $department as UTF8;')
-            values.append('$department')
-            query_params['$department'] = department
+        values.append('$department')
+        # '-' is the "unset" sentinel: stored as empty string (rendered as '-'),
+        # which avoids the type-inference problems of a bare SQL NULL literal.
+        query_params['$department'] = '' if department == '-' else department
 
     columns.append('created')
     values.append('CurrentUtcDate()')
@@ -667,7 +665,13 @@ def save_user_info(event, context):
         VALUES ({', '.join(values)});
     '''
 
-    pool.execute_with_retries(query, query_params)
+    try:
+        pool.execute_with_retries(query, query_params)
+    except Exception as e:
+        # Surface the real YDB error (e.g. a missing 'department' column) instead
+        # of a generic 500 with no message.
+        print(f"save_user_info failed: {e}")
+        return {'statusCode': 500, 'body': f'save failed: {e}'}
 
     return {
         'statusCode': 200,

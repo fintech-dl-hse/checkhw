@@ -143,7 +143,7 @@ resource "yandex_function" "homeworks-info-save-fio-tf" {
 resource "yandex_function" "homeworks-info-save-exam-grades-tf" {
     name               = "homeworks-info-save-exam-grades-tf"
     description        = "Truncate + replace exam_grades in ydb (token-authed; called by the bot)"
-    user_hash          = "v0.0.78"
+    user_hash          = "v0.0.79"
     runtime            = "python314"
     entrypoint         = "index.save_exam_grades"
     memory             = "128"
