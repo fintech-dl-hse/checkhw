@@ -338,6 +338,22 @@ def _handler(event, context, detailed=False):
             no_fio_with_grade.append(sender)
     no_fio_with_grade = sorted(s for s in no_fio_with_grade if s)
 
+    # Data for the client-side "download CSV" button: only students with a FIO.
+    export_data = []
+    for fio, hw_rounded, exam_g, final_g in zip(
+        result_total_df['fio'],
+        result_total_df['hw_hse_grade_rounded'],
+        result_total_df['exam_hse_grade'],
+        result_total_df['final_hse_grade'],
+    ):
+        if not pd.isna(fio) and str(fio).strip() != '':
+            export_data.append({
+                'fio': str(fio),
+                'hw': str(hw_rounded),
+                'exam': str(exam_g),
+                'final': str(final_g),
+            })
+
     df_to_render = result_total_df
     if detailed:
         df_to_render = result_df
@@ -624,6 +640,30 @@ def _handler(event, context, detailed=False):
         for sender in no_fio_with_grade:
             body += f"<li>{sender}</li>\n"
         body += "</ul>\n"
+
+    if not detailed:
+        # \\u003c keeps any '<' in a FIO from prematurely closing the script tag.
+        export_json = json.dumps(export_data, ensure_ascii=False).replace('<', '\\u003c')
+        export_html = (
+            '<div style="margin: 20px 0;">'
+            '<button onclick="downloadGradesCsv()">Скачать CSV (ФИО + оценки)</button>'
+            '</div>\n'
+            '<script>\n'
+            f'const GRADES_EXPORT = {export_json};\n'
+            'function csvCell(v){v=String(v==null?"":v);'
+            'return /[",\\r\\n;]/.test(v)?\'"\'+v.replace(/"/g,\'""\')+\'"\':v;}\n'
+            'function downloadGradesCsv(){\n'
+            '  const rows=[["ФИО","Накоп","Экзамены","Итог"]];\n'
+            '  for(const r of GRADES_EXPORT){rows.push([r.fio,r.hw,r.exam,r.final]);}\n'
+            '  const csv=rows.map(row=>row.map(csvCell).join(",")).join("\\r\\n");\n'
+            '  const blob=new Blob(["\\ufeff"+csv],{type:"text/csv;charset=utf-8;"});\n'
+            '  const url=URL.createObjectURL(blob);\n'
+            '  const a=document.createElement("a");a.href=url;a.download="grades.csv";\n'
+            '  document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);\n'
+            '}\n'
+            '</script>\n'
+        )
+        body = export_html + body
 
     return {
         'statusCode': 200,
