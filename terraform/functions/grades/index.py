@@ -257,11 +257,11 @@ def _handler(event, context, detailed=False):
         print(f"all_senders: {all_senders}")
 
     # Fetched separately so a missing/broken department column can't break fio.
+    senders_dept_dict = dict()
     try:
         query = f'{declare_placeholders} SELECT github_nick, department FROM github_nick_to_fio WHERE github_nick IN ({placeholders})'
         senders_dept = pool.execute_with_retries(query, senders_query_params)
 
-        senders_dept_dict = dict()
         for row in senders_dept[0].rows:
             senders_dept_dict[_col_str(row.github_nick)] = _col_str(row.department)
 
@@ -340,7 +340,8 @@ def _handler(event, context, detailed=False):
 
     # Data for the client-side "download CSV" button: only students with a FIO.
     export_data = []
-    for fio, hw_rounded, exam_g, final_g in zip(
+    for sender, fio, hw_rounded, exam_g, final_g in zip(
+        result_total_df['sender'],
         result_total_df['fio'],
         result_total_df['hw_hse_grade_rounded'],
         result_total_df['exam_hse_grade'],
@@ -349,6 +350,7 @@ def _handler(event, context, detailed=False):
         if not pd.isna(fio) and str(fio).strip() != '':
             export_data.append({
                 'fio': str(fio),
+                'dept': senders_dept_dict.get(sender) or '-',
                 'hw': str(hw_rounded),
                 'exam': str(exam_g),
                 'final': str(final_g),
@@ -421,28 +423,6 @@ def _handler(event, context, detailed=False):
                 });
         }
         </script>
-        """
-
-        # Add override form at the top
-        override_form = """
-        <div style="margin: 20px 0; padding: 15px; border: 1px solid #ccc; border-radius: 5px; background-color: #f9f9f9;">
-            <h3 style="margin-top: 0;">Override FIO for any GitHub Nick</h3>
-            <div style="display: flex; gap: 10px; align-items: center;">
-                <div>
-                    <label for="override_github_nick">GitHub Nick:</label><br>
-                    <input type="text" id="override_github_nick" style="width: 200px; padding: 5px;">
-                </div>
-                <div>
-                    <label for="override_fio">FIO:</label><br>
-                    <input type="text" id="override_fio" style="width: 200px; padding: 5px;">
-                </div>
-                <div style="align-self: flex-end;">
-                    <button onclick="updateFio(document.getElementById('override_github_nick').value, 'override_fio')" style="padding: 5px 15px; margin-bottom: 1px;">
-                        Save Override
-                    </button>
-                </div>
-            </div>
-        </div>
         """
 
         style_css = """
@@ -545,7 +525,7 @@ def _handler(event, context, detailed=False):
                             f'style="display:none;">Save</button></td>'
                         )
 
-            base_html = override_form + '\n'.join(rows)
+            base_html = '\n'.join(rows)
 
             # Replace department sentinel cells with a <select> + Save button.
             def _render_department_cell(match):
@@ -653,8 +633,8 @@ def _handler(event, context, detailed=False):
             'function csvCell(v){v=String(v==null?"":v);'
             'return /[",\\r\\n;]/.test(v)?\'"\'+v.replace(/"/g,\'""\')+\'"\':v;}\n'
             'function downloadGradesCsv(){\n'
-            '  const rows=[["ФИО","Накоп","Экзамены","Итог"]];\n'
-            '  for(const r of GRADES_EXPORT){rows.push([r.fio,r.hw,r.exam,r.final]);}\n'
+            '  const rows=[["ФИО","Программа","Накоп","Экзамены","Итог"]];\n'
+            '  for(const r of GRADES_EXPORT){rows.push([r.fio,r.dept,r.hw,r.exam,r.final]);}\n'
             '  const csv=rows.map(row=>row.map(csvCell).join(",")).join("\\r\\n");\n'
             '  const blob=new Blob(["\\ufeff"+csv],{type:"text/csv;charset=utf-8;"});\n'
             '  const url=URL.createObjectURL(blob);\n'
