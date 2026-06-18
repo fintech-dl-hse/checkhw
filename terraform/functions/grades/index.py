@@ -327,6 +327,17 @@ def _handler(event, context, detailed=False):
     final_numeric = (result_total_df['hw_hse_grade_rounded'] + result_total_df['sender'].map(exam_grade_by_sender).fillna(0.0)).clip(upper=10.0)
     result_total_df['final_hse_grade'] = final_numeric.apply(lambda x: f"{x:.2f}")
 
+    # github nicks with a final grade >= 4 but no FIO filled in - surfaced at the
+    # bottom of the page so admins can chase them.
+    no_fio_with_grade = []
+    for sender, fio, final_grade in zip(
+        result_total_df['sender'], result_total_df['fio'], final_numeric
+    ):
+        has_fio = not pd.isna(fio) and str(fio).strip() != ''
+        if not has_fio and float(final_grade) >= 4:
+            no_fio_with_grade.append(sender)
+    no_fio_with_grade = sorted(s for s in no_fio_with_grade if s)
+
     df_to_render = result_total_df
     if detailed:
         df_to_render = result_df
@@ -607,6 +618,12 @@ def _handler(event, context, detailed=False):
             for fio_key in orphan_exam_fios:
                 body += f"<li>{fio_key}</li>\n"
             body += "</ul>\n"
+
+    if not detailed and no_fio_with_grade:
+        body += "\n<h2>Студенты с оценкой ≥ 4 без заполненного ФИО</h2>\n<ul>\n"
+        for sender in no_fio_with_grade:
+            body += f"<li>{sender}</li>\n"
+        body += "</ul>\n"
 
     return {
         'statusCode': 200,
