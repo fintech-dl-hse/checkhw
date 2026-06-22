@@ -325,6 +325,16 @@ def _handler(event, context, detailed=False):
     )
     # Final grade sums the exam grade with the ROUNDED homework grade.
     final_numeric = (result_total_df['hw_hse_grade_rounded'] + result_total_df['sender'].map(exam_grade_by_sender).fillna(0.0)).clip(upper=10.0)
+
+    # Hardcoded final-grade overrides by github nick.
+    forced_final_grades = {
+        "Denisin": 4.0,
+    }
+    forced_mask = result_total_df['sender'].isin(forced_final_grades)
+    if forced_mask.any():
+        final_numeric = final_numeric.copy()
+        final_numeric.loc[forced_mask] = result_total_df.loc[forced_mask, 'sender'].map(forced_final_grades)
+
     result_total_df['final_hse_grade'] = final_numeric.apply(lambda x: f"{x:.2f}")
 
     # github nicks with a final grade >= 4 but no FIO filled in - surfaced at the
